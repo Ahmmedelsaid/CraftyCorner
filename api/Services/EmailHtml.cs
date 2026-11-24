@@ -10,7 +10,7 @@ namespace CraftyCorner.Api.Services;
 /// </summary>
 internal static class EmailHtml
 {
-    public const string Brand = "#8a5a2b";
+    public const string AccentColor = "#8a5a2b";
     private const string Font = "'Segoe UI',Tahoma,Arial,sans-serif";
 
     public static string Encode(string? text) => WebUtility.HtmlEncode(text ?? "");
@@ -44,7 +44,7 @@ internal static class EmailHtml
             $"<tr><td style=\"padding:0 4px 14px;font-family:{Font};font-size:24px;font-weight:700;color:#3a2718;\">Crafty Corner</td></tr>"
         );
         html.Append(
-            $"<tr><td style=\"background:#ffffff;border:1px solid #e0d2ba;border-top:4px solid {Brand};border-radius:14px;padding:28px;font-family:{Font};font-size:15px;line-height:1.65;color:#3a2718;\">{content}</td></tr>"
+            $"<tr><td style=\"background:#ffffff;border:1px solid #e0d2ba;border-top:4px solid {AccentColor};border-radius:14px;padding:28px;font-family:{Font};font-size:15px;line-height:1.65;color:#3a2718;\">{content}</td></tr>"
         );
         html.Append(
             $"<tr><td style=\"padding:16px 4px;font-family:{Font};font-size:12px;color:#7b6753;\">Crafty Corner &middot; Handcrafted decor for cozy homes</td></tr>"
@@ -83,11 +83,11 @@ internal static class EmailHtml
     }
 
     public static string Button(string url, string label) =>
-        $"<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin:8px 0 6px;\"><tr><td style=\"background:{Brand};border-radius:10px;\"><a href=\"{Encode(url)}\" style=\"display:inline-block;padding:12px 22px;font-family:{Font};font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;\">{Encode(label)}</a></td></tr></table>";
+        $"<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin:8px 0 6px;\"><tr><td style=\"background:{AccentColor};border-radius:10px;\"><a href=\"{Encode(url)}\" style=\"display:inline-block;padding:12px 22px;font-family:{Font};font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;\">{Encode(label)}</a></td></tr></table>";
 
     /// <summary>Grey box for free text (a customer's message).</summary>
     public static string Quote(string text) =>
-        $"<div style=\"margin:4px 0 16px;padding:14px 16px;background:#f6efe3;border-left:4px solid {Brand};border-radius:8px;color:#3a2718;font-size:15px;\">{EncodeMultiline(text)}</div>";
+        $"<div style=\"margin:4px 0 16px;padding:14px 16px;background:#f6efe3;border-left:4px solid {AccentColor};border-radius:8px;color:#3a2718;font-size:15px;\">{EncodeMultiline(text)}</div>";
 
     public static string Divider() =>
         "<hr style=\"border:0;border-top:1px solid #e0d2ba;margin:22px 0;\">";

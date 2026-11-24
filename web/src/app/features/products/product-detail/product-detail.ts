@@ -66,7 +66,6 @@ const LOW_STOCK_THRESHOLD = 10;
 
           <div class="flex flex-col gap-5">
             <div>
-              <p class="text-sm text-muted">{{ product.brandName }}</p>
               <h1 class="mt-1 text-3xl font-bold leading-tight tracking-tight">
                 {{ product.name }}
               </h1>
@@ -210,9 +209,9 @@ export class ProductDetail {
   constructor() {
     effect(() => {
       const current = this.state();
-      if (current.status === 'ready') this.title.setTitle(`${current.data.name} | CraftyCorner`);
+      if (current.status === 'ready') this.title.setTitle(`${current.data.name} | Crafty Corner`);
     });
-    inject(DestroyRef).onDestroy(() => this.title.setTitle('CraftyCorner'));
+    inject(DestroyRef).onDestroy(() => this.title.setTitle('Crafty Corner'));
   }
 
   /** لو المفتاح له ترجمة بنستخدمها، وإلا بنعرضه بشكل مقروء (noise_cancelling -> Noise cancelling). */

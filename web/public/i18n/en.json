@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "CraftyCorner"
+    "name": "Crafty Corner"
   },
   "nav": {
     "products": "Products",
@@ -10,14 +10,13 @@
     "switchTo": "العربية"
   },
   "home": {
-    "eyebrow": "Electronics store",
-    "title": "Power up your setup",
-    "subtitle": "Phones, laptops, audio and accessories from the brands you know, all in one place.",
+    "eyebrow": "Handmade · Home decor",
+    "title": "Handcrafted decor for cozy homes",
+    "subtitle": "Plaster and ceramic pieces made by hand, one at a time. Pick what you love and we prepare it and deliver it to your door anywhere in Egypt.",
     "shopNow": "Shop now",
     "newArrivals": "New arrivals",
     "viewAll": "View all",
     "shopByCategory": "Shop by category",
-    "topBrands": "Top brands",
     "products": "{{count}} products",
     "values": {
       "cod": {
@@ -25,49 +24,63 @@
         "text": "Pay when your order arrives."
       },
       "delivery": {
-        "title": "Fast delivery",
-        "text": "To every governorate in Egypt."
-      },
-      "warranty": {
-        "title": "Genuine products",
-        "text": "Authentic items from trusted brands."
+        "title": "Delivery across Egypt",
+        "text": "To every governorate."
       },
       "support": {
-        "title": "Friendly support",
-        "text": "We answer by phone and message."
+        "title": "Gift-ready packing",
+        "text": "Every order is wrapped with care."
+      },
+      "handmade": {
+        "title": "Handmade",
+        "text": "Every piece is made by hand with care."
       }
     },
     "stats": {
       "products": "Products",
       "categories": "Categories",
       "governorates": "Governorates"
+    },
+    "how": {
+      "title": "How to order",
+      "choose": {
+        "title": "Choose",
+        "text": "Browse the pieces and add what you like to the cart."
+      },
+      "order": {
+        "title": "Confirm on the site",
+        "text": "Enter your details and address and pay on delivery. Follow your order from your account."
+      },
+      "receive": {
+        "title": "Receive",
+        "text": "We prepare your order by hand and deliver it to any governorate in Egypt."
+      }
     }
   },
   "footer": {
-    "rights": "© {{year}} CraftyCorner. All rights reserved.",
-    "tagline": "The latest phones, laptops and accessories in one place.",
+    "rights": "© {{year}} Crafty Corner. All rights reserved.",
+    "tagline": "Handcrafted decor for cozy homes. Plaster and ceramic pieces made with love.",
     "shop": "Shop",
     "allProducts": "All products",
     "categories": "Categories",
     "account": "Account",
-    "company": "CraftyCorner",
+    "company": "Crafty Corner",
     "about": "About us",
-    "contact": "Contact us",
-    "credits": "Photo credits"
+    "contact": "Contact us"
   },
   "auth": {
     "login": {
       "title": "Welcome back",
-      "subtitle": "Sign in to your CraftyCorner account",
+      "subtitle": "Sign in to your Crafty Corner account",
       "cta": "Sign in",
       "submit": "Sign in",
       "submitting": "Signing in…",
-      "noAccount": "New to CraftyCorner?",
+      "noAccount": "New to Crafty Corner?",
       "createAccount": "Create an account"
     },
     "register": {
       "title": "Create your account",
-      "subtitle": "Join CraftyCorner to save your details and track your orders",
+      "subtitle": "Join Crafty Corner to save your details and track your orders",
       "cta": "Create account",
       "submit": "Create account",
       "submitting": "Creating account…",
@@ -114,8 +127,8 @@
     "signOut": "Sign out"
   },
   "products": {
-    "title": "Electronics",
-    "subtitle": "The latest phones, laptops, audio and accessories",
+    "title": "All pieces",
+    "subtitle": "Handmade decor: Ramadan, trays, figurines and gifts",
     "count": "{{count}} products",
     "emptyTitle": "No results",
     "emptyText": "Try a different search or remove some filters.",
@@ -288,7 +301,7 @@
     },
     "whatsapp": {
       "button": "Send my order on WhatsApp",
-      "message": "Hello CraftyCorner, I placed order #{{id}} (total EGP {{total}}). Name: {{name}}, phone: {{phone}}."
+      "message": "Hello Crafty Corner, I placed order #{{id}} (total EGP {{total}}). Name: {{name}}, phone: {{phone}}."
     }
   },
   "header": {
@@ -298,11 +311,11 @@
   },
   "about": {
     "eyebrow": "About us",
-    "title": "Your electronics store, made simple",
-    "subtitle": "CraftyCorner brings phones, laptops, audio, gaming and more to your door anywhere in Egypt, with honest prices and support you can actually reach.",
+    "title": "Decor made by hand",
+    "subtitle": "Crafty Corner makes plaster and ceramic decor by hand and delivers it to your door anywhere in Egypt.",
     "storyTitle": "Our story",
-    "story1": "We started CraftyCorner because buying electronics should not feel like a gamble. Too often the price is unclear, the product is not what you expected, and nobody answers when something goes wrong.",
-    "story2": "So we keep things simple: clear prices in Egyptian pounds, genuine products from brands you know, delivery to every governorate and payment only when your order arrives.",
+    "story1": "Crafty Corner started from a love of handmade things. Every piece, from lanterns to incense burners to figurines, is shaped, painted and prepared by hand.",
+    "story2": "That is why every piece is a little different. We wrap every order with care so it reaches you just as it left our hands.",
     "stats": {
       "products": "Products",
       "categories": "Categories",
@@ -311,8 +324,8 @@
     "valuesTitle": "What we stand for",
     "values": {
       "genuine": {
-        "title": "Genuine products",
-        "text": "We list authentic items from trusted brands, with clear specifications."
+        "title": "Handmade",
+        "text": "Every piece is made by hand, so small differences from the photo are normal."
       },
       "prices": {
         "title": "Clear prices",
@@ -323,8 +336,8 @@
         "text": "We deliver to all 27 governorates and we call you to arrange the time."
       },
       "support": {
-        "title": "Support that answers",
-        "text": "Questions before or after your order? Talk to a real person."
+        "title": "Friendly support",
+        "text": "A question, or want a different colour? Talk to us."
       }
     },
     "stepsTitle": "How ordering works",
@@ -342,7 +355,7 @@
         "text": "We deliver to your door and you pay in cash when it arrives."
       }
     },
-    "ctaTitle": "Ready to find your next device?",
+    "ctaTitle": "Ready to pick your piece?",
     "ctaText": "Have a question first? We are happy to help.",
     "shop": "Start shopping",
     "contact": "Contact us"
@@ -398,7 +411,7 @@
     "whatsapp": {
       "title": "Chat on WhatsApp",
       "text": "The quickest way to reach us.",
-      "message": "Hello CraftyCorner, I have a question."
+      "message": "Hello Crafty Corner, I have a question."
     },
     "quick": {
       "title": "Quick answers",
@@ -412,10 +425,5 @@
       },
       "track": "Track my order"
     }
-  },
-  "credits": {
-    "title": "Photo credits",
-    "intro": "Some product photos come from Wikimedia Commons and are used under free licences. Thank you to the photographers. Other product images on this site are simple illustrations.",
-    "empty": "No third-party photos are used yet."
   }
 }

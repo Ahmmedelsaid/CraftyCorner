@@ -81,7 +81,6 @@ describe('Home page', () => {
     http
       .expectOne(`${API}/categories`)
       .flush([category(1, 'Electronics', null), category(2, 'Phones', 1)]);
-    http.expectOne(`${API}/brands`).flush([]);
     await fixture.whenStable();
 
     // صف منتجات القسم الفرعي
@@ -110,9 +109,6 @@ describe('Home page', () => {
       .flush({ title: 'Server error' }, { status: 500, statusText: 'Server Error' });
     http
       .expectOne(`${API}/categories`)
-      .flush({ title: 'Server error' }, { status: 500, statusText: 'Server Error' });
-    http
-      .expectOne(`${API}/brands`)
       .flush({ title: 'Server error' }, { status: 500, statusText: 'Server Error' });
     await fixture.whenStable();
 

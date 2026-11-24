@@ -50,6 +50,7 @@ describe('Checkout page', () => {
 
   beforeEach(async () => {
     localStorage.clear();
+    localStorage.setItem('craftycorner.lang', 'en');
     await TestBed.configureTestingModule({
       imports: [Checkout],
       providers: [

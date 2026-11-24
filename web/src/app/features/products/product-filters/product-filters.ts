@@ -99,41 +99,43 @@ const optionBase =
         </ul>
       </details>
 
-      <details class="group mt-3 border-t border-border pt-3" open>
-        <summary
-          class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold [&::-webkit-details-marker]:hidden"
-        >
-          {{ 'filters.brand' | transloco }}
-          <app-icon
-            name="chevron-down"
-            [size]="1"
-            class="text-muted transition group-open:rotate-180"
-          />
-        </summary>
-        <ul class="mt-2 space-y-1">
-          <li>
-            <button
-              type="button"
-              [class]="optionClass(query().brandId === undefined)"
-              (click)="patch.emit({ brandId: undefined })"
-            >
-              {{ 'filters.all' | transloco }}
-            </button>
-          </li>
-          @for (brand of brands(); track brand.id) {
+      @if (brands().length > 1) {
+        <details class="group mt-3 border-t border-border pt-3" open>
+          <summary
+            class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold [&::-webkit-details-marker]:hidden"
+          >
+            {{ 'filters.brand' | transloco }}
+            <app-icon
+              name="chevron-down"
+              [size]="1"
+              class="text-muted transition group-open:rotate-180"
+            />
+          </summary>
+          <ul class="mt-2 space-y-1">
             <li>
               <button
                 type="button"
-                [class]="optionClass(query().brandId === brand.id)"
-                (click)="patch.emit({ brandId: brand.id })"
+                [class]="optionClass(query().brandId === undefined)"
+                (click)="patch.emit({ brandId: undefined })"
               >
-                <span>{{ brand.name }}</span>
-                <span class="count">{{ brand.productCount }}</span>
+                {{ 'filters.all' | transloco }}
               </button>
             </li>
-          }
-        </ul>
-      </details>
+            @for (brand of brands(); track brand.id) {
+              <li>
+                <button
+                  type="button"
+                  [class]="optionClass(query().brandId === brand.id)"
+                  (click)="patch.emit({ brandId: brand.id })"
+                >
+                  <span>{{ brand.name }}</span>
+                  <span class="count">{{ brand.productCount }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        </details>
+      }
 
       <details class="group mt-3 border-t border-border pt-3" open>
         <summary

@@ -46,13 +46,13 @@ public static class ContactEmails
             ("Name", Encode(m.Name)),
             (
                 "Email",
-                $"<a href=\"mailto:{Encode(m.Email)}\" style=\"color:{Brand};\">{Encode(m.Email)}</a>"
+                $"<a href=\"mailto:{Encode(m.Email)}\" style=\"color:{AccentColor};\">{Encode(m.Email)}</a>"
             ),
             (
                 "Phone",
                 m.Phone is null
-                    ? "<span style=\"color:#5b6678;\">(not given)</span>"
-                    : $"<a href=\"tel:{Encode(m.Phone)}\" style=\"color:{Brand};\">{Encode(m.Phone)}</a>"
+                    ? "<span style=\"color:#7b6753;\">(not given)</span>"
+                    : $"<a href=\"tel:{Encode(m.Phone)}\" style=\"color:{AccentColor};\">{Encode(m.Phone)}</a>"
             ),
         };
         if (m.OrderNumber is { } orderNumber)
@@ -67,7 +67,7 @@ public static class ContactEmails
 
         return new EmailMessage(
             To: recipient,
-            Subject: $"[CraftyCorner] {topic}: {subject}",
+            Subject: $"[Crafty Corner] {topic}: {subject}",
             Body: text.ToString(),
             // الرد على الإيميل يروح للعميل مباشرة
             ReplyTo: m.Email,

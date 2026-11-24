@@ -14,7 +14,7 @@
         try {
           var lang = localStorage.getItem('craftycorner.lang');
           if (lang !== 'ar' && lang !== 'en') {
-            lang = (navigator.language || '').toLowerCase().indexOf('ar') === 0 ? 'ar' : 'en';
+            lang = 'ar';
           }
           document.documentElement.lang = lang;
           document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';

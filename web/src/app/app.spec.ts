@@ -44,7 +44,7 @@ describe('App', () => {
     const element = fixture.nativeElement as HTMLElement;
     expect(element.querySelector('app-header')).toBeTruthy();
     expect(element.querySelector('main#main')).toBeTruthy();
-    expect(element.textContent).toContain('Cart');
+    expect(element.textContent).toContain('Crafty Corner');
     expect(element.querySelector('button')).toBeTruthy();
   });
 });

@@ -67,9 +67,6 @@ import { Icon } from '../../shared/ui/icon';
                   <div class="flex min-w-0 flex-col gap-2">
                     <div class="flex items-start justify-between gap-3">
                       <div class="min-w-0">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-muted">
-                          {{ item.brandName }}
-                        </p>
                         <a
                           [routerLink]="['/products', item.productId]"
                           class="line-clamp-2 font-semibold leading-snug hover:text-accent"

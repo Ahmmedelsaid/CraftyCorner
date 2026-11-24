@@ -31,6 +31,7 @@ describe('Contact page', () => {
 
   async function setup(extra: Provider[] = []) {
     localStorage.clear();
+    localStorage.setItem('craftycorner.lang', 'en');
     await TestBed.configureTestingModule({
       imports: [Contact],
       providers: [

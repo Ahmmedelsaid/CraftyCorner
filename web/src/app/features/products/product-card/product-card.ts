@@ -17,9 +17,7 @@ import { Icon } from '../../../shared/ui/icon';
         class="card group flex h-full flex-col overflow-hidden transition duration-300 hover:-translate-y-1.5 hover:border-accent/40 hover:shadow-glow"
       >
         <div
-          class="relative grid aspect-square place-items-center overflow-hidden sm:aspect-[4/3]"
-          [class.bg-photo]="product().imageUrl"
-          [class.bg-surface-2]="!product().imageUrl"
+          class="arch relative m-2.5 mb-0 grid aspect-[4/5] place-items-center bg-surface-2"
         >
           @if (product().imageUrl) {
             <img
@@ -27,7 +25,7 @@ import { Icon } from '../../../shared/ui/icon';
               [alt]="product().name"
               loading="lazy"
               decoding="async"
-              class="absolute inset-0 size-full object-contain p-4 mix-blend-multiply brightness-[1.05] transition duration-500 group-hover:scale-110 group-hover:-rotate-2"
+              class="absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-105"
             />
           } @else {
             <app-icon
@@ -39,13 +37,10 @@ import { Icon } from '../../../shared/ui/icon';
         </div>
 
         <div class="flex flex-1 flex-col gap-1 border-t border-border/70 p-3.5">
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-accent">
-            {{ product().brandName }}
-          </span>
+          <span class="text-xs font-semibold text-accent">{{ product().categoryName }}</span>
           <h3 class="line-clamp-2 text-sm font-semibold leading-snug sm:text-base">
             {{ product().name }}
           </h3>
-          <span class="text-xs text-muted">{{ product().categoryName }}</span>
 
           <div class="mt-auto flex items-end justify-between gap-2 pt-3">
             <p class="text-base font-bold sm:text-lg">{{ product().price | price }}</p>
@@ -55,7 +50,7 @@ import { Icon } from '../../../shared/ui/icon';
       </a>
       <button
         type="button"
-        class="absolute bottom-3 end-3 grid size-10 place-items-center rounded-full bg-accent text-accent-fg shadow-[0_8px_18px_-8px_rgb(37_99_235/0.8)] transition duration-200 group-hover/card:scale-110 hover:bg-accent-hover active:scale-90 disabled:opacity-50"
+        class="absolute bottom-3 end-3 grid size-10 place-items-center rounded-full bg-accent text-accent-fg shadow-[0_8px_18px_-8px_rgb(111_71_32/0.7)] transition duration-200 group-hover/card:scale-110 hover:bg-accent-hover active:scale-90 disabled:opacity-50"
         [attr.aria-label]="'cart.add' | transloco"
         [disabled]="cart.addingProductId() === product().id"
         (click)="cart.addFromCatalog(product().id)"

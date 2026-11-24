@@ -24,14 +24,9 @@ describe('LanguageService', () => {
     expect(service.locale()).toBe('en-US');
   });
 
-  it('falls back to the browser language when nothing is saved', () => {
-    vi.spyOn(window.navigator, 'language', 'get').mockReturnValue('ar-EG');
-    expect(TestBed.inject(LanguageService).lang()).toBe('ar');
-  });
-
-  it('defaults to English for other browser languages', () => {
+  it('defaults to Arabic whatever the browser language is', () => {
     vi.spyOn(window.navigator, 'language', 'get').mockReturnValue('fr-FR');
-    expect(TestBed.inject(LanguageService).lang()).toBe('en');
+    expect(TestBed.inject(LanguageService).lang()).toBe('ar');
   });
 
   it('toggling updates direction, <html>, storage and Transloco', () => {

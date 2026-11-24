@@ -67,7 +67,7 @@ public static class OrderEmails
 
         return new EmailMessage(
             To: customerEmail,
-            Subject: $"CraftyCorner | تم استلام طلبك #{order.Id} / Order #{order.Id} received",
+            Subject: $"Crafty Corner | تم استلام طلبك #{order.Id} / Order #{order.Id} received",
             Body: text.ToString(),
             Html: Layout(
                 $"Order #{order.Id}",
@@ -112,11 +112,11 @@ public static class OrderEmails
             ("Customer", Encode(order.ShippingName)),
             (
                 "Phone",
-                $"<a href=\"tel:{Encode(order.Phone)}\" style=\"color:{Brand};\">{Encode(order.Phone)}</a>"
+                $"<a href=\"tel:{Encode(order.Phone)}\" style=\"color:{AccentColor};\">{Encode(order.Phone)}</a>"
             ),
             (
                 "Email",
-                $"<a href=\"mailto:{Encode(customerEmail)}\" style=\"color:{Brand};\">{Encode(customerEmail)}</a>"
+                $"<a href=\"mailto:{Encode(customerEmail)}\" style=\"color:{AccentColor};\">{Encode(customerEmail)}</a>"
             ),
             ("Address", $"{Encode(order.Address)}, {Encode(order.City)}"),
         };
@@ -124,7 +124,7 @@ public static class OrderEmails
             rows.Add(
                 (
                     "Map pin",
-                    $"<a href=\"{Encode(map)}\" style=\"color:{Brand};\">Open on the map</a>"
+                    $"<a href=\"{Encode(map)}\" style=\"color:{AccentColor};\">Open on the map</a>"
                 )
             );
         if (!string.IsNullOrWhiteSpace(order.Notes))
@@ -139,7 +139,7 @@ public static class OrderEmails
 
         return new EmailMessage(
             To: recipient,
-            Subject: $"[CraftyCorner] New order #{order.Id} - {Money(order.Total)} - {OneLine(order.City)}",
+            Subject: $"[Crafty Corner] New order #{order.Id} - {Money(order.Total)} - {OneLine(order.City)}",
             Body: text.ToString(),
             // الرد على الإيميل يروح للعميل
             ReplyTo: customerEmail,
@@ -159,17 +159,17 @@ public static class OrderEmails
 
         var html = new StringBuilder();
         html.Append(
-            "<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" dir=\"ltr\" style=\"margin:6px 0 18px;border:1px solid #e1e6ef;border-radius:10px;\">"
+            "<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" dir=\"ltr\" style=\"margin:6px 0 18px;border:1px solid #e0d2ba;border-radius:10px;\">"
         );
         html.Append(
-            $"<tr style=\"background:#f4f6fa;\"><td style=\"padding:10px 12px;font-size:12px;color:#5b6678;\">{product}</td><td align=\"center\" style=\"padding:10px 12px;font-size:12px;color:#5b6678;\">{qty}</td><td align=\"right\" style=\"padding:10px 12px;font-size:12px;color:#5b6678;\">{price}</td></tr>"
+            $"<tr style=\"background:#f6efe3;\"><td style=\"padding:10px 12px;font-size:12px;color:#7b6753;\">{product}</td><td align=\"center\" style=\"padding:10px 12px;font-size:12px;color:#7b6753;\">{qty}</td><td align=\"right\" style=\"padding:10px 12px;font-size:12px;color:#7b6753;\">{price}</td></tr>"
         );
         foreach (var item in order.Items)
             html.Append(
-                $"<tr><td style=\"padding:10px 12px;border-top:1px solid #e1e6ef;font-size:14px;\">{Encode(item.ProductName)}</td><td align=\"center\" style=\"padding:10px 12px;border-top:1px solid #e1e6ef;font-size:14px;\">{item.Quantity}</td><td align=\"right\" style=\"padding:10px 12px;border-top:1px solid #e1e6ef;font-size:14px;white-space:nowrap;\">{Money(item.UnitPrice * item.Quantity)}</td></tr>"
+                $"<tr><td style=\"padding:10px 12px;border-top:1px solid #e0d2ba;font-size:14px;\">{Encode(item.ProductName)}</td><td align=\"center\" style=\"padding:10px 12px;border-top:1px solid #e0d2ba;font-size:14px;\">{item.Quantity}</td><td align=\"right\" style=\"padding:10px 12px;border-top:1px solid #e0d2ba;font-size:14px;white-space:nowrap;\">{Money(item.UnitPrice * item.Quantity)}</td></tr>"
             );
         html.Append(
-            $"<tr style=\"background:#f4f6fa;\"><td colspan=\"2\" style=\"padding:12px;border-top:1px solid #e1e6ef;font-size:14px;font-weight:700;\">{total}</td><td align=\"right\" style=\"padding:12px;border-top:1px solid #e1e6ef;font-size:15px;font-weight:700;color:{Brand};white-space:nowrap;\">{Money(order.Total)}</td></tr>"
+            $"<tr style=\"background:#f6efe3;\"><td colspan=\"2\" style=\"padding:12px;border-top:1px solid #e0d2ba;font-size:14px;font-weight:700;\">{total}</td><td align=\"right\" style=\"padding:12px;border-top:1px solid #e0d2ba;font-size:15px;font-weight:700;color:{AccentColor};white-space:nowrap;\">{Money(order.Total)}</td></tr>"
         );
         html.Append("</table>");
         return html.ToString();

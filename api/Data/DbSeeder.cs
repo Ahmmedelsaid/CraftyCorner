@@ -5,8 +5,6 @@ namespace CraftyCorner.Api.Data;
 
 public static class DbSeeder
 {
-    private const string GeneratedPrefix = "/images/products/generated/";
-
     /// <summary>
     /// Fills the demo catalogue (see <see cref="SeedCatalog"/>). It only ADDS what is missing (matched by slug
     /// and SKU) and never touches existing rows, so it is safe to run on every start of a development database.
@@ -16,15 +14,15 @@ public static class DbSeeder
     {
         var rows = SeedCatalog.Products();
 
-        var electronics = await GetOrAddCategoryAsync(
+        var root = await GetOrAddCategoryAsync(
             db,
-            "Electronics",
-            "electronics",
+            "ديكور",
+            "home-decor",
             parent: null
         );
         var categories = new Dictionary<string, Category>();
         foreach (var (name, slug) in SeedCatalog.Categories)
-            categories[slug] = await GetOrAddCategoryAsync(db, name, slug, electronics);
+            categories[slug] = await GetOrAddCategoryAsync(db, name, slug, root);
 
         var brands = await db.Brands.ToDictionaryAsync(b => b.Slug);
         foreach (var name in rows.Select(r => r.Brand).Distinct())
@@ -41,22 +39,6 @@ public static class DbSeeder
             };
             db.Brands.Add(brand);
             brands[slug] = brand;
-        }
-
-        // قاعدة اتعملها seed قبل كده برسمات (أو من غير صورة): لو اتضافت صورة حقيقية للمنتج نبدّلها.
-        // بنلمس بس اللي صورته رسمة من الـ seed أو فاضية، فأي صورة حطّها حد بإيده ما تتغيّرش.
-        var rowsBySlug = rows.ToDictionary(r => r.Slug);
-        var withIllustration = await db
-            .Products.Where(p => p.ImageUrl == null || p.ImageUrl.StartsWith(GeneratedPrefix))
-            .ToListAsync();
-        foreach (var product in withIllustration)
-        {
-            if (
-                rowsBySlug.TryGetValue(product.Slug, out var seeded)
-                && seeded.ImageUrl is { } photo
-                && !photo.StartsWith(GeneratedPrefix)
-            )
-                product.ImageUrl = photo;
         }
 
         var knownSlugs = (await db.Products.Select(p => p.Slug).ToListAsync()).ToHashSet();

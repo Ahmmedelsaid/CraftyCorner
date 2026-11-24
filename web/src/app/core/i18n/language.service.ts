@@ -45,8 +45,9 @@ export class LanguageService {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === 'ar' || saved === 'en') return saved;
     } catch {
-      // نكمّل على لغة المتصفح
+      // نكمّل على العربي
     }
-    return navigator.language.toLowerCase().startsWith('ar') ? 'ar' : 'en';
+    // الموقع عربي أولاً: لو مفيش لغة محفوظة نبدأ بالعربي مهما كانت لغة المتصفح
+    return 'ar';
   }
 }
