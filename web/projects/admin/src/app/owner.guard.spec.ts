@@ -40,7 +40,7 @@ describe('ownerGuard', () => {
 
   it('sends signed-in customers back to the login page', () => {
     authenticated.set(true);
-    expect(urlOf(run())).toBe('/login');
+    expect(urlOf(run())).toBe('/login?returnUrl=%2Forders');
   });
 
   it('lets the shop owner in', () => {
