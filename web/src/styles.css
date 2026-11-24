@@ -1,0 +1,391 @@
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+@import '@fontsource/tajawal/400.css';
+@import '@fontsource/tajawal/500.css';
+@import '@fontsource/tajawal/700.css';
+@import '@fontsource/aref-ruqaa/400.css';
+@import '@fontsource/aref-ruqaa/700.css';
+@import '@fontsource/cormorant-garamond/600.css';
+
+/* Crafty Corner: كل الألوان هنا، والباقي بيستخدمها بالاسم (bg-surface, text-muted, border-border...) */
+@theme {
+  --font-sans: 'Tajawal', ui-sans-serif, system-ui, sans-serif;
+  /* عناوين عربي: خط رقعة بإحساس اليد. اسم المحل بالإنجليزي: Cormorant */
+  --font-display: 'Aref Ruqaa', 'Tajawal', serif;
+  --font-brand: 'Cormorant Garamond', serif;
+
+  /* الصفحة والكروت */
+  --color-bg: #f6efe3;
+  --color-surface: #fffbf4;
+  --color-surface-2: #ede2cf;
+  --color-border: #e0d2ba;
+
+  /* النص */
+  --color-fg: #3a2718;
+  --color-muted: #7b6753;
+
+  /* اللون الأساسي: أزرق كهربائي. accent-fg هو لون النص فوقه */
+  --color-accent: #8a5a2b;
+  --color-accent-hover: #6f4720;
+  --color-accent-soft: #f1e3cc;
+  --color-accent-fg: #fff8ee;
+
+  /* لون دافي للخصومات والتنبيهات المهمة */
+  --color-highlight: #c6a15b;
+  /* نفس اللون بس أغمق: للكلام على الأبيض (تباين ~5:1). الفاتح للشارات والأيقونات والخلفيات الغامقة */
+  --color-highlight-strong: #b4573b;
+
+  --color-danger: #b4573b;
+  --color-success: #5f7050;
+
+  /* الأزرق الغامق: الشريط العلوي والفوتر */
+  --color-ink: #2b1d12;
+  --color-ink-2: #3a2718;
+
+  /* لوح أبيض لصور المنتجات (أغلبها بخلفية بيضاء) */
+  --color-photo: #f1e8d8;
+
+  --shadow-card: 0 1px 2px rgb(58 39 24 / 0.06), 0 6px 18px -10px rgb(107 70 30 / 0.25);
+  --shadow-lift: 0 2px 4px rgb(58 39 24 / 0.06), 0 18px 36px -18px rgb(138 90 43 / 0.45);
+  --shadow-glow: 0 0 0 1px rgb(138 90 43 / 0.2), 0 20px 50px -20px rgb(138 90 43 / 0.5);
+
+  /* الحركة: كلها بتتقفل لما المستخدم يختار "تقليل الحركة" (آخر الملف) */
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-blob: blob 20s ease-in-out infinite;
+  --animate-marquee: marquee 45s linear infinite;
+  --animate-fade-up: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in: fade-in 0.8s ease-out both;
+  --animate-slide-up: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-bump: bump 0.45s ease-out;
+  --animate-pop: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(var(--tilt, 0deg));
+    }
+    50% {
+      transform: translateY(-14px) rotate(var(--tilt, 0deg));
+    }
+  }
+  @keyframes blob {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(6%, -8%) scale(1.12);
+    }
+    66% {
+      transform: translate(-7%, 6%) scale(0.92);
+    }
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.97);
+    }
+  }
+  @keyframes bump {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.5);
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+  }
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes shine {
+    to {
+      transform: translateX(120%) skewX(-20deg);
+    }
+  }
+  @keyframes grow-x {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    scrollbar-color: #d3c3a6 transparent;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  ::selection {
+    background: rgb(198 161 91 / 0.3);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-surface px-3.5 py-2 text-sm font-medium text-fg shadow-sm transition duration-200 hover:-translate-y-px hover:border-accent/50 hover:text-accent hover:shadow-md active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0;
+  }
+
+  /* زرار رئيسي: تدرّج أزرق + لمعة بتعدّي عليه لما تقف فوقه */
+  .btn-accent {
+    @apply relative isolate overflow-hidden border-transparent bg-linear-to-b from-accent to-accent-hover text-accent-fg shadow-[0_10px_24px_-10px_rgb(111_71_32/0.7)] hover:border-transparent hover:text-accent-fg hover:shadow-[0_14px_30px_-10px_rgb(111_71_32/0.8)];
+  }
+
+  .btn-accent::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: -60%;
+    width: 40%;
+    z-index: -1;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35), transparent);
+    transform: translateX(0) skewX(-20deg);
+    opacity: 0;
+  }
+
+  .btn-accent:hover:not(:disabled)::after {
+    opacity: 1;
+    animation: shine 0.7s ease-out;
+  }
+
+  /* اختصارات التصنيفات */
+  .chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm text-fg shadow-sm transition hover:border-accent/60 hover:text-accent;
+  }
+
+  .chip-active {
+    @apply border-accent bg-accent text-accent-fg hover:text-accent-fg;
+  }
+
+  /* عدّاد المنتجات جنب اسم التصنيف أو الماركة */
+  .count {
+    @apply rounded-full bg-surface-2 px-2 py-0.5 text-[11px] leading-none text-muted;
+  }
+
+  .chip-active .count {
+    @apply bg-white/20 text-accent-fg;
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-fg transition placeholder:text-muted/80 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20;
+  }
+
+  /* كارت أبيض بحدود خفيفة وظل ناعم */
+  .card {
+    @apply rounded-2xl border border-border bg-surface shadow-card;
+  }
+
+  /* رقم الخطوة في صفحة إتمام الطلب */
+  .step {
+    @apply grid size-7 shrink-0 place-items-center rounded-full bg-accent text-sm font-bold text-accent-fg;
+  }
+
+  /* عنوان قسم في الصفحة الرئيسية، بشريط أزرق صغير قبله */
+  .section-title {
+    @apply relative ps-4 text-xl font-bold tracking-tight sm:text-2xl;
+  }
+
+  .section-title::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0.25em;
+    bottom: 0.25em;
+    width: 4px;
+    border-radius: 4px;
+    background: linear-gradient(to bottom, var(--color-highlight), var(--color-accent));
+  }
+
+  /* ظهور ناعم لما العنصر يدخل الشاشة (directive: appReveal) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* مكان الصورة وهي بتحمّل: لمعة بتعدّي بدل نبض */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-surface) 30%,
+      var(--color-surface-2) 50%,
+      var(--color-surface) 70%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+  }
+
+  /* نص بتدرّج لوني */
+  .text-gradient {
+    background: linear-gradient(100deg, #fffbf4 20%, #f1e3cc 60%, #e6c98a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* رابط في شريط الأقسام: خط بيتمدد من الوسط */
+  .nav-link {
+    position: relative;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0.75rem;
+    bottom: 0.2rem;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transition: transform 0.25s ease;
+  }
+
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* شريط تقدّم التمرير أعلى الصفحة (للمتصفحات اللي بتدعم scroll-driven animations) */
+  .scroll-progress {
+    display: none;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      display: block;
+      position: fixed;
+      inset-inline: 0;
+      top: 0;
+      height: 3px;
+      z-index: 60;
+      transform-origin: left;
+      background: linear-gradient(90deg, var(--color-highlight), var(--color-accent), var(--color-highlight));
+      animation: grow-x linear both;
+      animation-timeline: scroll(root);
+    }
+
+    [dir='rtl'] .scroll-progress {
+      transform-origin: right;
+    }
+  }
+}
+
+/* انتقال ناعم بين الصفحات (View Transitions). الهيدر ليه اسم عشان يفضل ثابت */
+@layer base {
+  ::view-transition-old(root) {
+    animation: 0.18s ease-in both fade-out-quick;
+  }
+
+  ::view-transition-new(root) {
+    animation: 0.32s cubic-bezier(0.16, 1, 0.3, 1) both fade-up-soft;
+  }
+
+  ::view-transition-group(site-header) {
+    animation-duration: 0s;
+  }
+
+  @keyframes fade-out-quick {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-up-soft {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+}
+
+/* الخريطة (Leaflet) */
+@layer components {
+  .leaflet-container {
+    font-family: var(--font-sans);
+    background: var(--color-surface-2);
+    outline-offset: 0;
+  }
+
+  .leaflet-bar a,
+  .leaflet-bar a:hover {
+    border-color: var(--color-border);
+    color: var(--color-fg);
+  }
+
+  .pin-marker {
+    background: none;
+    border: 0;
+  }
+}
+
+/* "تقليل الحركة": نقفل كل الأنيميشن بالكامل (مش بس نسرّعه) ونظهر العناصر المخفية */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .scroll-progress {
+    display: none !important;
+  }
+}

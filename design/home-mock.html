@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crafty Corner | Home mock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ الهوية: ألوان وخطوط وأشكال (اقتراح للمراجعة) ============ */
+  :root {
+    --cream: #f6efe3;        /* خلفية الصفحة */
+    --paper: #fffbf4;        /* الكروت */
+    --sand: #ede2cf;         /* خلفية ثانوية */
+    --line: #e0d2ba;         /* خطوط وحدود */
+    --ink: #3a2718;          /* النص الأساسي (بني غامق) */
+    --muted: #7b6753;        /* نص ثانوي */
+    --cocoa: #8a5a2b;        /* اللون الأساسي: الأزرار والروابط */
+    --cocoa-dark: #6f4720;
+    --gold: #c6a15b;         /* زخارف وحدود (مش للنص) */
+    --terracotta: #b4573b;   /* شارات وتمييز */
+    --sage: #7f8f6e;         /* ورق اللوجو: لمسات خضرا */
+    --espresso: #2b1d12;     /* الفوتر */
+    --on-primary: #fff8ee;
+    --radius: 22px;
+    --shadow: 0 1px 2px rgb(58 39 24 / .06), 0 14px 30px -16px rgb(107 70 30 / .35);
+  }
+  /* ===== تجارب ألوان (كلها من نفس اللوحة) ===== */
+  [data-theme="terracotta"] { --cocoa: #b4573b; --cocoa-dark: #94432a; --gold: #c6a15b; }
+  [data-theme="espresso"]   { --cocoa: #2b1d12; --cocoa-dark: #000; --gold: #c6a15b; --on-primary: #f6efe3; }
+  [data-theme="sage"]       { --cocoa: #5f7050; --cocoa-dark: #485640; --gold: #c6a15b; --terracotta: #8a5a2b; }
+  [data-theme="sand"]       { --cream: #ede2cf; --paper: #f6efe3; --sand: #e0d2ba; --line: #d3c3a6; }
+  .lab { position: fixed; inset-inline-start: 16px; bottom: 16px; z-index: 50; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 10px 12px; box-shadow: var(--shadow); font-size: 13px; max-width: calc(100vw - 32px); }
+  .lab b { display: block; margin-bottom: 6px; }
+  .lab div { display: flex; gap: 6px; flex-wrap: wrap; }
+  .lab button { font: inherit; border: 1px solid var(--line); background: var(--cream); color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .lab button.on { background: var(--cocoa); color: var(--on-primary); border-color: var(--cocoa); }
+  .sw { cursor: pointer; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; color: var(--ink); background: var(--cream);
+    font-family: 'Tajawal', system-ui, sans-serif; font-size: 17px; line-height: 1.7;
+    /* ملمس ورق خفيف جداً */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .2 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  h1, h2, h3, .display { font-family: 'Aref Ruqaa', 'Tajawal', serif; font-weight: 700; line-height: 1.25; margin: 0; }
+  .latin { font-family: 'Cormorant Garamond', serif; letter-spacing: .02em; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  .wrap { width: min(1180px, 100% - 40px); margin-inline: auto; }
+  .eyebrow { color: var(--cocoa); font-weight: 700; font-size: 15px; display: inline-flex; gap: 10px; align-items: center; }
+  .eyebrow::before, .eyebrow::after { content: ''; width: 26px; height: 1px; background: var(--gold); }
+
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 13px 26px; border-radius: 999px; font-weight: 700; font-size: 16px; border: 1.5px solid var(--cocoa); transition: .2s; cursor: pointer; }
+  .btn-primary { background: var(--cocoa); color: var(--on-primary); box-shadow: 0 10px 24px -12px rgb(111 71 32 / .7); }
+  .btn-primary:hover { background: var(--cocoa-dark); transform: translateY(-2px); }
+  .btn-ghost { color: var(--cocoa); background: transparent; }
+  .btn-ghost:hover { background: var(--sand); }
+  .btn svg { width: 20px; height: 20px; }
+
+  /* القوس: توقيع الهوية (مأخوذ من الأرفف والبيوت والمساجد في المنتجات) */
+  .arch { border-radius: 999px 999px var(--radius) var(--radius); overflow: hidden; background: var(--sand); }
+  .arch img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ===== شريط علوي + هيدر ===== */
+  .bar { background: var(--espresso); color: #f1e4cc; font-size: 14px; text-align: center; padding: 8px 12px; }
+  .bar b { color: var(--gold); }
+  header { position: sticky; top: 0; z-index: 10; background: rgb(246 239 227 / .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .nav { display: flex; align-items: center; gap: 28px; padding: 12px 0; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand img { width: 54px; height: 54px; border-radius: 50%; box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--line); }
+  .brand span { font-size: 26px; line-height: 1; color: var(--cocoa-dark); }
+  .brand small { display: block; font-size: 12px; color: var(--muted); font-family: 'Tajawal'; letter-spacing: 0; margin-top: 4px; }
+  nav { display: flex; gap: 24px; margin-inline-start: 12px; font-weight: 500; }
+  nav a { position: relative; padding: 6px 0; }
+  nav a::after { content: ''; position: absolute; inset-inline: 0; bottom: 0; height: 2px; background: var(--gold); transform: scaleX(0); transition: .25s; }
+  nav a:hover::after, nav a.on::after { transform: scaleX(1); }
+  .nav .btn { margin-inline-start: auto; padding: 9px 20px; font-size: 15px; }
+
+  /* ===== البانر ===== */
+  .hero { padding: 54px 0 40px; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
+  .hero h1 { font-size: clamp(38px, 5.2vw, 64px); margin: 14px 0 14px; color: var(--ink); }
+  .hero h1 em { font-style: normal; color: var(--cocoa); }
+  .hero p.lead { font-size: 19px; color: var(--muted); max-width: 30em; margin: 0 0 26px; }
+  .cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  .chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 30px; }
+  .chip { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 6px 16px; font-size: 14px; color: var(--muted); display: inline-flex; gap: 8px; align-items: center; }
+  .chip i { color: var(--gold); font-style: normal; }
+  .collage { position: relative; height: 520px; }
+  .collage .arch { position: absolute; box-shadow: var(--shadow); border: 6px solid var(--paper); }
+  .c1 { width: 56%; height: 78%; inset-inline-end: 0; top: 0; }
+  .c2 { width: 44%; height: 52%; inset-inline-start: 0; top: 14%; }
+  .c3 { width: 40%; height: 40%; inset-inline-start: 18%; bottom: 0; }
+  .stamp { position: absolute; inset-inline-start: 4%; bottom: 6%; width: 96px; height: 96px; border-radius: 50%; background: var(--terracotta); color: #fff4e8; display: grid; place-items: center; text-align: center; font-size: 13px; line-height: 1.3; font-weight: 700; transform: rotate(-10deg); box-shadow: var(--shadow); border: 2px dashed rgb(255 244 232 / .6); }
+
+  /* ===== عناوين الأقسام ===== */
+  .section { padding: 54px 0; }
+  .head { text-align: center; margin-bottom: 34px; }
+  .head h2 { font-size: clamp(30px, 3.6vw, 42px); margin-top: 8px; }
+  .head p { color: var(--muted); margin: 6px 0 0; }
+  .wavy { height: 18px; margin: 4px auto 0; width: 140px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='18'%3E%3Cpath d='M0 9 Q7 0 14 9 T28 9' fill='none' stroke='%23c6a15b' stroke-width='1.6'/%3E%3C/svg%3E") repeat-x center; }
+
+  /* ===== الأقسام ===== */
+  .cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .cat { text-align: center; }
+  .cat .arch { aspect-ratio: 3/4; transition: .3s; box-shadow: var(--shadow); }
+  .cat:hover .arch { transform: translateY(-6px); }
+  .cat b { display: block; margin-top: 12px; font-size: 19px; }
+  .cat span { color: var(--muted); font-size: 14px; }
+
+  /* ===== المنتجات ===== */
+  .products { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); transition: .3s; }
+  .card:hover { transform: translateY(-5px); }
+  .card .arch { aspect-ratio: 1/1.08; position: relative; }
+  .tag { position: absolute; bottom: 14px; inset-inline-start: 14px; background: var(--terracotta); color: #fff4e8; border-radius: 999px; padding: 2px 12px; font-size: 13px; font-weight: 700; z-index: 1; }
+  .card h3 { font-family: 'Tajawal'; font-size: 18px; font-weight: 700; margin: 14px 6px 2px; }
+  .card .meta { margin: 0 6px; color: var(--muted); font-size: 14px; }
+  .card .row { display: flex; align-items: center; justify-content: space-between; margin: 12px 6px 4px; }
+  .price { font-weight: 700; color: var(--cocoa-dark); font-size: 19px; }
+  .order { background: var(--cocoa); color: var(--on-primary); border-radius: 999px; padding: 7px 16px; font-size: 14px; font-weight: 700; display: inline-flex; gap: 6px; align-items: center; }
+  .order svg { width: 16px; height: 16px; }
+  .note { text-align: center; color: var(--muted); font-size: 13px; margin-top: 18px; }
+
+  /* ===== الطلب + التغليف ===== */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: s; }
+  .step { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; text-align: center; }
+  .step::before { counter-increment: s; content: counter(s, arabic-indic); display: grid; place-items: center; width: 52px; height: 52px; margin: 0 auto 14px; border-radius: 50%; background: var(--sand); color: var(--cocoa); font-family: 'Aref Ruqaa'; font-size: 26px; border: 1px dashed var(--gold); }
+  .step h3 { font-size: 22px; margin-bottom: 6px; }
+  .step p { margin: 0; color: var(--muted); font-size: 15px; }
+  .pack { margin-top: 28px; background: var(--sand); border-radius: var(--radius); padding: 22px 28px; display: flex; gap: 18px; align-items: center; border: 1px solid var(--line); }
+  .pack .kraft { flex: none; width: 58px; height: 58px; border-radius: 14px; background: #c79a68; display: grid; place-items: center; color: #fff4e0; font-size: 28px; box-shadow: inset 0 -6px 0 rgb(0 0 0 / .08); }
+  .pack p { margin: 0; }
+  .pack b { color: var(--cocoa-dark); }
+
+  /* ===== لوحة الهوية (للمراجعة) ===== */
+  .guide { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .sw { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #fff; font-size: 13px; }
+  .sw i { display: block; height: 62px; }
+  .sw div { padding: 8px 10px; line-height: 1.4; }
+  .sw code { color: var(--muted); direction: ltr; display: block; text-align: right; }
+  .type { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 26px; }
+  .type > div { border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; background: var(--cream); }
+  .type small { color: var(--muted); }
+
+  footer { background: var(--espresso); color: #e9dcc4; padding: 44px 0 26px; margin-top: 0; }
+  .foot { display: flex; gap: 40px; justify-content: space-between; flex-wrap: wrap; align-items: center; }
+  .foot img { width: 70px; height: 70px; border-radius: 50%; }
+  .foot a { color: var(--gold); }
+  .copy { text-align: center; font-size: 13px; color: #a89577; margin-top: 26px; }
+
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .collage { height: 400px; order: -1; }
+    .cats, .products { grid-template-columns: repeat(2, 1fr); }
+    .steps, .type { grid-template-columns: 1fr; }
+    nav { display: none; }
+    .brand span { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">شحن لكل محافظات مصر · الدفع عند الاستلام · <b>اطلبي من الموقع في دقيقة</b></div>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#">
+      <img src="assets/logo.jpg" alt="Crafty Corner">
+      <div><span class="latin">Crafty Corner</span><small>ديكور هاند ميد لبيوت دافئة</small></div>
+    </a>
+    <nav>
+      <a class="on" href="#">الرئيسية</a>
+      <a href="#products">المنتجات</a>
+      <a href="#">رمضان</a>
+      <a href="#how">ازاي تطلبي</a>
+      <a href="#">تواصلي معانا</a>
+    </nav>
+    <a class="btn btn-primary" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h14l-1.6 8.2a2 2 0 0 1-2 1.6H9a2 2 0 0 1-2-1.6L5 3H2"/><circle cx="9" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg>
+      السلة (٠)
+    </a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">هاند ميد · Home Decor</span>
+        <h1>ديكور مصنوع <em>بحب</em><br>لبيوت دافئة</h1>
+        <p class="lead">قطع من الجبس والخزف بتتعمل بإيدينا واحدة واحدة، مخصوص ليكي. اختاري اللي يعجبك وإحنا نجهّزه ونوصّله لحد بابك في أي مكان في مصر.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#products">تسوّقي دلوقتي</a>
+          <a class="btn btn-ghost" href="#how">ازاي أطلب؟</a>
+        </div>
+        <div class="chips">
+          <span class="chip"><i>✦</i> صناعة يدوية</span>
+          <span class="chip"><i>✦</i> شحن لكل مصر</span>
+          <span class="chip"><i>✦</i> تغليف بحب</span>
+        </div>
+      </div>
+      <div class="collage">
+        <div class="arch c1"><img src="assets/candle-house.jpg" alt=""></div>
+        <div class="arch c2"><img src="assets/busts.jpg" alt=""></div>
+        <div class="arch c3"><img src="assets/ramadan-tray.jpg" alt=""></div>
+        <div class="stamp">Made<br>with ♥<br>by hand</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">تصفّحي</span>
+        <h2>تسوّقي حسب القسم</h2>
+        <div class="wavy"></div>
+      </div>
+      <div class="cats">
+        <a class="cat" href="#"><div class="arch"><img src="assets/ramadan-tray.jpg" alt=""></div><b>رمضان والمباخر</b><span>هلال ومبخرة وفوانيس</span></a>
+        <a class="cat" href="#"><div class="arch"><img src="assets/vase-stack.jpg" alt=""></div><b>صواني وفازات</b><span>أشكال عضوية ومتموّجة</span></a>
+        <a class="cat" href="#"><div class="arch"><img src="assets/busts.jpg" alt=""></div><b>تماثيل وإضاءة</b><span>شمع وبيوت منوّرة</span></a>
+        <a class="cat" href="#"><div class="arch"><img src="assets/shelf-bows.jpg" alt=""></div><b>تنظيم وهدايا</b><span>ستاندات وفيونكات</span></a>
+      </div>
+      <div class="note">أسماء الأقسام اقتراح من صور الصفحة، نظبطها مع صاحبة المشروع.</div>
+    </div>
+  </section>
+
+  <section class="section" id="products" style="padding-top:10px">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">الأكثر طلباً</span>
+        <h2>قطع بتتحب</h2>
+        <div class="wavy"></div>
+      </div>
+      <div class="products">
+        <article class="card"><div class="arch"><span class="tag">جديد</span><img src="assets/brush-bows.jpg" alt=""></div><h3>ستاند فرش المكياج بالفيونكات</h3><p class="meta">جبس · بتصميم مضلّع</p><div class="row"><span class="price">٣٥٠ ج.م</span><a class="order" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h14l-1.6 8.2a2 2 0 0 1-2 1.6H9a2 2 0 0 1-2-1.6L5 3H2"/></svg>أضيفي للسلة</a></div></article>
+        <article class="card"><div class="arch"><img src="assets/busts.jpg" alt=""></div><h3>تمثال العروسين مع المبخرة</h3><p class="meta">جبس ملوّن · بدون وش</p><div class="row"><span class="price">٤٨٠ ج.م</span><a class="order" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h14l-1.6 8.2a2 2 0 0 1-2 1.6H9a2 2 0 0 1-2-1.6L5 3H2"/></svg>أضيفي للسلة</a></div></article>
+        <article class="card"><div class="arch"><span class="tag">رمضان</span><img src="assets/mosque-candle.jpg" alt=""></div><h3>فانوس المسجد وحامل الشمع</h3><p class="meta">جبس أبيض · طبق متموّج</p><div class="row"><span class="price">٤٢٠ ج.م</span><a class="order" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h14l-1.6 8.2a2 2 0 0 1-2 1.6H9a2 2 0 0 1-2-1.6L5 3H2"/></svg>أضيفي للسلة</a></div></article>
+        <article class="card"><div class="arch"><img src="assets/house.jpg" alt=""></div><h3>بيت HOME بقلب أحمر</h3><p class="meta">جبس · على طبق خزف</p><div class="row"><span class="price">٣٩٠ ج.م</span><a class="order" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h14l-1.6 8.2a2 2 0 0 1-2 1.6H9a2 2 0 0 1-2-1.6L5 3H2"/></svg>أضيفي للسلة</a></div></article>
+      </div>
+      <div class="note">الأسماء والأسعار هنا تجريبية للعرض بس، هتتغيّر لما نملا المنتجات الحقيقية.</div>
+    </div>
+  </section>
+
+  <section class="section" id="how" style="padding-top:20px">
+    <div class="wrap">
+      <div class="head"><span class="eyebrow">سهلة</span><h2>ازاي تطلبي؟</h2><div class="wavy"></div></div>
+      <div class="steps">
+        <div class="step"><h3>اختاري</h3><p>تصفّحي القطع وضيفي اللي يعجبك في السلة.</p></div>
+        <div class="step"><h3>أكّدي طلبك من الموقع</h3><p>اكتبي بياناتك وعنوانك واختاري الدفع عند الاستلام. هتشوفي حالة طلبك على الموقع.</p></div>
+        <div class="step"><h3>استلمي</h3><p>بنجهّز طلبك بإيدينا وبيوصلك في أي محافظة في مصر.</p></div>
+      </div>
+      <div class="pack">
+        <div class="kraft">🛍</div>
+        <p><b>كل طلب بيتغلّف بحب:</b> كيس كرافت بستيكر Crafty Corner وتغليف يحمي القطعة لحد ما توصلك.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ لوحة الهوية للمراجعة ============ -->
+  <section class="section guide">
+    <div class="wrap">
+      <div class="head"><span class="eyebrow">للمراجعة</span><h2>لوحة الهوية المقترحة</h2><p>مأخوذة من اللوجو وألوان المنتجات في الصفحة.</p></div>
+      <div class="swatches">
+        <div class="sw"><i style="background:#f6efe3"></i><div><b>كريمي</b><code>#F6EFE3</code>خلفية الصفحة</div></div>
+        <div class="sw"><i style="background:#fffbf4"></i><div><b>ورق</b><code>#FFFBF4</code>الكروت</div></div>
+        <div class="sw"><i style="background:#ede2cf"></i><div><b>رملي</b><code>#EDE2CF</code>خلفيات ثانوية</div></div>
+        <div class="sw"><i style="background:#3a2718"></i><div><b>بني غامق</b><code>#3A2718</code>النص</div></div>
+        <div class="sw"><i style="background:#8a5a2b"></i><div><b>كاكاو</b><code>#8A5A2B</code>الأساسي (أزرار)</div></div>
+        <div class="sw"><i style="background:#c6a15b"></i><div><b>ذهبي</b><code>#C6A15B</code>زخارف</div></div>
+        <div class="sw"><i style="background:#b4573b"></i><div><b>تيراكوتا</b><code>#B4573B</code>شارات</div></div>
+        <div class="sw"><i style="background:#7f8f6e"></i><div><b>أخضر زيتي</b><code>#7F8F6E</code>ورق اللوجو</div></div>
+        <div class="sw"><i style="background:#2b1d12"></i><div><b>إسبريسو</b><code>#2B1D12</code>الفوتر</div></div>
+      </div>
+      <div class="type">
+        <div><small>عناوين عربي · Aref Ruqaa (خط رقعة، إحساس إيد)</small><h2 style="font-size:34px;margin-top:6px">ديكور مصنوع بحب</h2></div>
+        <div><small>عناوين لاتيني · Cormorant Garamond</small><div class="latin" style="font-size:36px;font-weight:600;margin-top:6px">Crafty Corner</div></div>
+        <div style="grid-column:1/-1"><small>النص · Tajawal (واضح ومريح للقراءة على الموبايل)</small><p style="margin:6px 0 0">قطع من الجبس والخزف بتتعمل بإيدينا واحدة واحدة، مخصوص ليكي.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div style="display:flex;gap:16px;align-items:center"><img src="assets/logo.jpg" alt=""><div><div class="latin" style="font-size:26px">Crafty Corner</div><div style="color:#bda985;font-size:14px">Handcrafted decor for cozy homes</div></div></div>
+    <div style="font-size:15px">تابعينا على انستجرام <a href="#">@craftycornercreative</a><br>شحن لكل محافظات مصر · الدفع عند الاستلام</div>
+  </div>
+  <div class="wrap copy">© Crafty Corner · نموذج تصميم أولي (mock)</div>
+</footer>
+
+<div class="lab">
+  <b>جرّبي ألوان</b>
+  <div id="lab">
+    <button class="on" data-t="">كاكاو (الحالي)</button>
+    <button data-t="terracotta">تيراكوتا</button>
+    <button data-t="espresso">إسبريسو</button>
+    <button data-t="sage">أخضر زيتي</button>
+    <button data-t="sand">خلفية رملية</button>
+  </div>
+</div>
+<script>
+  const lab = document.getElementById('lab');
+  lab.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const t = b.dataset.t;
+    t ? document.documentElement.dataset.theme = t : delete document.documentElement.dataset.theme;
+    lab.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  });
+</script>
+</body>
+</html>

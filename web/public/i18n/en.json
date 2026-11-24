@@ -1,0 +1,421 @@
+{
+  "app": {
+    "name": "CraftyCorner"
+  },
+  "nav": {
+    "products": "Products",
+    "skip": "Skip to content"
+  },
+  "lang": {
+    "switchTo": "العربية"
+  },
+  "home": {
+    "eyebrow": "Electronics store",
+    "title": "Power up your setup",
+    "subtitle": "Phones, laptops, audio and accessories from the brands you know, all in one place.",
+    "shopNow": "Shop now",
+    "newArrivals": "New arrivals",
+    "viewAll": "View all",
+    "shopByCategory": "Shop by category",
+    "topBrands": "Top brands",
+    "products": "{{count}} products",
+    "values": {
+      "cod": {
+        "title": "Cash on delivery",
+        "text": "Pay when your order arrives."
+      },
+      "delivery": {
+        "title": "Fast delivery",
+        "text": "To every governorate in Egypt."
+      },
+      "warranty": {
+        "title": "Genuine products",
+        "text": "Authentic items from trusted brands."
+      },
+      "support": {
+        "title": "Friendly support",
+        "text": "We answer by phone and message."
+      }
+    },
+    "stats": {
+      "products": "Products",
+      "categories": "Categories",
+      "governorates": "Governorates"
+    }
+  },
+  "footer": {
+    "rights": "© {{year}} CraftyCorner. All rights reserved.",
+    "tagline": "The latest phones, laptops and accessories in one place.",
+    "shop": "Shop",
+    "allProducts": "All products",
+    "categories": "Categories",
+    "account": "Account",
+    "company": "CraftyCorner",
+    "about": "About us",
+    "contact": "Contact us",
+    "credits": "Photo credits"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your CraftyCorner account",
+      "cta": "Sign in",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "noAccount": "New to CraftyCorner?",
+      "createAccount": "Create an account"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Join CraftyCorner to save your details and track your orders",
+      "cta": "Create account",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "passwordHint": "At least 8 characters, with a letter and a number."
+    },
+    "fields": {
+      "fullName": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
+    "validation": {
+      "nameRequired": "Please enter your name.",
+      "nameShort": "Your name must be at least 2 characters.",
+      "emailRequired": "Please enter your email.",
+      "emailInvalid": "Enter a valid email address.",
+      "passwordRequired": "Please enter your password.",
+      "passwordShort": "Use at least 8 characters.",
+      "passwordWeak": "Include at least one letter and one number.",
+      "confirmRequired": "Please confirm your password.",
+      "mismatch": "The passwords do not match."
+    },
+    "errors": {
+      "invalidCredentials": "Incorrect email or password.",
+      "emailTaken": "An account with this email already exists.",
+      "tooManyAttempts": "Too many attempts. Please wait a minute and try again.",
+      "invalidInput": "Some details are not valid. Please check the form."
+    },
+    "logout": "Sign out"
+  },
+  "account": {
+    "title": "My account",
+    "greeting": "Hello, {{name}}",
+    "profile": "Profile",
+    "name": "Name",
+    "email": "Email",
+    "orders": "Orders",
+    "noOrders": "You have no orders yet.",
+    "startShopping": "Start shopping",
+    "signOut": "Sign out"
+  },
+  "products": {
+    "title": "Electronics",
+    "subtitle": "The latest phones, laptops, audio and accessories",
+    "count": "{{count}} products",
+    "emptyTitle": "No results",
+    "emptyText": "Try a different search or remove some filters.",
+    "clear": "Clear filters",
+    "pageTitle": "All products"
+  },
+  "filters": {
+    "title": "Filters",
+    "show": "Show filters",
+    "hide": "Hide filters",
+    "search": "Search",
+    "searchPlaceholder": "Search for a product…",
+    "category": "Category",
+    "brand": "Brand",
+    "all": "All",
+    "price": "Price (EGP)",
+    "min": "Min",
+    "max": "Max",
+    "apply": "Apply",
+    "clearAll": "Clear all"
+  },
+  "sort": {
+    "label": "Sort by",
+    "default": "Default",
+    "price_asc": "Price: low to high",
+    "price_desc": "Price: high to low",
+    "name": "Name",
+    "newest": "Newest"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "prev": "Previous page",
+    "next": "Next page",
+    "page": "Page {{page}}"
+  },
+  "detail": {
+    "home": "Home",
+    "back": "Back to products",
+    "sku": "SKU",
+    "description": "Description",
+    "noDescription": "No description for this product.",
+    "notFoundTitle": "Product not found",
+    "specs": "Specifications"
+  },
+  "stock": {
+    "in": "In stock",
+    "low": "Only {{count}} left",
+    "out": "Out of stock"
+  },
+  "specs": {
+    "ram": "Memory (RAM)",
+    "storage": "Storage",
+    "screen": "Screen",
+    "battery": "Battery",
+    "type": "Type",
+    "noise_cancelling": "Noise cancelling",
+    "connection": "Connection",
+    "dpi": "DPI",
+    "layout": "Layout",
+    "color": "Color"
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "network": "Could not reach the server. Make sure the API is running and try again.",
+    "server": "An unexpected server error occurred.",
+    "notFoundProduct": "This product does not exist or is no longer available.",
+    "retry": "Try again"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "text": "The link you opened is wrong or has moved.",
+    "home": "Back to home"
+  },
+  "cart": {
+    "title": "Shopping cart",
+    "add": "Add to cart",
+    "added": "Added to your cart",
+    "view": "View cart",
+    "remove": "Remove from cart",
+    "quantity": "Quantity",
+    "increase": "Increase quantity",
+    "decrease": "Decrease quantity",
+    "emptyTitle": "Your cart is empty",
+    "emptyText": "Add some products and they will show up here.",
+    "summary": "Order summary",
+    "items": "Items ({{count}})",
+    "subtotal": "Subtotal",
+    "checkout": "Checkout",
+    "continue": "Continue shopping",
+    "unavailable": "This product is unavailable. Remove it from your cart.",
+    "lowStock": "Only {{count}} left. Reduce the quantity.",
+    "fixUnavailable": "The subtotal excludes unavailable products.",
+    "errors": {
+      "stock": "That quantity is more than what we have in stock.",
+      "gone": "This product is no longer available."
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "shipping": "Delivery details",
+    "fields": {
+      "name": "Full name",
+      "phone": "Phone number",
+      "address": "Address",
+      "city": "Governorate",
+      "cityPlaceholder": "Choose your governorate",
+      "notes": "Notes for the courier"
+    },
+    "sections": {
+      "contact": "Who is receiving the order?",
+      "delivery": "Where should we deliver?",
+      "payment": "Payment"
+    },
+    "map": {
+      "label": "Map: tap to drop a pin on your delivery location",
+      "loading": "Loading map…",
+      "locate": "Use my location",
+      "locating": "Locating…",
+      "hint": "Tap the map to drop a pin on your exact location (optional).",
+      "pinned": "Pin saved. Drag it to adjust.",
+      "clear": "Remove pin",
+      "denied": "Location access is blocked. Tap the map instead.",
+      "unavailable": "We could not get your location. Tap the map instead."
+    },
+    "addressLooking": "Looking up the address…",
+    "addressFailed": "We could not read the address from the pin. Please type it in.",
+    "addressFromMap": "Filled in from your pin. Please check it and add the building and floor.",
+    "optional": "optional",
+    "payment": "Payment",
+    "cod": "Cash on delivery: you pay when the order arrives.",
+    "place": "Place order",
+    "placing": "Placing order…",
+    "backToCart": "Back to cart",
+    "shippingNote": "Delivery is arranged by phone after you place the order.",
+    "validation": {
+      "nameRequired": "Please enter the recipient's name.",
+      "nameShort": "The name must be at least 2 characters.",
+      "phoneRequired": "Please enter a phone number.",
+      "phoneInvalid": "Enter a valid phone number, like +20 100 123 4567.",
+      "addressRequired": "Please enter your address.",
+      "addressShort": "The address looks too short.",
+      "cityRequired": "Please choose your governorate."
+    },
+    "errors": {
+      "invalid": "Some details are not valid. Please check the form.",
+      "stock": "Some items are no longer available in the quantity you chose."
+    }
+  },
+  "orders": {
+    "title": "My orders",
+    "viewOnMap": "View delivery pin on the map",
+    "number": "Order #{{id}}",
+    "all": "All orders",
+    "total": "Total",
+    "status": {
+      "Placed": "Placed",
+      "Cancelled": "Cancelled"
+    },
+    "placedTitle": "Thank you! Your order is placed.",
+    "placedText": "We will call you to confirm delivery. You pay when it arrives.",
+    "cancel": "Cancel order",
+    "cancelConfirm": "Cancel this order? The items go back to stock.",
+    "cancelYes": "Yes, cancel",
+    "cancelNo": "Keep order",
+    "cancelling": "Cancelling…",
+    "notFoundTitle": "Order not found",
+    "errors": {
+      "notFound": "This order does not exist.",
+      "cannotCancel": "This order can no longer be cancelled."
+    },
+    "whatsapp": {
+      "button": "Send my order on WhatsApp",
+      "message": "Hello CraftyCorner, I placed order #{{id}} (total EGP {{total}}). Name: {{name}}, phone: {{phone}}."
+    }
+  },
+  "header": {
+    "promo": "Cash on delivery across Egypt",
+    "allProducts": "All products",
+    "searchLabel": "Search products"
+  },
+  "about": {
+    "eyebrow": "About us",
+    "title": "Your electronics store, made simple",
+    "subtitle": "CraftyCorner brings phones, laptops, audio, gaming and more to your door anywhere in Egypt, with honest prices and support you can actually reach.",
+    "storyTitle": "Our story",
+    "story1": "We started CraftyCorner because buying electronics should not feel like a gamble. Too often the price is unclear, the product is not what you expected, and nobody answers when something goes wrong.",
+    "story2": "So we keep things simple: clear prices in Egyptian pounds, genuine products from brands you know, delivery to every governorate and payment only when your order arrives.",
+    "stats": {
+      "products": "Products",
+      "categories": "Categories",
+      "governorates": "Governorates we deliver to"
+    },
+    "valuesTitle": "What we stand for",
+    "values": {
+      "genuine": {
+        "title": "Genuine products",
+        "text": "We list authentic items from trusted brands, with clear specifications."
+      },
+      "prices": {
+        "title": "Clear prices",
+        "text": "The price you see is the price you pay. No hidden fees at checkout."
+      },
+      "delivery": {
+        "title": "Delivery everywhere",
+        "text": "We deliver to all 27 governorates and we call you to arrange the time."
+      },
+      "support": {
+        "title": "Support that answers",
+        "text": "Questions before or after your order? Talk to a real person."
+      }
+    },
+    "stepsTitle": "How ordering works",
+    "steps": {
+      "choose": {
+        "title": "Choose",
+        "text": "Browse the catalogue and add what you like to your cart."
+      },
+      "order": {
+        "title": "Order",
+        "text": "Enter your delivery details and drop a pin on the map. No card needed."
+      },
+      "receive": {
+        "title": "Receive and pay",
+        "text": "We deliver to your door and you pay in cash when it arrives."
+      }
+    },
+    "ctaTitle": "Ready to find your next device?",
+    "ctaText": "Have a question first? We are happy to help.",
+    "shop": "Start shopping",
+    "contact": "Contact us"
+  },
+  "contact": {
+    "eyebrow": "Contact us",
+    "title": "We would love to hear from you",
+    "subtitle": "Ask about a product, an order or anything else. We usually reply within one working day.",
+    "info": {
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address",
+      "hours": "Working hours"
+    },
+    "form": {
+      "title": "Send us a message",
+      "name": "Your name",
+      "email": "Email",
+      "phone": "Phone number",
+      "message": "Message",
+      "optional": "optional",
+      "send": "Send message",
+      "sending": "Sending…",
+      "counter": "{{count}} / {{max}}",
+      "topic": "What is it about?",
+      "orderNumber": "Order number"
+    },
+    "validation": {
+      "nameRequired": "Please enter your name.",
+      "nameShort": "The name must be at least 2 characters.",
+      "emailRequired": "Please enter your email.",
+      "emailInvalid": "Enter a valid email address.",
+      "phoneInvalid": "Enter a valid phone number, like +20 100 123 4567.",
+      "messageRequired": "Please write your message.",
+      "messageShort": "Please write at least 10 characters.",
+      "orderNumberInvalid": "Use digits only, like 1042."
+    },
+    "success": {
+      "title": "Message sent",
+      "text": "Thank you for reaching out. We will reply to your email soon.",
+      "again": "Send another message"
+    },
+    "errors": {
+      "invalid": "Some details are not valid. Please check the form.",
+      "tooMany": "You have sent too many messages. Please try again in a few minutes."
+    },
+    "topics": {
+      "product": "A product",
+      "order": "My order",
+      "complaint": "A complaint",
+      "other": "Something else"
+    },
+    "whatsapp": {
+      "title": "Chat on WhatsApp",
+      "text": "The quickest way to reach us.",
+      "message": "Hello CraftyCorner, I have a question."
+    },
+    "quick": {
+      "title": "Quick answers",
+      "pay": {
+        "q": "How do I pay?",
+        "a": "Cash on delivery: you pay when your order arrives."
+      },
+      "delivery": {
+        "q": "How does delivery work?",
+        "a": "After you order, we call you to arrange the time. We deliver to every governorate."
+      },
+      "track": "Track my order"
+    }
+  },
+  "credits": {
+    "title": "Photo credits",
+    "intro": "Some product photos come from Wikimedia Commons and are used under free licences. Thank you to the photographers. Other product images on this site are simple illustrations.",
+    "empty": "No third-party photos are used yet."
+  }
+}
