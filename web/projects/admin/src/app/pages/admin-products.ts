@@ -3,12 +3,12 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { BehaviorSubject, combineLatest, switchMap } from 'rxjs';
-import { AdminProductRow } from '../../core/admin/admin.models';
-import { AdminService } from '../../core/admin/admin.service';
-import { PagedResult } from '../../core/models/api.models';
-import { LoadState, toLoadState } from '../../core/state/load-state';
-import { ToastService } from '../../core/toast/toast.service';
-import { PricePipe } from '../../shared/pipes/price.pipe';
+import { AdminProductRow } from '../data/admin.models';
+import { AdminService } from '../data/admin.service';
+import { PagedResult } from '@web/core/models/api.models';
+import { LoadState, toLoadState } from '@web/core/state/load-state';
+import { ToastService } from '@web/core/toast/toast.service';
+import { PricePipe } from '@web/shared/pipes/price.pipe';
 
 /** كل المنتجات (حتى المخفية): بحث، فلتر، تعديل، وإخفاء. */
 @Component({
@@ -17,13 +17,13 @@ import { PricePipe } from '../../shared/pipes/price.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mb-4 flex flex-wrap items-center gap-3">
-      <a routerLink="/admin/products/new" class="btn btn-accent"
+      <a routerLink="/products/new" class="btn btn-accent"
         >+ {{ 'admin.products.add' | transloco }}</a
       >
       <div class="flex flex-wrap gap-2">
         @for (filter of filters; track filter.key) {
           <a
-            routerLink="/admin/products"
+            routerLink="/products"
             [queryParams]="{ active: filter.value, search: params().search }"
             class="rounded-full border px-3.5 py-1.5 text-sm transition"
             [class]="
@@ -69,7 +69,7 @@ import { PricePipe } from '../../shared/pipes/price.pipe';
                 </div>
                 <div class="min-w-0 flex-1">
                   <a
-                    [routerLink]="['/admin/products', product.id]"
+                    [routerLink]="['/products', product.id]"
                     class="block font-semibold hover:text-accent"
                   >
                     {{ product.name }}
@@ -98,7 +98,7 @@ import { PricePipe } from '../../shared/pipes/price.pipe';
                 >
                   {{ 'admin.products.stock' | transloco }}: {{ product.stockQuantity }}
                 </span>
-                <a [routerLink]="['/admin/products', product.id]" class="btn !py-1.5">{{
+                <a [routerLink]="['/products', product.id]" class="btn !py-1.5">{{
                   'admin.edit' | transloco
                 }}</a>
                 @if (product.isActive) {

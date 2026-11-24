@@ -1,9 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { PagedResult, ProductDetails } from '../models/api.models';
-import { Order, OrderStatus } from '../orders/order.models';
+import { environment } from '@env/environment';
+import { PagedResult, ProductDetails } from '@web/core/models/api.models';
+import { Order, OrderStatus } from '@web/core/orders/order.models';
 import {
   AdminMessage,
   AdminOrderRow,

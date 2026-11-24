@@ -3,11 +3,11 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { BehaviorSubject, combineLatest, switchMap } from 'rxjs';
-import { AdminMessage, toWhatsAppNumber } from '../../core/admin/admin.models';
-import { AdminService } from '../../core/admin/admin.service';
-import { PagedResult } from '../../core/models/api.models';
-import { LoadState, toLoadState } from '../../core/state/load-state';
-import { DateTimePipe } from '../../shared/pipes/date-time.pipe';
+import { AdminMessage, toWhatsAppNumber } from '../data/admin.models';
+import { AdminService } from '../data/admin.service';
+import { PagedResult } from '@web/core/models/api.models';
+import { LoadState, toLoadState } from '@web/core/state/load-state';
+import { DateTimePipe } from '@web/shared/pipes/date-time.pipe';
 
 /** رسائل صفحة "اتصل بنا": غير المقروء الأول، وعلّم كمقروء، ورد بالإيميل أو واتساب. */
 @Component({
@@ -66,7 +66,7 @@ import { DateTimePipe } from '../../shared/pipes/date-time.pipe';
                 @if (message.orderNumber) {
                   ·
                   <a
-                    [routerLink]="['/admin/orders', message.orderNumber]"
+                    [routerLink]="['/orders', message.orderNumber]"
                     class="font-semibold text-accent"
                   >
                     #{{ message.orderNumber }}

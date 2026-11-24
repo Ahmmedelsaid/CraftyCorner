@@ -7,10 +7,10 @@ import {
   UrlTree,
   provideRouter,
 } from '@angular/router';
-import { adminGuard } from './auth.guard';
-import { AuthService } from './auth.service';
+import { ownerGuard } from './owner.guard';
+import { AuthService } from '@web/core/auth/auth.service';
 
-describe('adminGuard', () => {
+describe('ownerGuard', () => {
   const authenticated = signal(false);
   const admin = signal(false);
 
@@ -30,17 +30,17 @@ describe('adminGuard', () => {
 
   const run = () =>
     TestBed.runInInjectionContext(() =>
-      adminGuard({} as ActivatedRouteSnapshot, { url: '/admin/orders' } as RouterStateSnapshot),
+      ownerGuard({} as ActivatedRouteSnapshot, { url: '/orders' } as RouterStateSnapshot),
     );
   const urlOf = (result: unknown) => TestBed.inject(Router).serializeUrl(result as UrlTree);
 
   it('sends visitors to the login page and remembers the admin page', () => {
-    expect(urlOf(run())).toBe('/login?returnUrl=%2Fadmin%2Forders');
+    expect(urlOf(run())).toBe('/login?returnUrl=%2Forders');
   });
 
-  it('sends signed-in customers to the home page', () => {
+  it('sends signed-in customers back to the login page', () => {
     authenticated.set(true);
-    expect(urlOf(run())).toBe('/');
+    expect(urlOf(run())).toBe('/login');
   });
 
   it('lets the shop owner in', () => {

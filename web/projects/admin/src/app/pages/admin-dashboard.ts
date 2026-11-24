@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { AdminService } from '../../core/admin/admin.service';
-import { AdminStats, ORDER_STATUSES } from '../../core/admin/admin.models';
-import { LoadState, toLoadState } from '../../core/state/load-state';
-import { PricePipe } from '../../shared/pipes/price.pipe';
+import { AdminService } from '../data/admin.service';
+import { AdminStats, ORDER_STATUSES } from '../data/admin.models';
+import { LoadState, toLoadState } from '@web/core/state/load-state';
+import { PricePipe } from '@web/shared/pipes/price.pipe';
 
 /** الصفحة الأولى: أرقام اليوم، حالة الطلبات، المنتجات اللي قربت تخلص، وآخر 7 أيام. */
 @Component({
@@ -18,7 +18,7 @@ import { PricePipe } from '../../shared/pipes/price.pipe';
       @let stats = current.data;
 
       <a
-        routerLink="/admin/orders"
+        routerLink="/orders"
         [queryParams]="{ status: 'Placed' }"
         class="card mb-4 flex items-center justify-between gap-3 border-highlight/60 bg-accent-soft p-5 transition hover:-translate-y-0.5 hover:shadow-lift"
       >
@@ -56,7 +56,7 @@ import { PricePipe } from '../../shared/pipes/price.pipe';
           @for (status of statuses; track status) {
             <li>
               <a
-                routerLink="/admin/orders"
+                routerLink="/orders"
                 [queryParams]="{ status }"
                 class="flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm transition hover:border-accent/50"
               >
@@ -101,7 +101,7 @@ import { PricePipe } from '../../shared/pipes/price.pipe';
               @for (item of stats.lowStock; track item.id) {
                 <li>
                   <a
-                    [routerLink]="['/admin/products', item.id]"
+                    [routerLink]="['/products', item.id]"
                     class="flex items-center gap-3 py-2 transition hover:text-accent"
                   >
                     @if (item.imageUrl) {

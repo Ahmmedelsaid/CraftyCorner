@@ -538,6 +538,12 @@
       "replyEmail": "Reply by email",
       "markRead": "Mark as read",
       "markUnread": "Mark as unread"
+    },
+    "viewStore": "View the store",
+    "login": {
+      "title": "Owner sign-in",
+      "subtitle": "Sign in to manage orders, products and messages.",
+      "notOwner": "This account is not the shop owner's. Sign in with the owner account."
     }
   }
 }

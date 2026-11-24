@@ -22,7 +22,7 @@ Colors, fonts and shapes are frozen in [design/BRAND.md](design/BRAND.md). The d
 
 ## Owner dashboard
 
-Signed-in admins get a **Dashboard** button in the header (/admin):
+Signed-in admins get a **Dashboard** button in the store header that opens the dashboard app:
 
 - **Home**: new orders waiting, today, open order value, orders per status, last 7 days, products running low.
 - **Orders**: New, Confirmed, Preparing, Shipped, Delivered (or Cancelled, which puts the items back in stock exactly once).
@@ -54,8 +54,29 @@ dotnet user-secrets set "Jwt:Key" "<at least 32 random characters>" --project ap
 dotnet ef database update --project api
 dotnet run --project api            # Development seeds the sample catalogue (http://localhost:5034)
 
-cd web && npm install && npm start  # http://localhost:4200
+cd web && npm install
+npm start                           # the store, http://localhost:4200
+npm run start:admin                 # the owner dashboard, http://localhost:4201
 ```
+
+Or start all three at once on Windows with `.\dev.ps1`.
+
+## Two apps, one API
+
+`web/` is an Angular workspace with two separate applications talking to the same API and database:
+
+| App | Folder | Dev URL |
+| --- | --- | --- |
+| Store (customers) | `web/src` | http://localhost:4200 |
+| Owner dashboard | `web/projects/admin` | http://localhost:4201 |
+
+The dashboard has its own sign-in page (owner accounts only) and the store has no dashboard code at all; the
+header just links to it (`adminUrl` in `web/src/environments`). Models, auth, i18n and the theme are shared:
+the dashboard imports them from the store's `src/app` through the `@web/*` alias. In development both apps are
+on `localhost`, so the browser shares the sign-in cookie between them.
+
+Deployment of the dashboard (own domain, subdomain or a path) is still undecided, so the Docker image
+currently serves the store only.
 
 Everything else (email, Docker, deployment, tests) works as in the project this was started from:
 see [docs/DEPLOY.md](docs/DEPLOY.md) and `.env.example`.

@@ -1,4 +1,4 @@
-import { OrderStatus } from '../orders/order.models';
+import { OrderStatus } from '@web/core/orders/order.models';
 
 export interface AdminProductRow {
   id: number;

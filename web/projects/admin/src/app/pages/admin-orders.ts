@@ -3,13 +3,13 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { switchMap } from 'rxjs';
-import { AdminOrderRow, ORDER_STATUSES } from '../../core/admin/admin.models';
-import { AdminService } from '../../core/admin/admin.service';
-import { PagedResult } from '../../core/models/api.models';
-import { LoadState, toLoadState } from '../../core/state/load-state';
-import { DateTimePipe } from '../../shared/pipes/date-time.pipe';
-import { PricePipe } from '../../shared/pipes/price.pipe';
-import { OrderStatusBadge } from '../../shared/ui/order-status';
+import { AdminOrderRow, ORDER_STATUSES } from '../data/admin.models';
+import { AdminService } from '../data/admin.service';
+import { PagedResult } from '@web/core/models/api.models';
+import { LoadState, toLoadState } from '@web/core/state/load-state';
+import { DateTimePipe } from '@web/shared/pipes/date-time.pipe';
+import { PricePipe } from '@web/shared/pipes/price.pipe';
+import { OrderStatusBadge } from '@web/shared/ui/order-status';
 
 /** كل الطلبات، بفلتر الحالة وبحث بالاسم أو التليفون أو رقم الطلب. الفلتر كله في الـ URL. */
 @Component({
@@ -19,7 +19,7 @@ import { OrderStatusBadge } from '../../shared/ui/order-status';
   template: `
     <div class="mb-4 flex flex-wrap gap-2">
       <a
-        routerLink="/admin/orders"
+        routerLink="/orders"
         [queryParams]="{ search: params().search }"
         class="rounded-full border px-3.5 py-1.5 text-sm transition"
         [class]="
@@ -30,7 +30,7 @@ import { OrderStatusBadge } from '../../shared/ui/order-status';
       </a>
       @for (status of statuses; track status) {
         <a
-          routerLink="/admin/orders"
+          routerLink="/orders"
           [queryParams]="{ status, search: params().search }"
           class="rounded-full border px-3.5 py-1.5 text-sm transition"
           [class]="
@@ -65,7 +65,7 @@ import { OrderStatusBadge } from '../../shared/ui/order-status';
           @for (order of current.data.items; track order.id) {
             <li>
               <a
-                [routerLink]="['/admin/orders', order.id]"
+                [routerLink]="['/orders', order.id]"
                 class="card flex flex-wrap items-center gap-x-4 gap-y-2 p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-lift"
               >
                 <span class="text-lg font-bold tabular-nums">#{{ order.id }}</span>

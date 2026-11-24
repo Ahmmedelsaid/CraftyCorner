@@ -3,14 +3,14 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { map, switchMap, tap } from 'rxjs';
-import { NEXT_STATUSES, toWhatsAppNumber } from '../../core/admin/admin.models';
-import { AdminService } from '../../core/admin/admin.service';
-import { Order, OrderStatus } from '../../core/orders/order.models';
-import { LoadState, toLoadState } from '../../core/state/load-state';
-import { ToastService } from '../../core/toast/toast.service';
-import { DateTimePipe } from '../../shared/pipes/date-time.pipe';
-import { PricePipe } from '../../shared/pipes/price.pipe';
-import { OrderStatusBadge } from '../../shared/ui/order-status';
+import { NEXT_STATUSES, toWhatsAppNumber } from '../data/admin.models';
+import { AdminService } from '../data/admin.service';
+import { Order, OrderStatus } from '@web/core/orders/order.models';
+import { LoadState, toLoadState } from '@web/core/state/load-state';
+import { ToastService } from '@web/core/toast/toast.service';
+import { DateTimePipe } from '@web/shared/pipes/date-time.pipe';
+import { PricePipe } from '@web/shared/pipes/price.pipe';
+import { OrderStatusBadge } from '@web/shared/ui/order-status';
 
 /** طلب واحد: بيانات العميل، المنتجات، وأزرار نقل الطلب للخطوة اللي بعدها. */
 @Component({
@@ -18,7 +18,7 @@ import { OrderStatusBadge } from '../../shared/ui/order-status';
   imports: [RouterLink, TranslocoPipe, PricePipe, DateTimePipe, OrderStatusBadge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <a routerLink="/admin/orders" class="mb-4 inline-block text-sm font-semibold text-accent">
+    <a routerLink="/orders" class="mb-4 inline-block text-sm font-semibold text-accent">
       ← {{ 'admin.orders.back' | transloco }}
     </a>
 

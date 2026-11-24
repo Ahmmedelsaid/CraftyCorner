@@ -33,9 +33,9 @@ import { TranslocoPipe } from '@jsverse/transloco';
 })
 export class AdminLayout {
   protected readonly tabs = [
-    { path: '/admin', key: 'dashboard', exact: true },
-    { path: '/admin/orders', key: 'orders', exact: false },
-    { path: '/admin/products', key: 'products', exact: false },
-    { path: '/admin/messages', key: 'messages', exact: false },
+    { path: '/', key: 'dashboard', exact: true },
+    { path: '/orders', key: 'orders', exact: false },
+    { path: '/products', key: 'products', exact: false },
+    { path: '/messages', key: 'messages', exact: false },
   ];
 }

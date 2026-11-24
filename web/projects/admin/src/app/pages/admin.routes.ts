@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-/** لوحة التحكم (محمية بـ adminGuard من app.routes). كل شاشة بتتحمّل لوحدها (lazy). */
+/** شاشات لوحة التحكم (محمية بـ ownerGuard من app.routes). كل شاشة بتتحمّل لوحدها (lazy). */
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',

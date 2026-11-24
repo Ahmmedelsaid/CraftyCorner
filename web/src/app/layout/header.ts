@@ -13,6 +13,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, of } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { AuthService } from '../core/auth/auth.service';
 import { CartService } from '../core/cart/cart.service';
 import { initialOf } from '../core/forms/form-errors';
@@ -70,7 +71,9 @@ import { Icon } from '../shared/ui/icon';
             height="44"
             class="size-11 rounded-full ring-2 ring-surface shadow-card transition duration-300 group-hover:rotate-[-6deg] group-hover:scale-105"
           />
-          <span class="font-brand text-[1.7rem] font-semibold text-accent-hover">Crafty Corner</span>
+          <span class="font-brand text-[1.7rem] font-semibold text-accent-hover"
+            >Crafty Corner</span
+          >
         </a>
 
         <form
@@ -112,9 +115,7 @@ import { Icon } from '../shared/ui/icon';
           </a>
 
           @if (auth.isAdmin()) {
-            <a routerLink="/admin" routerLinkActive="!border-accent !text-accent" class="btn">
-              {{ 'admin.title' | transloco }}
-            </a>
+            <a [href]="adminUrl" class="btn">{{ 'admin.title' | transloco }}</a>
           }
 
           @if (auth.user(); as user) {
@@ -194,6 +195,8 @@ export class Header {
   private readonly router = inject(Router);
 
   protected readonly initial = initialOf;
+  /** لوحة التحكم تطبيق منفصل (admin)، فده لينك خارجي مش route. */
+  protected readonly adminUrl = environment.adminUrl;
 
   /** نزلنا شوية: الهيدر بيصغّر ويظهر ظل. */
   protected readonly scrolled = signal(false);

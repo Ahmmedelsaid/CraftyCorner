@@ -4,12 +4,12 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } fr
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Observable, catchError, of } from 'rxjs';
-import { ProductPayload } from '../../core/admin/admin.models';
-import { AdminService } from '../../core/admin/admin.service';
-import { firstError } from '../../core/forms/form-errors';
-import { Category } from '../../core/models/api.models';
-import { CatalogService } from '../../core/services/catalog.service';
-import { ToastService } from '../../core/toast/toast.service';
+import { ProductPayload } from '../data/admin.models';
+import { AdminService } from '../data/admin.service';
+import { firstError } from '@web/core/forms/form-errors';
+import { Category } from '@web/core/models/api.models';
+import { CatalogService } from '@web/core/services/catalog.service';
+import { ToastService } from '@web/core/toast/toast.service';
 
 /** slug و SKU بيتولّدوا لوحدهم عشان صاحبة المتجر ما تحتاجش تفكر فيهم (الاسم عربي). */
 function randomCode(): string {
@@ -22,7 +22,7 @@ function randomCode(): string {
   imports: [ReactiveFormsModule, RouterLink, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <a routerLink="/admin/products" class="mb-4 inline-block text-sm font-semibold text-accent">
+    <a routerLink="/products" class="mb-4 inline-block text-sm font-semibold text-accent">
       ← {{ 'admin.products.back' | transloco }}
     </a>
     <h2 class="mb-5 text-2xl font-bold">
@@ -202,7 +202,7 @@ function randomCode(): string {
             <button type="submit" class="btn btn-accent !px-8" [disabled]="saving() || uploading()">
               {{ (saving() ? 'admin.saving' : 'admin.save') | transloco }}
             </button>
-            <a routerLink="/admin/products" class="btn">{{ 'admin.cancel' | transloco }}</a>
+            <a routerLink="/products" class="btn">{{ 'admin.cancel' | transloco }}</a>
           </div>
         </section>
       </form>
@@ -379,7 +379,7 @@ export class AdminProductForm {
       next: () => {
         this.saving.set(false);
         this.toasts.show({ kind: 'success', key: 'admin.saved' });
-        void this.router.navigate(['/admin/products']);
+        void this.router.navigate(['/products']);
       },
       error: () => {
         this.saving.set(false);
