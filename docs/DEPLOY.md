@@ -73,3 +73,10 @@ Put a reverse proxy with HTTPS in front (Caddy or nginx) and forward to port 808
 | `/api/health` | Returns 200 when the database is reachable. |
 
 Cookies are `Secure; HttpOnly; SameSite=Strict`, so the site must be served over HTTPS (all platforms do this for you).
+
+
+## Owner account and product photos
+
+- Set `Seed__AdminEmail` and `Seed__AdminPassword` once to create the owner account, then remove the password variable.
+- Product photos uploaded from the dashboard are written to `/data/uploads` in the image. **Attach a persistent volume at that path**
+  (Railway: Volumes). Without it the photos are lost on every deploy.

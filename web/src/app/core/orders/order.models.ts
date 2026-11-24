@@ -1,4 +1,10 @@
-export type OrderStatus = 'Placed' | 'Cancelled';
+export type OrderStatus =
+  | 'Placed'
+  | 'Confirmed'
+  | 'Preparing'
+  | 'Shipped'
+  | 'Delivered'
+  | 'Cancelled';
 
 export interface OrderItem {
   productId: number;

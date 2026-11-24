@@ -5,6 +5,12 @@ public enum OrderStatus
     /// <summary>The customer placed the order and it is waiting to be handled (pay on delivery).</summary>
     Placed,
     Cancelled,
+
+    // Owner workflow (stored as text, so adding values needs no migration)
+    Confirmed,
+    Preparing,
+    Shipped,
+    Delivered,
 }
 
 public class Order

@@ -28,7 +28,9 @@ public class ProductsController(AppDbContext db) : ControllerBase
             p.Category!.Name,
             p.Brand!.Name,
             p.CreatedAt,
-            p.UpdatedAt
+            p.UpdatedAt,
+            p.CategoryId,
+            p.BrandId
         );
 
     [HttpGet]

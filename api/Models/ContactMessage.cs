@@ -17,5 +17,8 @@ public class ContactMessage
     /// <summary>An order number the customer mentioned (not checked against the orders table).</summary>
     public int? OrderNumber { get; set; }
 
+    /// <summary>Set by the owner from the dashboard once the message has been read.</summary>
+    public bool IsRead { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -10,6 +10,16 @@ export const authGuard: CanActivateFn = (_route, state) => {
     : router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
 };
 
+/** لوحة التحكم: للأدمن بس. مش مسجّل دخول يروح لصفحة الدخول، ومسجّل عادي يرجع للرئيسية. */
+export const adminGuard: CanActivateFn = (_route, state) => {
+  const router = inject(Router);
+  const auth = inject(AuthService);
+  if (!auth.isAuthenticated()) {
+    return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
+  }
+  return auth.isAdmin() ? true : router.createUrlTree(['/']);
+};
+
 /** صفحات الدخول والتسجيل: لو مسجّل دخول أصلًا مفيش داعي يشوفها. */
 export const guestGuard: CanActivateFn = () => {
   const router = inject(Router);

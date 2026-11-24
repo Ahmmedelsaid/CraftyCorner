@@ -284,8 +284,12 @@
     "all": "All orders",
     "total": "Total",
     "status": {
-      "Placed": "Placed",
-      "Cancelled": "Cancelled"
+      "Placed": "New order",
+      "Cancelled": "Cancelled",
+      "Confirmed": "Confirmed",
+      "Preparing": "Preparing",
+      "Shipped": "Shipped",
+      "Delivered": "Delivered"
     },
     "placedTitle": "Thank you! Your order is placed.",
     "placedText": "We will call you to confirm delivery. You pay when it arrives.",
@@ -424,6 +428,116 @@
         "a": "After you order, we call you to arrange the time. We deliver to every governorate."
       },
       "track": "Track my order"
+    }
+  },
+  "admin": {
+    "title": "Dashboard",
+    "nav": {
+      "dashboard": "Home",
+      "orders": "Orders",
+      "products": "Products",
+      "messages": "Messages"
+    },
+    "all": "All",
+    "search": "Search",
+    "edit": "Edit",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved.",
+    "saveFailed": "Could not save. Please try again.",
+    "cancel": "Cancel",
+    "remove": "Remove",
+    "loadError": "Something went wrong while loading. Try refreshing the page.",
+    "err": {
+      "required": "This field is required.",
+      "min": "The value is too small.",
+      "short": "The text is too short.",
+      "long": "The text is too long.",
+      "slug": "Lowercase English letters, numbers and dashes only."
+    },
+    "dashboard": {
+      "newOrders": "New orders waiting",
+      "review": "Review",
+      "today": "Orders today",
+      "openValue": "Value of open orders",
+      "delivered": "Delivered in total",
+      "products": "Visible products",
+      "unread": "Unread messages",
+      "byStatus": "Orders by status",
+      "last7": "Orders in the last 7 days",
+      "lowStock": "Running low",
+      "stockOk": "Stock looks fine. Nothing is running low."
+    },
+    "orders": {
+      "searchPlaceholder": "Search by customer name, phone or order number",
+      "empty": "No orders here.",
+      "back": "All orders"
+    },
+    "order": {
+      "items": "Items",
+      "customer": "Customer",
+      "call": "Call",
+      "whatsapp": "WhatsApp",
+      "address": "Address",
+      "notes": "Customer notes",
+      "action": {
+        "Confirmed": "Confirm order",
+        "Preparing": "Start preparing",
+        "Shipped": "Mark as shipped",
+        "Delivered": "Mark as delivered",
+        "Cancelled": "Cancel order"
+      },
+      "cancelConfirm": "Cancel this order? The items go back to stock.",
+      "cancelYes": "Yes, cancel",
+      "cancelNo": "Keep it",
+      "updated": "Order status updated.",
+      "updateFailed": "Could not change the status. Refresh and try again.",
+      "waMessage": "Hello {{name}}, this is Crafty Corner about your order #{{id}}."
+    },
+    "products": {
+      "add": "New product",
+      "addTitle": "Add a product",
+      "editTitle": "Edit product",
+      "back": "All products",
+      "filter": {
+        "all": "All",
+        "active": "Visible",
+        "hidden": "Hidden"
+      },
+      "searchPlaceholder": "Search by name or code",
+      "empty": "No products here.",
+      "hidden": "Hidden from the shop",
+      "stock": "Stock",
+      "hide": "Hide",
+      "hideSure": "Sure? Hide it",
+      "hiddenDone": "The product is now hidden from the shop.",
+      "photo": "Photo",
+      "noPhoto": "No photo yet",
+      "choosePhoto": "Choose a photo",
+      "uploading": "Uploading...",
+      "removePhoto": "Remove photo",
+      "photoHint": "JPG, PNG or WebP, up to 5 MB. Portrait photos look best (shown in an arch frame).",
+      "uploadFailed": "Could not upload the photo. Make sure it is a JPG, PNG or WebP under 5 MB.",
+      "name": "Product name",
+      "category": "Category",
+      "chooseCategory": "Choose a category",
+      "price": "Price (EGP)",
+      "stockQty": "Quantity in stock",
+      "visible": "Visible in the shop",
+      "description": "Description",
+      "specs": "Details (material, colour...)",
+      "specKey": "e.g. Material",
+      "specValue": "e.g. Plaster",
+      "addSpec": "Add detail",
+      "advanced": "Advanced (code and link)"
+    },
+    "messages": {
+      "unread": "Unread",
+      "new": "New",
+      "empty": "No messages.",
+      "replyEmail": "Reply by email",
+      "markRead": "Mark as read",
+      "markUnread": "Mark as unread"
     }
   }
 }

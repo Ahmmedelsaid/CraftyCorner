@@ -111,6 +111,12 @@ import { Icon } from '../shared/ui/icon';
             }
           </a>
 
+          @if (auth.isAdmin()) {
+            <a routerLink="/admin" routerLinkActive="!border-accent !text-accent" class="btn">
+              {{ 'admin.title' | transloco }}
+            </a>
+          }
+
           @if (auth.user(); as user) {
             <a
               routerLink="/account"

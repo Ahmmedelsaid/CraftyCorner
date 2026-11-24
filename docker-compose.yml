@@ -32,6 +32,9 @@ services:
       Database__MigrateOnStartup: "true"
       Seed__DemoData: "true"
       Email__WebUrl: ${PUBLIC_URL:-http://localhost:8080}
+    volumes:
+      - uploads:/data/uploads
 
 volumes:
   dbdata:
+  uploads:

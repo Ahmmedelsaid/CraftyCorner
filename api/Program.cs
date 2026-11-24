@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -231,6 +232,22 @@ app.UseStatusCodePages();
 
 app.UseHttpsRedirection();
 
+// صور المنتجات اللي الأونر بيرفعها من الداشبورد: بتتخزّن في فولدر (Uploads:Path) وبتتخدم من /uploads
+var uploadsFolder = UploadsController.UploadsFolder(app.Configuration, app.Environment);
+Directory.CreateDirectory(uploadsFolder);
+app.UseStaticFiles(
+    new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(uploadsFolder),
+        RequestPath = UploadsController.RequestPath,
+        OnPrepareResponse = context =>
+        {
+            context.Context.Response.Headers.CacheControl = "public,max-age=604800,immutable";
+            context.Context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+        },
+    }
+);
+
 // الموقع (Angular) بيتخدم من نفس الـ API لو الملفات موجودة في wwwroot (جوه الـ Docker image):
 // رابط واحد، ومفيش CORS، والـ cookie بتاع الـ refresh token first-party.
 var webRoot = app.Environment.WebRootPath;
@@ -278,6 +295,7 @@ if (serveWebsite)
 {
     // أي /api/... مش موجود يرجّع 404 مش صفحة الموقع
     app.MapFallback("/api/{**rest}", () => Results.NotFound());
+    app.MapFallback("/uploads/{**rest}", () => Results.NotFound());
     // باقي الروابط (/products/5, /cart...) هي routes الـ Angular: نرجّع index.html
     app.MapFallbackToFile("index.html", staticFiles);
 }

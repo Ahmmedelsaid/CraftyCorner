@@ -1,11 +1,11 @@
 # Crafty Corner
 
-An online store (with an owner dashboard on the way) for **Crafty Corner**, a handmade home-decor brand.
+An online store with an owner dashboard for **Crafty Corner**, a handmade home-decor brand.
 Arabic first (RTL) with English available. Built on **Angular 21**, **.NET 10** and **MySQL**.
 
 Orders are placed on the site (cart and checkout, cash on delivery). The owner manages products and orders from a dashboard.
 
-> Status: storefront re-themed and running with **sample products**. The admin dashboard, real products and
+> Status: storefront and **owner dashboard** are running locally with **sample products**. Real products and
 > deployment are the next steps (see the roadmap).
 
 ## Brand
@@ -17,8 +17,28 @@ Colors, fonts and shapes are frozen in [design/BRAND.md](design/BRAND.md). The d
 
 - [x] Phase 1: visual identity
 - [x] Phase 2: new project and storefront theme, sample catalogue
-- [ ] Phase 3: owner dashboard (login, products with image upload, order management with statuses, simple stats)
+- [x] Phase 3: owner dashboard (products with photo upload, orders with a status workflow, messages, stats)
 - [ ] Phase 4: deployment, domain and an owner guide
+
+## Owner dashboard
+
+Signed-in admins get a **Dashboard** button in the header (/admin):
+
+- **Home**: new orders waiting, today, open order value, orders per status, last 7 days, products running low.
+- **Orders**: New, Confirmed, Preparing, Shipped, Delivered (or Cancelled, which puts the items back in stock exactly once).
+  Customers can still cancel on their own until the order is confirmed. Call or WhatsApp the customer from the order page.
+- **Products**: add, edit, hide; photos are uploaded from the device (JPG/PNG/WebP up to 5 MB, checked by content, not by name).
+- **Messages**: what customers sent from the Contact page, with reply links.
+
+Create the first admin by setting both of these (nothing is created otherwise):
+
+```bash
+dotnet user-secrets set "Seed:AdminEmail" "owner@example.com" --project api
+dotnet user-secrets set "Seed:AdminPassword" "<a strong password>" --project api
+```
+
+Uploaded photos live in `Uploads:Path` (default `api/uploads`; `/data/uploads` in Docker). **Mount a volume there on the host**,
+otherwise photos disappear on every redeploy (or swap `UploadsController` for an image service such as Cloudinary).
 
 ## Run it locally
 

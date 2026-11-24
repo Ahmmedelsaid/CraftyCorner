@@ -25,6 +25,8 @@ export class AuthService {
 
   readonly user = this.userState.asReadonly();
   readonly isAuthenticated = computed(() => this.userState() !== null);
+  /** صاحبة المتجر: بتشوف لوحة التحكم. (الـ API بيتحقق من الدور بنفسه، ده بس لإخفاء الروابط.) */
+  readonly isAdmin = computed(() => this.userState()?.role === 'Admin');
 
   /** بيقراه الـ interceptor بشكل متزامن عشان يحطه في الـ header. */
   get accessToken(): string | null {

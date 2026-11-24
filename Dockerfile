@@ -29,6 +29,11 @@ ENV ASPNETCORE_ENVIRONMENT=Production \
     Proxy__TrustForwardedHeaders=true
 EXPOSE 8080
 
+# صور المنتجات اللي بترفعها صاحبة المتجر: لازم تتحط على volume، وإلا بتضيع مع كل نشر جديد
+ENV Uploads__Path=/data/uploads
+RUN mkdir -p /data/uploads && chown -R $APP_UID /data
+VOLUME /data/uploads
+
 # مش root
 USER $APP_UID
 ENTRYPOINT ["dotnet", "CraftyCorner.Api.dll"]
