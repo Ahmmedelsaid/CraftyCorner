@@ -10,7 +10,8 @@ public record CartItemDto(
     int StockQuantity,
     decimal LineTotal,
     // false لو المنتج اتخفى أو المخزون أقل من الكمية: بنعرضه بس مش بنحسبه في الإجمالي
-    bool IsAvailable
+    bool IsAvailable,
+    string? NameEn
 );
 
 public record CartDto(IReadOnlyList<CartItemDto> Items, int ItemCount, decimal Subtotal);

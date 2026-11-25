@@ -20,9 +20,15 @@ public static class DbSeeder
             "home-decor",
             parent: null
         );
+        root.NameEn ??= "Home Decor";
         var categories = new Dictionary<string, Category>();
-        foreach (var (name, slug) in SeedCatalog.Categories)
-            categories[slug] = await GetOrAddCategoryAsync(db, name, slug, root);
+        foreach (var (name, slug, nameEn) in SeedCatalog.Categories)
+        {
+            var category = await GetOrAddCategoryAsync(db, name, slug, root);
+            // fill the English name on rows created before it existed, but never overwrite the owner's edits
+            category.NameEn ??= nameEn;
+            categories[slug] = category;
+        }
 
         var brands = await db.Brands.ToDictionaryAsync(b => b.Slug);
         foreach (var name in rows.Select(r => r.Brand).Distinct())
@@ -51,7 +57,15 @@ public static class DbSeeder
         {
             // slug و SKU الاتنين unique: اللي موجود (حتى لو اتعدّل) ما نلمسوش
             if (!knownSlugs.Add(row.Slug) || !knownSkus.Add(row.Sku))
+            {
+                var existing = await db.Products.FirstOrDefaultAsync(p => p.Slug == row.Slug);
+                if (existing is not null)
+                {
+                    existing.NameEn ??= row.NameEn;
+                    existing.DescriptionEn ??= row.DescriptionEn;
+                }
                 continue;
+            }
 
             db.Products.Add(
                 new Product
@@ -60,6 +74,8 @@ public static class DbSeeder
                     Slug = row.Slug,
                     Sku = row.Sku,
                     Description = row.Description,
+                    NameEn = row.NameEn,
+                    DescriptionEn = row.DescriptionEn,
                     ImageUrl = row.ImageUrl,
                     Price = row.Price,
                     StockQuantity = row.Stock,

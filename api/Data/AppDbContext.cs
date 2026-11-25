@@ -134,6 +134,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Product>(entity =>
         {
             entity.Property(p => p.Name).HasMaxLength(200);
+            entity.Property(p => p.NameEn).HasMaxLength(200);
+            entity.Property(p => p.DescriptionEn).HasMaxLength(2000);
             entity.Property(p => p.Sku).HasMaxLength(50);
             entity.Property(p => p.Slug).HasMaxLength(220);
 
@@ -177,6 +179,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Category>(entity =>
         {
             entity.Property(c => c.Name).HasMaxLength(100);
+            entity.Property(c => c.NameEn).HasMaxLength(100);
+            entity.Property(c => c.DescriptionEn).HasMaxLength(500);
             entity.Property(c => c.Slug).HasMaxLength(120);
 
             entity.HasIndex(c => c.Slug).IsUnique();

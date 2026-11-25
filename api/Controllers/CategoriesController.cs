@@ -23,7 +23,8 @@ public class CategoriesController(AppDbContext db) : ControllerBase
                 c.ImageUrl,
                 c.ParentId,
                 c.Products.Count(p => p.IsActive)
-                    + c.Children.SelectMany(child => child.Products).Count(p => p.IsActive)
+                    + c.Children.SelectMany(child => child.Products).Count(p => p.IsActive),
+                c.NameEn
             ))
             .ToListAsync();
     }
@@ -41,7 +42,8 @@ public class CategoriesController(AppDbContext db) : ControllerBase
                 c.ImageUrl,
                 c.ParentId,
                 c.Products.Count(p => p.IsActive)
-                    + c.Children.SelectMany(child => child.Products).Count(p => p.IsActive)
+                    + c.Children.SelectMany(child => child.Products).Count(p => p.IsActive),
+                c.NameEn
             ))
             .FirstOrDefaultAsync();
 

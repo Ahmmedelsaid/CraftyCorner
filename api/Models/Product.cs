@@ -8,6 +8,10 @@ public class Product
     public required string Sku { get; set; }
 
     public string? Description { get; set; }
+
+    /// <summary>English name/description shown when the visitor browses in English (null = fall back to Arabic).</summary>
+    public string? NameEn { get; set; }
+    public string? DescriptionEn { get; set; }
     public string? ImageUrl { get; set; }
     public required string Slug { get; set; }
 

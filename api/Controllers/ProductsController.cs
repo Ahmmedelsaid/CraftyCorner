@@ -30,7 +30,10 @@ public class ProductsController(AppDbContext db) : ControllerBase
             p.CreatedAt,
             p.UpdatedAt,
             p.CategoryId,
-            p.BrandId
+            p.BrandId,
+            p.NameEn,
+            p.DescriptionEn,
+            p.Category.NameEn
         );
 
     [HttpGet]
@@ -51,7 +54,9 @@ public class ProductsController(AppDbContext db) : ControllerBase
         var products = db.Products.Where(p => p.IsActive);
 
         if (!string.IsNullOrWhiteSpace(query.Search))
-            products = products.Where(p => p.Name.Contains(query.Search));
+            products = products.Where(p =>
+                p.Name.Contains(query.Search) || (p.NameEn != null && p.NameEn.Contains(query.Search))
+            );
 
         if (query.CategoryId is not null)
             // التصنيف نفسه أو أي فرع مباشر تحته (Electronics -> Phones)
@@ -93,7 +98,9 @@ public class ProductsController(AppDbContext db) : ControllerBase
                 p.Price,
                 p.ImageUrl,
                 p.Brand!.Name,
-                p.Category!.Name
+                p.Category!.Name,
+                p.NameEn,
+                p.Category.NameEn
             ))
             .ToListAsync();
 
@@ -128,6 +135,8 @@ public class ProductsController(AppDbContext db) : ControllerBase
             Slug = dto.Slug,
             Sku = dto.Sku,
             Description = dto.Description,
+            NameEn = Clean(dto.NameEn),
+            DescriptionEn = Clean(dto.DescriptionEn),
             ImageUrl = dto.ImageUrl,
             Price = dto.Price,
             StockQuantity = dto.StockQuantity,
@@ -169,6 +178,8 @@ public class ProductsController(AppDbContext db) : ControllerBase
         product.Slug = dto.Slug;
         product.Sku = dto.Sku;
         product.Description = dto.Description;
+        product.NameEn = Clean(dto.NameEn);
+        product.DescriptionEn = Clean(dto.DescriptionEn);
         product.ImageUrl = dto.ImageUrl;
         product.Price = dto.Price;
         product.StockQuantity = dto.StockQuantity;
@@ -197,6 +208,9 @@ public class ProductsController(AppDbContext db) : ControllerBase
         await db.SaveChangesAsync();
         return NoContent();
     }
+
+    private static string? Clean(string? text) =>
+        string.IsNullOrWhiteSpace(text) ? null : text.Trim();
 
     private async Task<bool> CategoryAndBrandExistAsync(int categoryId, int brandId)
     {

@@ -13,7 +13,8 @@ public record AdminProductListDto(
     bool IsActive,
     string? ImageUrl,
     string CategoryName,
-    int CategoryId
+    int CategoryId,
+    string? NameEn
 );
 
 /// <summary>A row of the owner's order table.</summary>
@@ -108,3 +109,19 @@ public record SetPasswordDto(
 );
 
 public record SetActiveDto(bool IsActive);
+
+/// <summary>A category row in the owner's category screen (names in both languages).</summary>
+public record AdminCategoryDto(
+    int Id,
+    string Name,
+    string? NameEn,
+    string Slug,
+    int? ParentId,
+    bool IsActive,
+    int ProductCount
+);
+
+public record UpdateCategoryDto(
+    [Required, StringLength(100, MinimumLength = 2)] string Name,
+    [StringLength(100)] string? NameEn
+);

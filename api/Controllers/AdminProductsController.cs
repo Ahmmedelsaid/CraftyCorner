@@ -46,7 +46,9 @@ public class AdminProductsController(AppDbContext db) : ControllerBase
         if (!string.IsNullOrWhiteSpace(search))
         {
             var term = search.Trim();
-            query = query.Where(p => p.Name.Contains(term) || p.Sku.Contains(term));
+            query = query.Where(p => p.Name.Contains(term)
+                || (p.NameEn != null && p.NameEn.Contains(term))
+                || p.Sku.Contains(term));
         }
 
         query = sort switch
@@ -71,7 +73,8 @@ public class AdminProductsController(AppDbContext db) : ControllerBase
                 p.IsActive,
                 p.ImageUrl,
                 p.Category!.Name,
-                p.CategoryId
+                p.CategoryId,
+                p.NameEn
             ))
             .ToListAsync();
 
@@ -100,7 +103,10 @@ public class AdminProductsController(AppDbContext db) : ControllerBase
                 p.CreatedAt,
                 p.UpdatedAt,
                 p.CategoryId,
-                p.BrandId
+                p.BrandId,
+                p.NameEn,
+                p.DescriptionEn,
+                p.Category.NameEn
             ))
             .FirstOrDefaultAsync();
 

@@ -153,7 +153,8 @@ public class CartController(AppDbContext db, TimeProvider clock) : ControllerBas
                 c.Quantity,
                 c.Product.StockQuantity,
                 c.Product.Price * c.Quantity,
-                c.Product.IsActive && c.Product.StockQuantity >= c.Quantity
+                c.Product.IsActive && c.Product.StockQuantity >= c.Quantity,
+                c.Product.NameEn
             ))
             .ToListAsync();
 

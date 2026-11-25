@@ -6,6 +6,8 @@ public class Category
     public required string Name { get; set; }
     public required string Slug { get; set; }
     public string? Description { get; set; }
+    public string? NameEn { get; set; }
+    public string? DescriptionEn { get; set; }
     public string? ImageUrl { get; set; }
     public bool IsActive { get; set; }
 

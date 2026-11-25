@@ -11,5 +11,6 @@ public record CategoryDto(
     string? Description,
     string? ImageUrl,
     int? ParentId,
-    int ProductCount
+    int ProductCount,
+    string? NameEn
 );

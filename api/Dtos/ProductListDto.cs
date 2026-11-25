@@ -7,5 +7,7 @@ public record ProductListDto(
     decimal Price,
     string? ImageUrl,
     string BrandName,
-    string CategoryName
+    string CategoryName,
+    string? NameEn,
+    string? CategoryNameEn
 );

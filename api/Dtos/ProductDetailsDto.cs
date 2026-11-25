@@ -16,5 +16,8 @@ public record ProductDetailsDto(
     DateTime CreatedAt,
     DateTime UpdatedAt,
     int CategoryId = 0,
-    int BrandId = 0
+    int BrandId = 0,
+    string? NameEn = null,
+    string? DescriptionEn = null,
+    string? CategoryNameEn = null
 );

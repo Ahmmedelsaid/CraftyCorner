@@ -13,6 +13,8 @@ public record UpdateProductDto(
         string Slug,
     [Required, StringLength(50, MinimumLength = 3)] string Sku,
     [StringLength(2000)] string? Description,
+    [StringLength(200)] string? NameEn,
+    [StringLength(2000)] string? DescriptionEn,
     [StringLength(500)] string? ImageUrl,
     [Range(typeof(decimal), "0.01", "1000000")] decimal Price,
     [Range(0, int.MaxValue)] int StockQuantity,
