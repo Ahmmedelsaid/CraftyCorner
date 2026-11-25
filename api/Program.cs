@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -125,11 +125,18 @@ builder.Services.AddRateLimiter(options =>
     options.AddPolicy("auth", httpContext =>
         RateLimitPartition.GetFixedWindowLimiter(
             httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            _ => new FixedWindowRateLimiterOptions
+            _ =>
             {
-                PermitLimit = authPermitLimit,
-                Window = TimeSpan.FromSeconds(authWindowSeconds),
-                QueueLimit = 0,
+                // read from the final configuration when the first request arrives (so tests and hosts can override it)
+                var configuration = httpContext.RequestServices.GetRequiredService<IConfiguration>();
+                return new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = configuration.GetValue("RateLimit:AuthPermitLimit", authPermitLimit),
+                    Window = TimeSpan.FromSeconds(
+                        configuration.GetValue("RateLimit:AuthWindowSeconds", authWindowSeconds)
+                    ),
+                    QueueLimit = 0,
+                };
             }
         )
     );
@@ -365,7 +372,7 @@ static async Task MigrateWithRetryAsync(AppDbContext db, ILogger logger)
 }
 
 // الملفات اللي اسمها فيه hash من الـ Angular build: main-ABC123XY.js و chunk-... و styles-...
-internal partial class Program
+public partial class Program
 {
     [GeneratedRegex(@"-[A-Z0-9]{8}\.(js|css)$")]
     internal static partial Regex HashedAsset();
