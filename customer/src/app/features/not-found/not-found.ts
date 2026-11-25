@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Icon } from '../../shared/ui/icon';
+import { Icon } from '@shared/ui/icon';
 
 @Component({
   selector: 'app-not-found',

@@ -3,15 +3,16 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, of } from 'rxjs';
-import { AuthService } from './core/auth/auth.service';
-import { Category } from './core/models/api.models';
-import { CatalogService } from './core/services/catalog.service';
+import { AuthService } from '@shared/core/auth/auth.service';
+import { Category } from '@shared/core/models/api.models';
+import { CatalogService } from '@shared/core/services/catalog.service';
 import { Header } from './layout/header';
-import { Toasts } from './shared/ui/toasts';
+import { Toasts } from '@shared/ui/toasts';
+import { LocalizedPipe } from '@shared/pipes/localized.pipe';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Header, Toasts, TranslocoPipe],
+  imports: [LocalizedPipe, RouterOutlet, RouterLink, Header, Toasts, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a
@@ -86,7 +87,7 @@ import { Toasts } from './shared/ui/toasts';
                     [queryParams]="{ categoryId: category.id }"
                     class="transition hover:text-white"
                   >
-                    {{ category.name }}
+                    {{ category.name | localized: category.nameEn }}
                   </a>
                 </li>
               }

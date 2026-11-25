@@ -3,13 +3,13 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { switchMap } from 'rxjs';
-import { OrderSummary } from '../../core/orders/order.models';
+import { OrderSummary } from '@shared/core/orders/order.models';
 import { OrdersService, orderErrorKey } from '../../core/orders/orders.service';
-import { LoadState, toLoadState } from '../../core/state/load-state';
-import { DateTimePipe } from '../../shared/pipes/date-time.pipe';
-import { PricePipe } from '../../shared/pipes/price.pipe';
-import { Icon } from '../../shared/ui/icon';
-import { OrderStatusBadge } from '../../shared/ui/order-status';
+import { LoadState, toLoadState } from '@shared/core/state/load-state';
+import { DateTimePipe } from '@shared/pipes/date-time.pipe';
+import { PricePipe } from '@shared/pipes/price.pipe';
+import { Icon } from '@shared/ui/icon';
+import { OrderStatusBadge } from '@shared/ui/order-status';
 
 /** سجل طلبات العميل (الأحدث أولًا). */
 @Component({

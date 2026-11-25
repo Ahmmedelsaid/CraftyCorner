@@ -8,6 +8,8 @@ export interface ProductListItem {
   imageUrl: string | null;
   brandName: string;
   categoryName: string;
+  nameEn: string | null;
+  categoryNameEn: string | null;
 }
 
 export interface ProductDetails {
@@ -23,6 +25,9 @@ export interface ProductDetails {
   specs: Record<string, string>;
   categoryName: string;
   brandName: string;
+  nameEn: string | null;
+  descriptionEn: string | null;
+  categoryNameEn: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -43,6 +48,7 @@ export interface Category {
   imageUrl: string | null;
   parentId: number | null;
   productCount: number;
+  nameEn?: string | null;
 }
 
 export interface Brand {

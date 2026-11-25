@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
-import { LanguageService } from '../../core/i18n/language.service';
+import { LanguageService } from '../core/i18n/language.service';
 
 /**
  * "2026-11-23T16:49:11" -> "23 Nov 2026, 6:49 PM" بلغة الصفحة وبتوقيت الجهاز.

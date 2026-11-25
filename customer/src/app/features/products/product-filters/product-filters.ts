@@ -2,16 +2,17 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
-import { Brand, Category, ProductQuery } from '../../../core/models/api.models';
-import { Icon } from '../../../shared/ui/icon';
+import { Brand, Category, ProductQuery } from '@shared/core/models/api.models';
+import { Icon } from '@shared/ui/icon';
 import { hasActiveFilters } from '../product-query';
+import { LocalizedPipe } from '@shared/pipes/localized.pipe';
 
 const optionBase =
   'flex w-full items-center justify-between gap-2 rounded-lg px-3 py-1.5 text-sm transition';
 
 @Component({
   selector: 'app-product-filters',
-  imports: [TranslocoPipe, Icon],
+  imports: [LocalizedPipe, TranslocoPipe, Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
@@ -75,7 +76,7 @@ const optionBase =
                 [class]="optionClass(query().categoryId === root.id)"
                 (click)="patch.emit({ categoryId: root.id })"
               >
-                <span>{{ root.name }}</span>
+                <span>{{ root.name | localized: root.nameEn }}</span>
                 <span class="count">{{ root.productCount }}</span>
               </button>
               @if (root.children.length) {
@@ -87,7 +88,7 @@ const optionBase =
                         [class]="optionClass(query().categoryId === child.id)"
                         (click)="patch.emit({ categoryId: child.id })"
                       >
-                        <span>{{ child.name }}</span>
+                        <span>{{ child.name | localized: child.nameEn }}</span>
                         <span class="count">{{ child.productCount }}</span>
                       </button>
                     </li>

@@ -2,11 +2,11 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { environment } from '../../../environments/environment';
-import { AuthResponse } from '../auth/auth.models';
-import { AuthService } from '../auth/auth.service';
+import { environment } from '@env/environment';
+import { AuthResponse } from '@shared/core/auth/auth.models';
+import { AuthService } from '@shared/core/auth/auth.service';
 import { CartService } from '../cart/cart.service';
-import { Order, PlaceOrderRequest } from './order.models';
+import { Order, PlaceOrderRequest } from '@shared/core/orders/order.models';
 import { OrdersService, orderErrorKey } from './orders.service';
 
 const API = `${environment.apiUrl}`;

@@ -1,4 +1,8 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+/* Tailwind بيدوّر على الـ classes في التطبيقين والمشترك بس */
+@source '../customer/src';
+@source '../admin/src';
+@source '.';
 @import 'leaflet/dist/leaflet.css';
 @import '@fontsource/tajawal/400.css';
 @import '@fontsource/tajawal/500.css';
@@ -251,7 +255,8 @@
     height: 18px;
     width: 140px;
     margin: 6px auto 0;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='18'%3E%3Cpath d='M0 9 Q7 0 14 9 T28 9' fill='none' stroke='%23c6a15b' stroke-width='1.6'/%3E%3C/svg%3E") repeat-x center;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='18'%3E%3Cpath d='M0 9 Q7 0 14 9 T28 9' fill='none' stroke='%23c6a15b' stroke-width='1.6'/%3E%3C/svg%3E")
+      repeat-x center;
   }
 
   /* عنوان قسم في الصفحة الرئيسية، بشريط أزرق صغير قبله */
@@ -282,6 +287,16 @@
   .reveal.is-visible {
     opacity: 1;
     transform: none;
+  }
+
+  /* الصورة بتظهر بنعومة بعد ما تتحمّل (directive: appImgFade) */
+  .img-fade {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .img-fade.is-loaded {
+    opacity: 1;
   }
 
   /* مكان الصورة وهي بتحمّل: لمعة بتعدّي بدل نبض */
@@ -339,7 +354,12 @@
       height: 3px;
       z-index: 60;
       transform-origin: left;
-      background: linear-gradient(90deg, var(--color-highlight), var(--color-accent), var(--color-highlight));
+      background: linear-gradient(
+        90deg,
+        var(--color-highlight),
+        var(--color-accent),
+        var(--color-highlight)
+      );
       animation: grow-x linear both;
       animation-timeline: scroll(root);
     }
@@ -408,7 +428,8 @@
     scroll-behavior: auto !important;
   }
 
-  .reveal {
+  .reveal,
+  .img-fade {
     opacity: 1;
     transform: none;
   }

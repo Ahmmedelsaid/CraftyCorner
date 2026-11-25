@@ -3,12 +3,12 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { switchMap } from 'rxjs';
-import { PagedResult } from '@web/core/models/api.models';
-import { LoadState, toLoadState } from '@web/core/state/load-state';
-import { DateTimePipe } from '@web/shared/pipes/date-time.pipe';
-import { PricePipe } from '@web/shared/pipes/price.pipe';
-import { Icon } from '@web/shared/ui/icon';
-import { OrderStatusBadge } from '@web/shared/ui/order-status';
+import { PagedResult } from '@shared/core/models/api.models';
+import { LoadState, toLoadState } from '@shared/core/state/load-state';
+import { DateTimePipe } from '@shared/pipes/date-time.pipe';
+import { PricePipe } from '@shared/pipes/price.pipe';
+import { Icon } from '@shared/ui/icon';
+import { OrderStatusBadge } from '@shared/ui/order-status';
 import { AdminOrderRow, ORDER_STATUSES } from '../data/admin.models';
 import { AdminService } from '../data/admin.service';
 

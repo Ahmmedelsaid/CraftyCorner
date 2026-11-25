@@ -14,18 +14,22 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { of, switchMap } from 'rxjs';
 import { CartService } from '../../../core/cart/cart.service';
-import { ProductDetails } from '../../../core/models/api.models';
+import { ProductDetails } from '@shared/core/models/api.models';
 import { ProductsService } from '../../../core/services/products.service';
-import { errorMessageKey } from '../../../core/state/error-message';
-import { LoadState, toLoadState } from '../../../core/state/load-state';
-import { PricePipe } from '../../../shared/pipes/price.pipe';
-import { Icon } from '../../../shared/ui/icon';
+import { errorMessageKey } from '@shared/core/state/error-message';
+import { LoadState, toLoadState } from '@shared/core/state/load-state';
+import { PricePipe } from '@shared/pipes/price.pipe';
+import { Icon } from '@shared/ui/icon';
+import { LanguageService } from '@shared/core/i18n/language.service';
+import { LocalizedPipe } from '@shared/pipes/localized.pipe';
+import { ImgFade } from '../../../shared/directives/img-fade';
+import { Reveal } from '../../../shared/directives/reveal';
 
 const LOW_STOCK_THRESHOLD = 10;
 
 @Component({
   selector: 'app-product-detail',
-  imports: [RouterLink, TranslocoPipe, PricePipe, Icon],
+  imports: [Reveal, ImgFade, LocalizedPipe, RouterLink, TranslocoPipe, PricePipe, Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mx-auto max-w-7xl px-4 py-8">
@@ -40,9 +44,9 @@ const LOW_STOCK_THRESHOLD = 10;
         >
           <a routerLink="/" class="transition hover:text-fg">{{ 'detail.home' | transloco }}</a>
           <app-icon name="chevron-right" [size]="0.9" class="rtl:rotate-180" />
-          <span>{{ product.categoryName }}</span>
+          <span>{{ product.categoryName | localized: product.categoryNameEn }}</span>
           <app-icon name="chevron-right" [size]="0.9" class="rtl:rotate-180" />
-          <span class="text-fg">{{ product.name }}</span>
+          <span class="text-fg">{{ product.name | localized: product.nameEn }}</span>
         </nav>
 
         <div class="grid gap-8 lg:grid-cols-2">
@@ -55,8 +59,9 @@ const LOW_STOCK_THRESHOLD = 10;
           >
             @if (product.imageUrl) {
               <img
+                appImgFade
                 [src]="product.imageUrl"
-                [alt]="product.name"
+                [alt]="product.name | localized: product.nameEn"
                 class="absolute inset-0 size-full object-contain p-8 mix-blend-multiply brightness-[1.07]"
               />
             } @else {
@@ -64,10 +69,10 @@ const LOW_STOCK_THRESHOLD = 10;
             }
           </div>
 
-          <div class="flex flex-col gap-5">
+          <div appReveal class="flex flex-col gap-5">
             <div>
               <h1 class="mt-1 text-3xl font-bold leading-tight tracking-tight">
-                {{ product.name }}
+                {{ product.name | localized: product.nameEn }}
               </h1>
             </div>
 
@@ -109,7 +114,10 @@ const LOW_STOCK_THRESHOLD = 10;
             <section>
               <h2 class="mb-2 font-semibold">{{ 'detail.description' | transloco }}</h2>
               <p class="leading-relaxed text-muted">
-                {{ product.description || ('detail.noDescription' | transloco) }}
+                {{
+                  (product.description | localized: product.descriptionEn) ||
+                    ('detail.noDescription' | transloco)
+                }}
               </p>
             </section>
 
@@ -206,10 +214,18 @@ export class ProductDetail {
       : [];
   });
 
+  private readonly language = inject(LanguageService);
+
   constructor() {
     effect(() => {
       const current = this.state();
-      if (current.status === 'ready') this.title.setTitle(`${current.data.name} | Crafty Corner`);
+      if (current.status === 'ready') {
+        const name =
+          this.language.lang() === 'en' && current.data.nameEn
+            ? current.data.nameEn
+            : current.data.name;
+        this.title.setTitle(`${name} | Crafty Corner`);
+      }
     });
     inject(DestroyRef).onDestroy(() => this.title.setTitle('Crafty Corner'));
   }

@@ -4,8 +4,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideTransloco, TranslocoLoader } from '@jsverse/transloco';
 import { of } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Order } from '../../core/orders/order.models';
+import { environment } from '@env/environment';
+import { Order } from '@shared/core/orders/order.models';
 import { SHOP_WHATSAPP } from '../../core/site';
 import { OrderDetail } from './order-detail';
 

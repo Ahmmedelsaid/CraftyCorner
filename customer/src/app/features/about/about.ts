@@ -4,10 +4,10 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, map, of } from 'rxjs';
 import { GOVERNORATES } from '../../core/geo/governorates';
-import { Category } from '../../core/models/api.models';
-import { CatalogService } from '../../core/services/catalog.service';
+import { Category } from '@shared/core/models/api.models';
+import { CatalogService } from '@shared/core/services/catalog.service';
 import { ProductsService } from '../../core/services/products.service';
-import { Icon, IconName } from '../../shared/ui/icon';
+import { Icon, IconName } from '@shared/ui/icon';
 
 /** من نحن: القصة، أرقام حية من الكتالوج، القيم، خطوات الطلب. */
 @Component({

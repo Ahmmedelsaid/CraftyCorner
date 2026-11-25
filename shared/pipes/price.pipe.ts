@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
-import { LanguageService } from '../../core/i18n/language.service';
+import { LanguageService } from '../core/i18n/language.service';
 
 const formatters = new Map<string, Intl.NumberFormat>();
 

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { shareReplay } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import { Brand, Category } from '../models/api.models';
 
 /** التصنيفات والبراندات بتتغيّر نادرًا، فبنجيبها مرة واحدة ونحتفظ بيها. */

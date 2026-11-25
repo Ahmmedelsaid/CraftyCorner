@@ -11,21 +11,31 @@ import {
   PagedResult,
   ProductListItem,
   ProductQuery,
-} from '../../../core/models/api.models';
-import { CatalogService } from '../../../core/services/catalog.service';
+} from '@shared/core/models/api.models';
+import { CatalogService } from '@shared/core/services/catalog.service';
 import { ProductsService } from '../../../core/services/products.service';
-import { errorMessageKey } from '../../../core/state/error-message';
-import { LoadState, toLoadState } from '../../../core/state/load-state';
+import { errorMessageKey } from '@shared/core/state/error-message';
+import { LoadState, toLoadState } from '@shared/core/state/load-state';
 import { Reveal } from '../../../shared/directives/reveal';
-import { Icon } from '../../../shared/ui/icon';
+import { Icon } from '@shared/ui/icon';
 import { Pagination } from '../pagination/pagination';
 import { ProductCard } from '../product-card/product-card';
 import { ProductFilters } from '../product-filters/product-filters';
 import { PAGE_SIZE, hasActiveFilters, isProductSort, toQuery, toUrlParams } from '../product-query';
+import { LocalizedPipe } from '@shared/pipes/localized.pipe';
 
 @Component({
   selector: 'app-product-list',
-  imports: [ProductCard, ProductFilters, Pagination, RouterLink, TranslocoPipe, Icon, Reveal],
+  imports: [
+    LocalizedPipe,
+    ProductCard,
+    ProductFilters,
+    Pagination,
+    RouterLink,
+    TranslocoPipe,
+    Icon,
+    Reveal,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mx-auto max-w-7xl px-4 py-6">
@@ -56,7 +66,7 @@ import { PAGE_SIZE, hasActiveFilters, isProductSort, toQuery, toUrlParams } from
                 class="chip"
                 [class.chip-active]="query().categoryId === category.id"
               >
-                {{ category.name }}
+                {{ category.name | localized: category.nameEn }}
                 <span class="count">{{ category.productCount }}</span>
               </a>
             }

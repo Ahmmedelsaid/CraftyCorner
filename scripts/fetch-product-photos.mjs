@@ -15,7 +15,7 @@ const API = 'https://commons.wikimedia.org/w/api.php';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ---- الصفوف من SeedCatalog.cs
-const source = fs.readFileSync(path.join(here, '../../api/Data/SeedCatalog.cs'), 'utf8');
+const source = fs.readFileSync(path.join(here, '../api/Data/SeedCatalog.cs'), 'utf8');
 const products = source
   .split('\n')
   .map((l) => l.trim())

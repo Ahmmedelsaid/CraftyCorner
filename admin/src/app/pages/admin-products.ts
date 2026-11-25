@@ -3,12 +3,12 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { BehaviorSubject, catchError, combineLatest, map, of, switchMap } from 'rxjs';
-import { Category, PagedResult } from '@web/core/models/api.models';
-import { CatalogService } from '@web/core/services/catalog.service';
-import { LoadState, toLoadState } from '@web/core/state/load-state';
-import { ToastService } from '@web/core/toast/toast.service';
-import { PricePipe } from '@web/shared/pipes/price.pipe';
-import { Icon } from '@web/shared/ui/icon';
+import { Category, PagedResult } from '@shared/core/models/api.models';
+import { CatalogService } from '@shared/core/services/catalog.service';
+import { LoadState, toLoadState } from '@shared/core/state/load-state';
+import { ToastService } from '@shared/core/toast/toast.service';
+import { PricePipe } from '@shared/pipes/price.pipe';
+import { Icon } from '@shared/ui/icon';
 import { AdminProductRow } from '../data/admin.models';
 import { AdminService } from '../data/admin.service';
 

@@ -11,10 +11,10 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Subscription, finalize } from 'rxjs';
-import { AuthService } from '../../core/auth/auth.service';
-import { egyptPhoneValidator } from '../../core/forms/egypt-phone';
+import { AuthService } from '@shared/core/auth/auth.service';
+import { egyptPhoneValidator } from '@shared/core/forms/egypt-phone';
 import { CartService } from '../../core/cart/cart.service';
-import { firstError } from '../../core/forms/form-errors';
+import { firstError } from '@shared/core/forms/form-errors';
 import { GeocodingService, ReverseGeocode } from '../../core/geo/geocoding.service';
 import {
   GOVERNORATES,
@@ -22,18 +22,29 @@ import {
   findGovernorate,
   matchGovernorate,
 } from '../../core/geo/governorates';
-import { LanguageService } from '../../core/i18n/language.service';
-import { ApiError } from '../../core/models/api.models';
-import { PlaceOrderRequest } from '../../core/orders/order.models';
+import { LanguageService } from '@shared/core/i18n/language.service';
+import { ApiError } from '@shared/core/models/api.models';
+import { PlaceOrderRequest } from '@shared/core/orders/order.models';
 import { OrdersService, orderErrorKey } from '../../core/orders/orders.service';
-import { PricePipe } from '../../shared/pipes/price.pipe';
-import { Icon } from '../../shared/ui/icon';
+import { PricePipe } from '@shared/pipes/price.pipe';
+import { Icon } from '@shared/ui/icon';
 import { LocationPicker } from '../../shared/ui/location-picker';
+import { LocalizedPipe } from '@shared/pipes/localized.pipe';
+import { Reveal } from '../../shared/directives/reveal';
 
 /** إتمام الطلب: بيانات المستلم، مكان التوصيل (محافظة + خريطة + عنوان)، الدفع، وملخص السلة. */
 @Component({
   selector: 'app-checkout',
-  imports: [ReactiveFormsModule, RouterLink, TranslocoPipe, PricePipe, Icon, LocationPicker],
+  imports: [
+    Reveal,
+    LocalizedPipe,
+    ReactiveFormsModule,
+    RouterLink,
+    TranslocoPipe,
+    PricePipe,
+    Icon,
+    LocationPicker,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mx-auto max-w-7xl px-4 py-8">
@@ -68,6 +79,7 @@ import { LocationPicker } from '../../shared/ui/location-picker';
               }
 
               <section
+                appReveal
                 class="grid gap-4 rounded-2xl border border-border bg-surface/60 p-5 sm:p-6"
                 aria-labelledby="co-contact-title"
               >
@@ -122,6 +134,7 @@ import { LocationPicker } from '../../shared/ui/location-picker';
               </section>
 
               <section
+                [appReveal]="80"
                 class="grid gap-4 rounded-2xl border border-border bg-surface/60 p-5 sm:p-6"
                 aria-labelledby="co-delivery-title"
               >
@@ -226,6 +239,7 @@ import { LocationPicker } from '../../shared/ui/location-picker';
               </section>
 
               <section
+                [appReveal]="160"
                 class="grid gap-3 rounded-2xl border border-border bg-surface/60 p-5 sm:p-6"
                 aria-labelledby="co-payment-title"
               >
@@ -251,6 +265,7 @@ import { LocationPicker } from '../../shared/ui/location-picker';
             </form>
 
             <aside
+              [appReveal]="120"
               class="grid gap-4 rounded-2xl border border-border bg-surface/60 p-5 lg:sticky lg:top-24"
             >
               <h2 class="font-semibold">{{ 'cart.summary' | transloco }}</h2>
@@ -265,7 +280,7 @@ import { LocationPicker } from '../../shared/ui/location-picker';
                       @if (item.imageUrl) {
                         <img
                           [src]="item.imageUrl"
-                          [alt]="item.name"
+                          [alt]="item.name | localized: item.nameEn"
                           class="absolute inset-0 size-full object-contain p-1 mix-blend-multiply"
                         />
                       } @else {
@@ -273,7 +288,9 @@ import { LocationPicker } from '../../shared/ui/location-picker';
                       }
                     </div>
                     <div class="min-w-0 flex-1">
-                      <p class="line-clamp-1 text-sm font-medium">{{ item.name }}</p>
+                      <p class="line-clamp-1 text-sm font-medium">
+                        {{ item.name | localized: item.nameEn }}
+                      </p>
                       <p class="text-xs text-muted">
                         {{ item.unitPrice | price }} × {{ item.quantity }}
                       </p>

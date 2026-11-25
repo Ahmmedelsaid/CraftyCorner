@@ -9,13 +9,13 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { authErrorKey } from '../../../core/auth/auth-error';
-import { safeReturnUrl } from '../../../core/auth/auth.guard';
-import { AuthService } from '../../../core/auth/auth.service';
-import { egyptPhoneValidator } from '../../../core/forms/egypt-phone';
-import { firstError } from '../../../core/forms/form-errors';
-import { ApiError } from '../../../core/models/api.models';
-import { Icon, IconName } from '../../../shared/ui/icon';
+import { authErrorKey } from '@shared/core/auth/auth-error';
+import { safeReturnUrl } from '@shared/core/auth/auth.guard';
+import { AuthService } from '@shared/core/auth/auth.service';
+import { egyptPhoneValidator } from '@shared/core/forms/egypt-phone';
+import { firstError } from '@shared/core/forms/form-errors';
+import { ApiError } from '@shared/core/models/api.models';
+import { Icon, IconName } from '@shared/ui/icon';
 
 /** نفس قاعدة الـ API: حرف واحد على الأقل ورقم واحد على الأقل. */
 const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d).+$/;

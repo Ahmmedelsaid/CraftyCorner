@@ -1,4 +1,1 @@
-/* نفس هوية الموقع (الألوان والخطوط والكلاسات): ملف واحد مشترك */
-@import '../../../src/styles.css';
-/* Tailwind بيدوّر على الـ classes في ملفات الأدمن كمان */
-@source '../../../projects/admin/src';
+@import '../../shared/styles.css';

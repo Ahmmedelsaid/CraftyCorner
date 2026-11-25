@@ -4,14 +4,17 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { Observable, finalize } from 'rxjs';
 import { Cart, CartItem, MAX_QUANTITY_PER_ITEM } from '../../core/cart/cart.models';
 import { CartService, cartErrorKey } from '../../core/cart/cart.service';
-import { ApiError } from '../../core/models/api.models';
-import { PricePipe } from '../../shared/pipes/price.pipe';
-import { Icon } from '../../shared/ui/icon';
+import { ApiError } from '@shared/core/models/api.models';
+import { PricePipe } from '@shared/pipes/price.pipe';
+import { Icon } from '@shared/ui/icon';
+import { LocalizedPipe } from '@shared/pipes/localized.pipe';
+import { ImgFade } from '../../shared/directives/img-fade';
+import { Reveal } from '../../shared/directives/reveal';
 
 /** سلة العميل: تعديل الكميات، حذف منتج، والإجمالي. (إتمام الطلب هييجي مع Orders.) */
 @Component({
   selector: 'app-cart',
-  imports: [RouterLink, TranslocoPipe, PricePipe, Icon],
+  imports: [Reveal, ImgFade, LocalizedPipe, RouterLink, TranslocoPipe, PricePipe, Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mx-auto max-w-7xl px-4 py-8">
@@ -55,8 +58,9 @@ import { Icon } from '../../shared/ui/icon';
                   >
                     @if (item.imageUrl) {
                       <img
+                        appImgFade
                         [src]="item.imageUrl"
-                        [alt]="item.name"
+                        [alt]="item.name | localized: item.nameEn"
                         class="absolute inset-0 size-full object-contain p-2 mix-blend-multiply brightness-[1.07]"
                       />
                     } @else {
@@ -71,7 +75,7 @@ import { Icon } from '../../shared/ui/icon';
                           [routerLink]="['/products', item.productId]"
                           class="line-clamp-2 font-semibold leading-snug hover:text-accent"
                         >
-                          {{ item.name }}
+                          {{ item.name | localized: item.nameEn }}
                         </a>
                         <p class="mt-0.5 text-sm text-muted">{{ item.unitPrice | price }}</p>
                       </div>
@@ -133,6 +137,7 @@ import { Icon } from '../../shared/ui/icon';
             </ul>
 
             <aside
+              [appReveal]="120"
               class="grid gap-4 rounded-2xl border border-border bg-surface/60 p-5 lg:sticky lg:top-24"
             >
               <h2 class="font-semibold">{{ 'cart.summary' | transloco }}</h2>

@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import { AuthResponse } from './auth.models';
 import { AuthService } from './auth.service';
 
@@ -69,7 +69,12 @@ describe('AuthService', () => {
 
   it('register signs the new customer in', () => {
     auth
-      .register({ email: 'ana@example.com', password: 'Passw0rd!1', fullName: 'Ana Test' })
+      .register({
+        email: 'ana@example.com',
+        password: 'Passw0rd!1',
+        fullName: 'Ana Test',
+        phone: '01012345678',
+      })
       .subscribe();
     http
       .expectOne(`${API}/register`)

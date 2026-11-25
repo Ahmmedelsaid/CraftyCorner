@@ -5,9 +5,9 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { BehaviorSubject, combineLatest, switchMap } from 'rxjs';
 import { AdminMessage, toWhatsAppNumber } from '../data/admin.models';
 import { AdminService } from '../data/admin.service';
-import { PagedResult } from '@web/core/models/api.models';
-import { LoadState, toLoadState } from '@web/core/state/load-state';
-import { DateTimePipe } from '@web/shared/pipes/date-time.pipe';
+import { PagedResult } from '@shared/core/models/api.models';
+import { LoadState, toLoadState } from '@shared/core/state/load-state';
+import { DateTimePipe } from '@shared/pipes/date-time.pipe';
 
 /** رسائل صفحة "اتصل بنا": غير المقروء الأول، وعلّم كمقروء، ورد بالإيميل أو واتساب. */
 @Component({

@@ -3,20 +3,21 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { of, switchMap } from 'rxjs';
-import { ApiError } from '../../core/models/api.models';
-import { Order } from '../../core/orders/order.models';
+import { ApiError } from '@shared/core/models/api.models';
+import { Order } from '@shared/core/orders/order.models';
 import { SHOP_WHATSAPP } from '../../core/site';
 import { OrdersService, orderErrorKey } from '../../core/orders/orders.service';
-import { LoadState, toLoadState } from '../../core/state/load-state';
-import { DateTimePipe } from '../../shared/pipes/date-time.pipe';
-import { PricePipe } from '../../shared/pipes/price.pipe';
-import { Icon } from '../../shared/ui/icon';
-import { OrderStatusBadge } from '../../shared/ui/order-status';
+import { LoadState, toLoadState } from '@shared/core/state/load-state';
+import { DateTimePipe } from '@shared/pipes/date-time.pipe';
+import { PricePipe } from '@shared/pipes/price.pipe';
+import { Icon } from '@shared/ui/icon';
+import { OrderStatusBadge } from '@shared/ui/order-status';
+import { Reveal } from '../../shared/directives/reveal';
 
 /** تفاصيل طلب: المنتجات، بيانات التوصيل، وإلغاء الطلب لو لسه متاخدش في التنفيذ. */
 @Component({
   selector: 'app-order-detail',
-  imports: [RouterLink, TranslocoPipe, PricePipe, DateTimePipe, Icon, OrderStatusBadge],
+  imports: [Reveal, RouterLink, TranslocoPipe, PricePipe, DateTimePipe, Icon, OrderStatusBadge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mx-auto max-w-4xl px-4 py-8">
@@ -179,7 +180,7 @@ import { OrderStatusBadge } from '../../shared/ui/order-status';
             }
           </ul>
 
-          <aside class="grid gap-4">
+          <aside appReveal class="grid gap-4">
             <section class="grid gap-2 rounded-2xl border border-border bg-surface/60 p-5">
               <h2 class="font-semibold">{{ 'checkout.shipping' | transloco }}</h2>
               <p class="text-sm">{{ order.shippingName }}</p>

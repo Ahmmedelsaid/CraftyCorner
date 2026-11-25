@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { ApiError } from '../models/api.models';
+import { environment } from '@env/environment';
+import { ApiError } from '@shared/core/models/api.models';
 
 export interface ContactRequest {
   name: string;

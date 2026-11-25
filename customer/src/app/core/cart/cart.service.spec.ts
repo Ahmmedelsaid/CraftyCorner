@@ -2,10 +2,10 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { environment } from '../../../environments/environment';
-import { AuthResponse } from '../auth/auth.models';
-import { AuthService } from '../auth/auth.service';
-import { ToastService } from '../toast/toast.service';
+import { environment } from '@env/environment';
+import { AuthResponse } from '@shared/core/auth/auth.models';
+import { AuthService } from '@shared/core/auth/auth.service';
+import { ToastService } from '@shared/core/toast/toast.service';
 import { Cart } from './cart.models';
 import { CartService, cartErrorKey } from './cart.service';
 
@@ -17,6 +17,7 @@ function cartOf(quantity: number): Cart {
       {
         productId: 1,
         name: 'Phone',
+        nameEn: null,
         imageUrl: null,
         brandName: 'Acme',
         unitPrice: 100,

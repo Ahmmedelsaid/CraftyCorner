@@ -11,10 +11,10 @@ import {
 import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, filter, map, of, startWith, switchMap } from 'rxjs';
 import { environment } from '@env/environment';
-import { AuthService } from '@web/core/auth/auth.service';
-import { LanguageService } from '@web/core/i18n/language.service';
-import { Icon, IconName } from '@web/shared/ui/icon';
-import { Toasts } from '@web/shared/ui/toasts';
+import { AuthService } from '@shared/core/auth/auth.service';
+import { LanguageService } from '@shared/core/i18n/language.service';
+import { Icon, IconName } from '@shared/ui/icon';
+import { Toasts } from '@shared/ui/toasts';
 import { AdminStats } from './data/admin.models';
 import { AdminService } from './data/admin.service';
 
@@ -161,7 +161,9 @@ export class AdminApp {
     { path: '/', key: 'dashboard', icon: 'bolt', exact: true },
     { path: '/orders', key: 'orders', icon: 'cart', exact: false, badge: 'orders' },
     { path: '/products', key: 'products', icon: 'box', exact: false },
+    { path: '/categories', key: 'categories', icon: 'menu', exact: false },
     { path: '/messages', key: 'messages', icon: 'mail', exact: false, badge: 'messages' },
+    { path: '/team', key: 'team', icon: 'user', exact: false },
   ];
 
   private readonly navigated$ = this.router.events.pipe(

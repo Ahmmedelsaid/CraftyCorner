@@ -2,13 +2,15 @@ import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { CartService } from '../../../core/cart/cart.service';
-import { ProductListItem } from '../../../core/models/api.models';
-import { PricePipe } from '../../../shared/pipes/price.pipe';
-import { Icon } from '../../../shared/ui/icon';
+import { ProductListItem } from '@shared/core/models/api.models';
+import { PricePipe } from '@shared/pipes/price.pipe';
+import { Icon } from '@shared/ui/icon';
+import { LocalizedPipe } from '@shared/pipes/localized.pipe';
+import { ImgFade } from '../../../shared/directives/img-fade';
 
 @Component({
   selector: 'app-product-card',
-  imports: [RouterLink, TranslocoPipe, PricePipe, Icon],
+  imports: [ImgFade, LocalizedPipe, RouterLink, TranslocoPipe, PricePipe, Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="group/card relative h-full">
@@ -19,8 +21,9 @@ import { Icon } from '../../../shared/ui/icon';
         <div class="arch relative m-2.5 mb-0 grid aspect-[4/5] place-items-center bg-surface-2">
           @if (product().imageUrl) {
             <img
+              appImgFade
               [src]="product().imageUrl"
-              [alt]="product().name"
+              [alt]="product().name | localized: product().nameEn"
               loading="lazy"
               decoding="async"
               class="absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-105"
@@ -35,9 +38,11 @@ import { Icon } from '../../../shared/ui/icon';
         </div>
 
         <div class="flex flex-1 flex-col gap-1 border-t border-border/70 p-3.5">
-          <span class="text-xs font-semibold text-accent">{{ product().categoryName }}</span>
+          <span class="text-xs font-semibold text-accent">{{
+            product().categoryName | localized: product().categoryNameEn
+          }}</span>
           <h3 class="line-clamp-2 text-sm font-semibold leading-snug sm:text-base">
-            {{ product().name }}
+            {{ product().name | localized: product().nameEn }}
           </h3>
 
           <div class="mt-auto flex items-end justify-between gap-2 pt-3">

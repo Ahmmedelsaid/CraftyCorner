@@ -16,11 +16,11 @@ import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom, timeout } from 'rxjs';
 
 import { routes } from './app.routes';
-import { authInterceptor } from './core/auth/auth.interceptor';
-import { AuthService } from './core/auth/auth.service';
-import { LanguageService } from './core/i18n/language.service';
-import { TranslocoHttpLoader } from './core/i18n/transloco-loader';
-import { problemDetailsInterceptor } from './core/interceptors/problem-details.interceptor';
+import { authInterceptor } from '@shared/core/auth/auth.interceptor';
+import { AuthService } from '@shared/core/auth/auth.service';
+import { LanguageService } from '@shared/core/i18n/language.service';
+import { TranslocoHttpLoader } from '@shared/core/i18n/transloco-loader';
+import { problemDetailsInterceptor } from '@shared/core/interceptors/problem-details.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [

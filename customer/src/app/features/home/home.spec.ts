@@ -4,8 +4,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideTransloco, TranslocoLoader } from '@jsverse/transloco';
 import { of } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Category, ProductListItem } from '../../core/models/api.models';
+import { environment } from '@env/environment';
+import { Category, ProductListItem } from '@shared/core/models/api.models';
 import { Home } from './home';
 
 class EmptyLoader implements TranslocoLoader {
@@ -34,6 +34,8 @@ const product = (id: number, name: string): ProductListItem => ({
   imageUrl: null,
   brandName: 'Acme',
   categoryName: 'Phones',
+  nameEn: null,
+  categoryNameEn: null,
 });
 
 const page = (items: ProductListItem[]) => ({

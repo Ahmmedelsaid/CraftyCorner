@@ -3,10 +3,10 @@ import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { EMPTY, Observable, catchError, finalize, of, switchMap, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { AuthService } from '../auth/auth.service';
-import { ApiError } from '../models/api.models';
-import { ToastService } from '../toast/toast.service';
+import { environment } from '@env/environment';
+import { AuthService } from '@shared/core/auth/auth.service';
+import { ApiError } from '@shared/core/models/api.models';
+import { ToastService } from '@shared/core/toast/toast.service';
 import { Cart } from './cart.models';
 
 /** مفتاح الترجمة المناسب لخطأ من الـ API في عمليات السلة. */

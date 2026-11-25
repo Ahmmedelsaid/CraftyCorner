@@ -4,14 +4,15 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { GOVERNORATES } from '../../core/geo/governorates';
-import { Category, PagedResult, ProductListItem } from '../../core/models/api.models';
-import { CatalogService } from '../../core/services/catalog.service';
+import { Category, PagedResult, ProductListItem } from '@shared/core/models/api.models';
+import { CatalogService } from '@shared/core/services/catalog.service';
 import { ProductsService } from '../../core/services/products.service';
-import { LoadState, toLoadState } from '../../core/state/load-state';
+import { LoadState, toLoadState } from '@shared/core/state/load-state';
 import { CountUp } from '../../shared/directives/count-up';
 import { Reveal } from '../../shared/directives/reveal';
-import { Icon, IconName } from '../../shared/ui/icon';
+import { Icon, IconName } from '@shared/ui/icon';
 import { ProductCard } from '../products/product-card/product-card';
+import { LocalizedPipe } from '@shared/pipes/localized.pipe';
 
 interface CategorySection {
   category: Category;
@@ -26,7 +27,7 @@ function byPopularity(categories: Category[]): Category[] {
 /** الصفحة الرئيسية: بانر بإطارات قوس، مميزات، أقسام بصور، وصل حديثاً، منتجات كل قسم، وخطوات الطلب. */
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, TranslocoPipe, Icon, ProductCard, Reveal, CountUp],
+  imports: [LocalizedPipe, RouterLink, TranslocoPipe, Icon, ProductCard, Reveal, CountUp],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-4 pb-4 pt-8">
@@ -97,21 +98,30 @@ function byPopularity(categories: Category[]): Category[] {
                 class="arch animate-float absolute end-0 top-0 h-[78%] w-[56%] border-[6px] border-surface shadow-lift"
                 [style.--tilt]="'0deg'"
               >
-                <img [src]="heroProducts()[0].imageUrl" [alt]="heroProducts()[0].name" />
+                <img
+                  [src]="heroProducts()[0].imageUrl"
+                  [alt]="heroProducts()[0].name | localized: heroProducts()[0].nameEn"
+                />
               </a>
               <a
                 [routerLink]="['/products', heroProducts()[1].id]"
                 class="arch animate-float absolute start-0 top-[14%] h-[52%] w-[44%] border-[6px] border-surface shadow-lift [animation-delay:-2s]"
                 [style.--tilt]="'0deg'"
               >
-                <img [src]="heroProducts()[1].imageUrl" [alt]="heroProducts()[1].name" />
+                <img
+                  [src]="heroProducts()[1].imageUrl"
+                  [alt]="heroProducts()[1].name | localized: heroProducts()[1].nameEn"
+                />
               </a>
               <a
                 [routerLink]="['/products', heroProducts()[2].id]"
                 class="arch animate-float absolute bottom-0 start-[18%] h-[40%] w-[40%] border-[6px] border-surface shadow-lift [animation-delay:-4s]"
                 [style.--tilt]="'0deg'"
               >
-                <img [src]="heroProducts()[2].imageUrl" [alt]="heroProducts()[2].name" />
+                <img
+                  [src]="heroProducts()[2].imageUrl"
+                  [alt]="heroProducts()[2].name | localized: heroProducts()[2].nameEn"
+                />
               </a>
               <span
                 aria-hidden="true"
@@ -176,7 +186,9 @@ function byPopularity(categories: Category[]): Category[] {
                       />
                     }
                   </div>
-                  <span class="mt-3 block text-lg font-bold">{{ category.name }}</span>
+                  <span class="mt-3 block text-lg font-bold">{{
+                    category.name | localized: category.nameEn
+                  }}</span>
                   <span class="text-sm text-muted">
                     {{ 'home.products' | transloco: { count: category.productCount } }}
                   </span>
@@ -222,9 +234,11 @@ function byPopularity(categories: Category[]): Category[] {
       </section>
 
       @for (section of sections(); track section.category.id) {
-        <section [attr.aria-label]="section.category.name">
+        <section [attr.aria-label]="section.category.name | localized: section.category.nameEn">
           <div appReveal class="mb-5 flex items-end justify-between gap-3">
-            <h2 class="font-display text-3xl">{{ section.category.name }}</h2>
+            <h2 class="font-display text-3xl">
+              {{ section.category.name | localized: section.category.nameEn }}
+            </h2>
             <a
               routerLink="/products"
               [queryParams]="{ categoryId: section.category.id }"

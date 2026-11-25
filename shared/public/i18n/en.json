@@ -466,7 +466,9 @@
       "dashboard": "Home",
       "orders": "Orders",
       "products": "Products",
-      "messages": "Messages"
+      "messages": "Messages",
+      "team": "Team",
+      "categories": "Categories"
     },
     "all": "All",
     "search": "Search",
@@ -598,7 +600,10 @@
       "col": {
         "product": "Product",
         "price": "Price"
-      }
+      },
+      "nameEn": "Product name (English)",
+      "descriptionEn": "Description (English)",
+      "englishHint": "Shown when a visitor browses the shop in English. Leave empty to show the Arabic name."
     },
     "messages": {
       "unread": "Unread",
@@ -613,6 +618,43 @@
       "title": "Owner sign-in",
       "subtitle": "Sign in to manage orders, products and messages.",
       "notOwner": "This account is not the shop owner's. Sign in with the owner account."
+    },
+    "team": {
+      "intro": "The accounts that can sign in to the dashboard. Add another admin, or edit any account.",
+      "add": "Add admin",
+      "cancel": "Cancel",
+      "create": "Create account",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "passwordHint": "At least 8 characters, with a letter and a number.",
+      "signOutNote": "The account is signed out of every device after the change.",
+      "you": "You",
+      "inactive": "Inactive",
+      "since": "Since",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "created": "Admin added",
+      "saved": "Details saved",
+      "passwordChanged": "Password changed",
+      "deactivated": "Account deactivated",
+      "activated": "Account activated",
+      "errors": {
+        "invalid": "Check the details: name, email and a password (8 characters with a letter and a number).",
+        "invalidPassword": "Enter a new password (8 characters with a letter and a number), plus the current one if this is your account.",
+        "emailTaken": "This email is used by another account.",
+        "wrongPassword": "The current password is not correct.",
+        "lastAdmin": "You cannot deactivate your own account or the last active admin."
+      }
+    },
+    "categories": {
+      "intro": "Name each category in Arabic and English. The English name shows when a visitor switches the shop to English.",
+      "nameAr": "Arabic name",
+      "nameEn": "English name",
+      "enPlaceholder": "e.g. Trays & Vases",
+      "nameRequired": "The Arabic name is required."
     }
   }
 }

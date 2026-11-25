@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { OrderStatus } from '../../core/orders/order.models';
+import { OrderStatus } from '../core/orders/order.models';
 
 /** شارة حالة الطلب (ملوّنة + نص، فاللون مش هو الوسيلة الوحيدة للتمييز). */
 @Component({

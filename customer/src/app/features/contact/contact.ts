@@ -12,18 +12,18 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { AuthService } from '../../core/auth/auth.service';
+import { AuthService } from '@shared/core/auth/auth.service';
 import {
   ContactRequest,
   ContactService,
   contactErrorKey,
 } from '../../core/contact/contact.service';
-import { firstError } from '../../core/forms/form-errors';
-import { LanguageService } from '../../core/i18n/language.service';
-import { ApiError } from '../../core/models/api.models';
-import { PHONE_PATTERN } from '../../core/orders/order.models';
+import { firstError } from '@shared/core/forms/form-errors';
+import { LanguageService } from '@shared/core/i18n/language.service';
+import { ApiError } from '@shared/core/models/api.models';
+import { PHONE_PATTERN } from '@shared/core/orders/order.models';
 import { SHOP_WHATSAPP, SITE_INFO } from '../../core/site';
-import { Icon, IconName } from '../../shared/ui/icon';
+import { Icon, IconName } from '@shared/ui/icon';
 
 const MESSAGE_MAX = 2000;
 const TOPICS = ['product', 'order', 'complaint', 'other'] as const;

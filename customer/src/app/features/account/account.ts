@@ -4,23 +4,25 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, of } from 'rxjs';
-import { AuthService } from '../../core/auth/auth.service';
-import { egyptPhoneValidator } from '../../core/forms/egypt-phone';
-import { firstError, initialOf } from '../../core/forms/form-errors';
+import { AuthService } from '@shared/core/auth/auth.service';
+import { egyptPhoneValidator } from '@shared/core/forms/egypt-phone';
+import { firstError, initialOf } from '@shared/core/forms/form-errors';
 import { GOVERNORATES } from '../../core/geo/governorates';
-import { LanguageService } from '../../core/i18n/language.service';
-import { OrderSummary } from '../../core/orders/order.models';
+import { LanguageService } from '@shared/core/i18n/language.service';
+import { OrderSummary } from '@shared/core/orders/order.models';
 import { OrdersService } from '../../core/orders/orders.service';
-import { ToastService } from '../../core/toast/toast.service';
-import { DateTimePipe } from '../../shared/pipes/date-time.pipe';
-import { PricePipe } from '../../shared/pipes/price.pipe';
-import { Icon } from '../../shared/ui/icon';
-import { OrderStatusBadge } from '../../shared/ui/order-status';
+import { ToastService } from '@shared/core/toast/toast.service';
+import { DateTimePipe } from '@shared/pipes/date-time.pipe';
+import { PricePipe } from '@shared/pipes/price.pipe';
+import { Icon } from '@shared/ui/icon';
+import { OrderStatusBadge } from '@shared/ui/order-status';
+import { Reveal } from '../../shared/directives/reveal';
 
 /** صفحة العميل: بياناته (الاسم والموبايل)، عنوان التوصيل الافتراضي، وآخر طلباته. */
 @Component({
   selector: 'app-account',
   imports: [
+    Reveal,
     ReactiveFormsModule,
     RouterLink,
     TranslocoPipe,
@@ -75,7 +77,10 @@ import { OrderStatusBadge } from '../../shared/ui/order-status';
             class="grid gap-5"
             [attr.aria-label]="'account.profile' | transloco"
           >
-            <section class="grid gap-4 rounded-2xl border border-border bg-surface p-5 sm:p-6">
+            <section
+              appReveal
+              class="grid gap-4 rounded-2xl border border-border bg-surface p-5 sm:p-6"
+            >
               <h2 class="flex items-center gap-2 font-semibold">
                 <app-icon name="user" [size]="1.1" class="text-accent" />
                 {{ 'account.profile' | transloco }}
@@ -135,7 +140,10 @@ import { OrderStatusBadge } from '../../shared/ui/order-status';
               </div>
             </section>
 
-            <section class="grid gap-4 rounded-2xl border border-border bg-surface p-5 sm:p-6">
+            <section
+              [appReveal]="100"
+              class="grid gap-4 rounded-2xl border border-border bg-surface p-5 sm:p-6"
+            >
               <div>
                 <h2 class="flex items-center gap-2 font-semibold">
                   <app-icon name="pin" [size]="1.1" class="text-accent" />
@@ -207,7 +215,7 @@ import { OrderStatusBadge } from '../../shared/ui/order-status';
             </div>
           </form>
 
-          <aside class="grid gap-4">
+          <aside [appReveal]="200" class="grid gap-4">
             <section
               class="grid content-start gap-3 rounded-2xl border border-border bg-surface p-5"
             >

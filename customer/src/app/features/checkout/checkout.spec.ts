@@ -5,9 +5,9 @@ import { By } from '@angular/platform-browser';
 import { Router, provideRouter } from '@angular/router';
 import { provideTransloco, TranslocoLoader } from '@jsverse/transloco';
 import { of } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { AuthResponse } from '../../core/auth/auth.models';
-import { AuthService } from '../../core/auth/auth.service';
+import { environment } from '@env/environment';
+import { AuthResponse } from '@shared/core/auth/auth.models';
+import { AuthService } from '@shared/core/auth/auth.service';
 import { Cart } from '../../core/cart/cart.models';
 import { LocationPicker } from '../../shared/ui/location-picker';
 import { Checkout } from './checkout';
@@ -39,6 +39,7 @@ const cart: Cart = {
     {
       productId: 1,
       name: 'Phone',
+      nameEn: null,
       imageUrl: null,
       brandName: 'Acme',
       unitPrice: 100,

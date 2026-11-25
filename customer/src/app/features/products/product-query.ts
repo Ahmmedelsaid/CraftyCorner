@@ -1,5 +1,5 @@
 import { Params, ParamMap } from '@angular/router';
-import { PRODUCT_SORTS, ProductQuery, ProductSort } from '../../core/models/api.models';
+import { PRODUCT_SORTS, ProductQuery, ProductSort } from '@shared/core/models/api.models';
 
 export const PAGE_SIZE = 12;
 

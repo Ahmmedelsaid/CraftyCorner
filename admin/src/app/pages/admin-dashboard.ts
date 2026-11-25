@@ -3,11 +3,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, of } from 'rxjs';
-import { LoadState, toLoadState } from '@web/core/state/load-state';
-import { DateTimePipe } from '@web/shared/pipes/date-time.pipe';
-import { PricePipe } from '@web/shared/pipes/price.pipe';
-import { Icon, IconName } from '@web/shared/ui/icon';
-import { OrderStatusBadge } from '@web/shared/ui/order-status';
+import { LoadState, toLoadState } from '@shared/core/state/load-state';
+import { DateTimePipe } from '@shared/pipes/date-time.pipe';
+import { PricePipe } from '@shared/pipes/price.pipe';
+import { Icon, IconName } from '@shared/ui/icon';
+import { OrderStatusBadge } from '@shared/ui/order-status';
 import { AdminOrderRow, AdminStats, ORDER_STATUSES } from '../data/admin.models';
 import { AdminService } from '../data/admin.service';
 

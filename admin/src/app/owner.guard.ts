@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '@web/core/auth/auth.service';
+import { AuthService } from '@shared/core/auth/auth.service';
 
 /** لوحة التحكم لصاحبة المتجر بس. أي حد تاني (زائر أو عميل) بيروح لصفحة دخول الأدمن. */
 export const ownerGuard: CanActivateFn = (_route, state) => {

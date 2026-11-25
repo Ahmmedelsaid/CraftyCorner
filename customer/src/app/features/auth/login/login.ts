@@ -2,12 +2,12 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { authErrorKey } from '../../../core/auth/auth-error';
-import { safeReturnUrl } from '../../../core/auth/auth.guard';
-import { AuthService } from '../../../core/auth/auth.service';
-import { firstError } from '../../../core/forms/form-errors';
-import { ApiError } from '../../../core/models/api.models';
-import { Icon } from '../../../shared/ui/icon';
+import { authErrorKey } from '@shared/core/auth/auth-error';
+import { safeReturnUrl } from '@shared/core/auth/auth.guard';
+import { AuthService } from '@shared/core/auth/auth.service';
+import { firstError } from '@shared/core/forms/form-errors';
+import { ApiError } from '@shared/core/models/api.models';
+import { Icon } from '@shared/ui/icon';
 
 @Component({
   selector: 'app-login',

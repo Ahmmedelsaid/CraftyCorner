@@ -6,10 +6,10 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { Observable, catchError, of } from 'rxjs';
 import { ProductPayload } from '../data/admin.models';
 import { AdminService } from '../data/admin.service';
-import { firstError } from '@web/core/forms/form-errors';
-import { Category } from '@web/core/models/api.models';
-import { CatalogService } from '@web/core/services/catalog.service';
-import { ToastService } from '@web/core/toast/toast.service';
+import { firstError } from '@shared/core/forms/form-errors';
+import { Category } from '@shared/core/models/api.models';
+import { CatalogService } from '@shared/core/services/catalog.service';
+import { ToastService } from '@shared/core/toast/toast.service';
 
 /** slug و SKU بيتولّدوا لوحدهم عشان صاحبة المتجر ما تحتاجش تفكر فيهم (الاسم عربي). */
 function randomCode(): string {
@@ -82,6 +82,14 @@ function randomCode(): string {
             }
           </label>
 
+          <label class="grid gap-1 text-sm font-medium">
+            {{ 'admin.products.nameEn' | transloco }}
+            <input class="field" dir="ltr" formControlName="nameEn" maxlength="200" />
+            <span class="text-xs font-normal text-muted">
+              {{ 'admin.products.englishHint' | transloco }}
+            </span>
+          </label>
+
           <div class="grid gap-4 sm:grid-cols-2">
             <label class="grid gap-1 text-sm font-medium">
               {{ 'admin.products.category' | transloco }}
@@ -143,6 +151,11 @@ function randomCode(): string {
           <label class="grid gap-1 text-sm font-medium">
             {{ 'admin.products.description' | transloco }}
             <textarea class="field" rows="4" formControlName="description"></textarea>
+          </label>
+
+          <label class="grid gap-1 text-sm font-medium">
+            {{ 'admin.products.descriptionEn' | transloco }}
+            <textarea class="field" dir="ltr" rows="4" formControlName="descriptionEn"></textarea>
           </label>
 
           <fieldset class="grid gap-2">
@@ -234,6 +247,11 @@ export class AdminProductForm {
       nonNullable: true,
       validators: [Validators.required, Validators.minLength(3), Validators.maxLength(200)],
     }),
+    nameEn: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(200)] }),
+    descriptionEn: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.maxLength(2000)],
+    }),
     categoryId: new FormControl(0, { nonNullable: true, validators: [Validators.min(1)] }),
     price: new FormControl<number | null>(null, {
       validators: [Validators.required, Validators.min(1)],
@@ -283,6 +301,8 @@ export class AdminProductForm {
           this.brandId = product.brandId;
           this.form.patchValue({
             name: product.name,
+            nameEn: product.nameEn ?? '',
+            descriptionEn: product.descriptionEn ?? '',
             categoryId: product.categoryId,
             price: product.price,
             stockQuantity: product.stockQuantity,
@@ -357,6 +377,8 @@ export class AdminProductForm {
     const brandId = this.brandId || this.brands()[0]?.id || 0;
     const payload: ProductPayload = {
       name: value.name.trim(),
+      nameEn: value.nameEn.trim() || null,
+      descriptionEn: value.descriptionEn.trim() || null,
       slug: value.slug,
       sku: value.sku,
       description: value.description.trim() || null,

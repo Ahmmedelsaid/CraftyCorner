@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { authErrorKey } from '@web/core/auth/auth-error';
-import { AuthService } from '@web/core/auth/auth.service';
-import { ApiError } from '@web/core/models/api.models';
+import { authErrorKey } from '@shared/core/auth/auth-error';
+import { AuthService } from '@shared/core/auth/auth.service';
+import { ApiError } from '@shared/core/models/api.models';
 
 /** دخول صاحبة المتجر. لو الحساب مش أدمن بنخرّجه ونقول السبب. */
 @Component({

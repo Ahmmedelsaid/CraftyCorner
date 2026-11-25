@@ -8,7 +8,7 @@ import {
   provideRouter,
 } from '@angular/router';
 import { ownerGuard } from './owner.guard';
-import { AuthService } from '@web/core/auth/auth.service';
+import { AuthService } from '@shared/core/auth/auth.service';
 
 describe('ownerGuard', () => {
   const authenticated = signal(false);

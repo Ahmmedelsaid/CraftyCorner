@@ -2,10 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
-import { PagedResult, ProductDetails } from '@web/core/models/api.models';
-import { Order, OrderStatus } from '@web/core/orders/order.models';
+import { PagedResult, ProductDetails } from '@shared/core/models/api.models';
+import { Order, OrderStatus } from '@shared/core/orders/order.models';
 import {
+  AdminCategory,
   AdminMessage,
+  AdminUser,
   AdminOrderRow,
   AdminProductRow,
   AdminStats,
@@ -117,5 +119,41 @@ export class AdminService {
     return this.http.post<void>(`${this.api}/admin/messages/${id}/read`, null, {
       params: toParams({ isRead }),
     });
+  }
+
+  // ---- التصنيفات
+  categories(): Observable<AdminCategory[]> {
+    return this.http.get<AdminCategory[]>(`${this.api}/admin/categories`);
+  }
+
+  updateCategory(
+    id: number,
+    body: { name: string; nameEn: string | null },
+  ): Observable<AdminCategory> {
+    return this.http.put<AdminCategory>(`${this.api}/admin/categories/${id}`, body);
+  }
+
+  // ---- الأدمنز (فريق المتجر)
+  adminUsers(): Observable<AdminUser[]> {
+    return this.http.get<AdminUser[]>(`${this.api}/admin/users`);
+  }
+
+  createAdmin(body: { email: string; fullName: string; password: string }): Observable<AdminUser> {
+    return this.http.post<AdminUser>(`${this.api}/admin/users`, body);
+  }
+
+  updateAdmin(id: number, body: { email: string; fullName: string }): Observable<AdminUser> {
+    return this.http.put<AdminUser>(`${this.api}/admin/users/${id}`, body);
+  }
+
+  setAdminPassword(
+    id: number,
+    body: { newPassword: string; currentPassword?: string },
+  ): Observable<void> {
+    return this.http.post<void>(`${this.api}/admin/users/${id}/password`, body);
+  }
+
+  setAdminActive(id: number, isActive: boolean): Observable<AdminUser> {
+    return this.http.post<AdminUser>(`${this.api}/admin/users/${id}/active`, { isActive });
   }
 }

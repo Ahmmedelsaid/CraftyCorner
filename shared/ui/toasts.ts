@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ToastService } from '../../core/toast/toast.service';
+import { ToastService } from '../core/toast/toast.service';
 import { Icon } from './icon';
 
 /** مكان عرض الرسائل الصغيرة: أسفل الشاشة، وبيقراها قارئ الشاشة (aria-live). */

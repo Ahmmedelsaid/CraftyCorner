@@ -4,8 +4,8 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
-      "@web/*": ["./src/app/*"],
-      "@env/*": ["./src/environments/*"]
+      "@shared/*": ["./shared/*"],
+      "@env/*": ["./shared/environments/*"]
     },
     "strict": true,
     "noImplicitOverride": true,
@@ -24,14 +24,5 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  },
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    }
-  ]
+  }
 }

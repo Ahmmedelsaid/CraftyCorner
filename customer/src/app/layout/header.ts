@@ -13,19 +13,20 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, of } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { AuthService } from '../core/auth/auth.service';
+import { environment } from '@env/environment';
+import { AuthService } from '@shared/core/auth/auth.service';
 import { CartService } from '../core/cart/cart.service';
-import { initialOf } from '../core/forms/form-errors';
-import { LanguageService } from '../core/i18n/language.service';
-import { Category } from '../core/models/api.models';
-import { CatalogService } from '../core/services/catalog.service';
-import { Icon } from '../shared/ui/icon';
+import { initialOf } from '@shared/core/forms/form-errors';
+import { LanguageService } from '@shared/core/i18n/language.service';
+import { Category } from '@shared/core/models/api.models';
+import { CatalogService } from '@shared/core/services/catalog.service';
+import { Icon } from '@shared/ui/icon';
+import { LocalizedPipe } from '@shared/pipes/localized.pipe';
 
 @Component({
   selector: 'app-header',
   host: { class: 'contents' },
-  imports: [RouterLink, RouterLinkActive, TranslocoPipe, Icon],
+  imports: [LocalizedPipe, RouterLink, RouterLinkActive, TranslocoPipe, Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-ink text-xs text-white/80">
@@ -170,7 +171,7 @@ import { Icon } from '../shared/ui/icon';
                 [queryParams]="{ categoryId: category.id }"
                 class="nav-link block whitespace-nowrap rounded-lg px-3 py-1.5 text-fg/80 transition hover:text-accent"
               >
-                {{ category.name }}
+                {{ category.name | localized: category.nameEn }}
               </a>
             </li>
           }

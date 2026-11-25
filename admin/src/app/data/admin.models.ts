@@ -1,4 +1,4 @@
-import { OrderStatus } from '@web/core/orders/order.models';
+import { OrderStatus } from '@shared/core/orders/order.models';
 
 export interface AdminProductRow {
   id: number;
@@ -50,6 +50,8 @@ export interface AdminStats {
 /** نفس شكل CreateProductDto / UpdateProductDto في الـ API. */
 export interface ProductPayload {
   name: string;
+  nameEn: string | null;
+  descriptionEn: string | null;
   slug: string;
   sku: string;
   description: string | null;
@@ -87,4 +89,24 @@ export function toWhatsAppNumber(phone: string): string {
   if (digits.startsWith('00')) return digits.slice(2);
   if (digits.startsWith('0')) return `20${digits.slice(1)}`;
   return digits;
+}
+
+/** حساب أدمن في صفحة "الفريق". */
+export interface AdminUser {
+  id: number;
+  email: string;
+  fullName: string;
+  isActive: boolean;
+  createdAt: string;
+  isCurrentUser: boolean;
+}
+
+export interface AdminCategory {
+  id: number;
+  name: string;
+  nameEn: string | null;
+  slug: string;
+  parentId: number | null;
+  isActive: boolean;
+  productCount: number;
 }

@@ -16,7 +16,7 @@ import {
 import { TranslocoPipe } from '@jsverse/transloco';
 import type * as Leaflet from 'leaflet';
 import { EGYPT_CENTER, LatLng } from '../../core/geo/governorates';
-import { Icon } from './icon';
+import { Icon } from '@shared/ui/icon';
 
 type LeafletModule = typeof Leaflet;
 

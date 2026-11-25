@@ -1,12 +1,13 @@
 {
-  "name": "crafty-corner-web",
+  "name": "crafty-corner",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve web",
+    "start": "ng serve customer",
     "start:admin": "ng serve admin",
-    "build": "ng build web && ng build admin",
-    "watch": "ng build --watch --configuration development",
+    "build": "ng build customer && ng build admin",
+    "build:customer": "ng build customer",
+    "build:admin": "ng build admin",
     "test": "ng test"
   },
   "private": true,

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { LanguageService } from '../../core/i18n/language.service';
+import { LanguageService } from '../core/i18n/language.service';
 import { PricePipe } from './price.pipe';
 
 function pipeFor(locale: string): PricePipe {

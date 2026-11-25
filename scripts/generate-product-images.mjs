@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const out = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public/images/products/generated');
+const out = path.join(path.dirname(fileURLToPath(import.meta.url)), '../shared/public/images/products/generated');
 fs.mkdirSync(out, { recursive: true });
 
 // body = لون الجسم، dark = ظل، light = إضاءة

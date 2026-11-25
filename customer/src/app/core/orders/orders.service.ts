@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import { CartService } from '../cart/cart.service';
-import { ApiError } from '../models/api.models';
-import { Order, OrderSummary, PlaceOrderRequest } from './order.models';
+import { ApiError } from '@shared/core/models/api.models';
+import { Order, OrderSummary, PlaceOrderRequest } from '@shared/core/orders/order.models';
 
 /** مفتاح الترجمة المناسب لخطأ من الـ orders endpoints. */
 export function orderErrorKey(error: ApiError): string {

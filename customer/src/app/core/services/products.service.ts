@@ -1,8 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { PagedResult, ProductDetails, ProductListItem, ProductQuery } from '../models/api.models';
+import { environment } from '@env/environment';
+import {
+  PagedResult,
+  ProductDetails,
+  ProductListItem,
+  ProductQuery,
+} from '@shared/core/models/api.models';
 
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
