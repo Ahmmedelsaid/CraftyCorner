@@ -166,62 +166,108 @@ import { AdminService } from '../data/admin.service';
           </div>
         </section>
 
-        <section class="card grid content-start gap-4 p-5">
-          <div class="flex items-center gap-3">
-            <span
-              class="grid size-12 shrink-0 place-items-center rounded-full bg-accent text-lg font-bold text-accent-fg"
-              aria-hidden="true"
-              >{{ initial(order.shippingName) }}</span
-            >
-            <div class="min-w-0">
-              <p class="text-xs text-muted">{{ 'admin.order.customer' | transloco }}</p>
-              <p class="truncate font-bold">{{ order.shippingName }}</p>
-            </div>
-          </div>
-
-          <p
-            dir="ltr"
-            class="rounded-lg bg-surface-2/60 px-3 py-2 text-center font-semibold tabular-nums"
-          >
-            {{ order.phone }}
-          </p>
-          <div class="grid grid-cols-2 gap-2">
-            <a class="btn" [href]="'tel:' + order.phone">
-              <app-icon name="phone" [size]="1" />
-              {{ 'admin.order.call' | transloco }}
-            </a>
-            <a class="btn" [href]="whatsAppUrl(order)" target="_blank" rel="noopener">
-              <app-icon name="chat" [size]="1" />
-              {{ 'admin.order.whatsapp' | transloco }}
-            </a>
-          </div>
-
-          <div class="border-t border-border pt-4">
-            <p class="mb-1 flex items-center gap-1.5 text-xs text-muted">
-              <app-icon name="pin" [size]="0.9" />
-              {{ 'admin.order.address' | transloco }}
-            </p>
-            <p>{{ order.address }}</p>
-            <p class="text-muted">{{ order.city }}</p>
-            @if (order.latitude !== null && order.longitude !== null) {
-              <a
-                class="mt-2 inline-block text-sm font-semibold text-accent hover:underline"
-                target="_blank"
-                rel="noopener"
-                [href]="mapUrl(order)"
+        <div class="grid content-start gap-5">
+          @if (order.status !== 'Cancelled') {
+            <section class="card grid content-start gap-3 p-5">
+              <h2 class="flex items-center gap-2 font-bold">
+                <app-icon name="truck" [size]="1.1" class="text-accent" />
+                {{ 'admin.tracking.title' | transloco }}
+              </h2>
+              <p class="text-xs text-muted">{{ 'admin.tracking.hint' | transloco }}</p>
+              <label class="grid gap-1 text-sm font-medium">
+                {{ 'admin.tracking.company' | transloco }}
+                <input
+                  #company
+                  class="field"
+                  maxlength="60"
+                  [value]="order.trackingCompany ?? ''"
+                  [placeholder]="'admin.tracking.companyPlaceholder' | transloco"
+                />
+              </label>
+              <label class="grid gap-1 text-sm font-medium">
+                {{ 'admin.tracking.number' | transloco }}
+                <input
+                  #number
+                  class="field"
+                  dir="ltr"
+                  maxlength="60"
+                  [value]="order.trackingNumber ?? ''"
+                />
+              </label>
+              <button
+                type="button"
+                class="btn btn-accent"
+                [disabled]="busy()"
+                (click)="saveTracking(order, company.value, number.value)"
               >
-                {{ 'orders.viewOnMap' | transloco }}
-              </a>
-            }
-          </div>
-
-          @if (order.notes) {
-            <div class="border-t border-border pt-4">
-              <p class="mb-1 text-xs text-muted">{{ 'admin.order.notes' | transloco }}</p>
-              <p class="rounded-lg bg-accent-soft/60 px-3 py-2 text-sm">{{ order.notes }}</p>
-            </div>
+                {{ 'admin.save' | transloco }}
+              </button>
+              @if (order.trackingNumber) {
+                <a class="btn" [href]="whatsAppUrl(order)" target="_blank" rel="noopener">
+                  <app-icon name="chat" [size]="1" />
+                  {{ 'admin.tracking.sendWhatsapp' | transloco }}
+                </a>
+              }
+            </section>
           }
-        </section>
+
+          <section class="card grid content-start gap-4 p-5">
+            <div class="flex items-center gap-3">
+              <span
+                class="grid size-12 shrink-0 place-items-center rounded-full bg-accent text-lg font-bold text-accent-fg"
+                aria-hidden="true"
+                >{{ initial(order.shippingName) }}</span
+              >
+              <div class="min-w-0">
+                <p class="text-xs text-muted">{{ 'admin.order.customer' | transloco }}</p>
+                <p class="truncate font-bold">{{ order.shippingName }}</p>
+              </div>
+            </div>
+
+            <p
+              dir="ltr"
+              class="rounded-lg bg-surface-2/60 px-3 py-2 text-center font-semibold tabular-nums"
+            >
+              {{ order.phone }}
+            </p>
+            <div class="grid grid-cols-2 gap-2">
+              <a class="btn" [href]="'tel:' + order.phone">
+                <app-icon name="phone" [size]="1" />
+                {{ 'admin.order.call' | transloco }}
+              </a>
+              <a class="btn" [href]="whatsAppUrl(order)" target="_blank" rel="noopener">
+                <app-icon name="chat" [size]="1" />
+                {{ 'admin.order.whatsapp' | transloco }}
+              </a>
+            </div>
+
+            <div class="border-t border-border pt-4">
+              <p class="mb-1 flex items-center gap-1.5 text-xs text-muted">
+                <app-icon name="pin" [size]="0.9" />
+                {{ 'admin.order.address' | transloco }}
+              </p>
+              <p>{{ order.address }}</p>
+              <p class="text-muted">{{ order.city }}</p>
+              @if (order.latitude !== null && order.longitude !== null) {
+                <a
+                  class="mt-2 inline-block text-sm font-semibold text-accent hover:underline"
+                  target="_blank"
+                  rel="noopener"
+                  [href]="mapUrl(order)"
+                >
+                  {{ 'orders.viewOnMap' | transloco }}
+                </a>
+              }
+            </div>
+
+            @if (order.notes) {
+              <div class="border-t border-border pt-4">
+                <p class="mb-1 text-xs text-muted">{{ 'admin.order.notes' | transloco }}</p>
+                <p class="rounded-lg bg-accent-soft/60 px-3 py-2 text-sm">{{ order.notes }}</p>
+              </div>
+            }
+          </section>
+        </div>
       </div>
     } @else if (loaded.status === 'loading') {
       <div class="card skeleton h-48" aria-hidden="true"></div>
@@ -286,11 +332,34 @@ export class AdminOrderDetail {
 
   /** رسالة جاهزة للعميل على واتساب (للتواصل بس: الطلب نفسه بيتم من الموقع). */
   protected whatsAppUrl(order: Order): string {
-    const text = this.transloco.translate('admin.order.waMessage', {
-      name: order.shippingName,
-      id: order.id,
-    });
+    const shipped = order.status === 'Shipped' || !!order.trackingNumber;
+    const text = this.transloco.translate(
+      shipped ? 'admin.order.waShipped' : 'admin.order.waMessage',
+      {
+        name: order.shippingName,
+        id: order.id,
+        company: order.trackingCompany || '-',
+        number: order.trackingNumber || '-',
+      },
+    );
     return `https://wa.me/${toWhatsAppNumber(order.phone)}?text=${encodeURIComponent(text)}`;
+  }
+
+  protected saveTracking(order: Order, company: string, number: string): void {
+    this.busy.set(true);
+    this.admin
+      .setTracking(order.id, { company: company.trim() || null, number: number.trim() || null })
+      .subscribe({
+        next: (next) => {
+          this.updated.set(next);
+          this.busy.set(false);
+          this.toasts.show({ kind: 'success', key: 'admin.saved' });
+        },
+        error: () => {
+          this.busy.set(false);
+          this.toasts.show({ kind: 'error', key: 'admin.saveFailed' });
+        },
+      });
   }
 
   protected mapUrl(order: Order): string {

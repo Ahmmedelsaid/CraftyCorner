@@ -110,3 +110,14 @@ export interface AdminCategory {
   isActive: boolean;
   productCount: number;
 }
+
+export interface AdminReview {
+  id: number;
+  productId: number;
+  productName: string;
+  rating: number;
+  comment: string | null;
+  authorName: string;
+  authorEmail: string;
+  createdAt: string;
+}

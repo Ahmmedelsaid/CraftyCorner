@@ -24,12 +24,26 @@ import { LanguageService } from '@shared/core/i18n/language.service';
 import { LocalizedPipe } from '@shared/pipes/localized.pipe';
 import { ImgFade } from '../../../shared/directives/img-fade';
 import { Reveal } from '../../../shared/directives/reveal';
+import { ProductReviews } from '../product-reviews/product-reviews';
+import { Stars } from '@shared/ui/stars';
+import { WishlistButton } from '../../wishlist/wishlist-button';
 
 const LOW_STOCK_THRESHOLD = 10;
 
 @Component({
   selector: 'app-product-detail',
-  imports: [Reveal, ImgFade, LocalizedPipe, RouterLink, TranslocoPipe, PricePipe, Icon],
+  imports: [
+    WishlistButton,
+    Stars,
+    ProductReviews,
+    Reveal,
+    ImgFade,
+    LocalizedPipe,
+    RouterLink,
+    TranslocoPipe,
+    PricePipe,
+    Icon,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mx-auto max-w-7xl px-4 py-8">
@@ -71,9 +85,21 @@ const LOW_STOCK_THRESHOLD = 10;
 
           <div appReveal class="flex flex-col gap-5">
             <div>
-              <h1 class="mt-1 text-3xl font-bold leading-tight tracking-tight">
-                {{ product.name | localized: product.nameEn }}
-              </h1>
+              <div class="mt-1 flex items-start justify-between gap-3">
+                <h1 class="text-3xl font-bold leading-tight tracking-tight">
+                  {{ product.name | localized: product.nameEn }}
+                </h1>
+                <app-wishlist-button [product]="product" />
+              </div>
+              @if (product.ratingCount > 0) {
+                <a
+                  href="#reviews-title"
+                  class="mt-2 inline-flex items-center gap-2 text-sm text-muted"
+                >
+                  <app-stars [value]="product.ratingAverage" />
+                  {{ product.ratingAverage.toFixed(1) }} ({{ product.ratingCount }})
+                </a>
+              }
             </div>
 
             <div class="grid gap-3 rounded-2xl border border-border bg-surface/60 p-5">
@@ -136,6 +162,8 @@ const LOW_STOCK_THRESHOLD = 10;
                 </dl>
               </section>
             }
+
+            <app-product-reviews [productId]="product.id" />
 
             <a routerLink="/products" class="btn mt-2 self-start">
               <app-icon name="chevron-left" [size]="1" class="rtl:rotate-180" />

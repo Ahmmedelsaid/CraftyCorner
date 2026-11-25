@@ -6,6 +6,7 @@ import { PagedResult, ProductDetails } from '@shared/core/models/api.models';
 import { Order, OrderStatus } from '@shared/core/orders/order.models';
 import {
   AdminCategory,
+  AdminReview,
   AdminMessage,
   AdminUser,
   AdminOrderRow,
@@ -119,6 +120,24 @@ export class AdminService {
     return this.http.post<void>(`${this.api}/admin/messages/${id}/read`, null, {
       params: toParams({ isRead }),
     });
+  }
+
+  setTracking(
+    id: number,
+    body: { company: string | null; number: string | null },
+  ): Observable<Order> {
+    return this.http.put<Order>(`${this.api}/admin/orders/${id}/tracking`, body);
+  }
+
+  // ---- التقييمات
+  reviews(page: number): Observable<PagedResult<AdminReview>> {
+    return this.http.get<PagedResult<AdminReview>>(`${this.api}/admin/reviews`, {
+      params: toParams({ page, pageSize: 20 }),
+    });
+  }
+
+  deleteReview(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/admin/reviews/${id}`);
   }
 
   // ---- التصنيفات

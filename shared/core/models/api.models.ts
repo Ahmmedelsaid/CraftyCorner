@@ -10,6 +10,8 @@ export interface ProductListItem {
   categoryName: string;
   nameEn: string | null;
   categoryNameEn: string | null;
+  ratingAverage: number;
+  ratingCount: number;
 }
 
 export interface ProductDetails {
@@ -28,6 +30,8 @@ export interface ProductDetails {
   nameEn: string | null;
   descriptionEn: string | null;
   categoryNameEn: string | null;
+  ratingAverage: number;
+  ratingCount: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -81,4 +85,23 @@ export interface ApiError {
   title: string;
   detail?: string;
   errors?: Record<string, string[]>;
+}
+
+export interface Review {
+  id: number;
+  rating: number;
+  comment: string | null;
+  authorName: string;
+  createdAt: string;
+  isMine: boolean;
+}
+
+export interface ReviewSummary {
+  average: number;
+  count: number;
+  /** how many reviews gave 1..5 stars (index 0 = one star) */
+  distribution: number[];
+  items: Review[];
+  /** the signed-in customer received this product, so they may review it */
+  canReview: boolean;
 }

@@ -36,6 +36,8 @@ const product = (id: number, name: string): ProductListItem => ({
   categoryName: 'Phones',
   nameEn: null,
   categoryNameEn: null,
+  ratingAverage: 0,
+  ratingCount: 0,
 });
 
 const page = (items: ProductListItem[]) => ({

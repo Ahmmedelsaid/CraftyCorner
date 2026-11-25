@@ -16,6 +16,7 @@ import { catchError, of } from 'rxjs';
 import { environment } from '@env/environment';
 import { AuthService } from '@shared/core/auth/auth.service';
 import { CartService } from '../core/cart/cart.service';
+import { WishlistService } from '../core/wishlist/wishlist.service';
 import { initialOf } from '@shared/core/forms/form-errors';
 import { LanguageService } from '@shared/core/i18n/language.service';
 import { Category } from '@shared/core/models/api.models';
@@ -98,6 +99,22 @@ import { LocalizedPipe } from '@shared/pipes/localized.pipe';
         </form>
 
         <div class="ms-auto flex items-center gap-2">
+          <a
+            routerLink="/wishlist"
+            routerLinkActive="!border-accent !text-accent"
+            class="btn relative !px-3 !py-2.5"
+            [attr.aria-label]="'wishlist.title' | transloco"
+          >
+            <app-icon name="heart" [size]="1.3" />
+            @if (wishlist.count() > 0) {
+              <span
+                class="absolute -end-1.5 -top-1.5 grid min-w-5 place-items-center rounded-full bg-danger px-1 text-[11px] font-bold leading-5 text-white"
+              >
+                {{ wishlist.count() }}
+              </span>
+            }
+          </a>
+
           <a
             routerLink="/cart"
             routerLinkActive="!border-accent !text-accent"
@@ -193,6 +210,7 @@ export class Header {
   protected readonly language = inject(LanguageService);
   protected readonly auth = inject(AuthService);
   protected readonly cart = inject(CartService);
+  protected readonly wishlist = inject(WishlistService);
   private readonly router = inject(Router);
 
   protected readonly initial = initialOf;

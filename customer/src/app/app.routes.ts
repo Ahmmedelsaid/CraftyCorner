@@ -57,6 +57,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/orders/order-detail').then((m) => m.OrderDetail),
   },
   {
+    path: 'wishlist',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/wishlist/wishlist').then((m) => m.Wishlist),
+  },
+  {
     path: 'account',
     canActivate: [authGuard],
     loadComponent: () => import('./features/account/account').then((m) => m.Account),

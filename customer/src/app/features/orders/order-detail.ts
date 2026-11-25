@@ -181,6 +181,24 @@ import { Reveal } from '../../shared/directives/reveal';
           </ul>
 
           <aside appReveal class="grid gap-4">
+            @if (order.trackingNumber) {
+              <section class="grid gap-2 rounded-2xl border border-accent/40 bg-accent-soft/40 p-5">
+                <h2 class="flex items-center gap-2 font-semibold">
+                  <app-icon name="truck" [size]="1.1" class="text-accent" />
+                  {{ 'orders.tracking.title' | transloco }}
+                </h2>
+                @if (order.trackingCompany) {
+                  <p class="text-sm">
+                    <span class="text-muted">{{ 'orders.tracking.company' | transloco }}:</span>
+                    {{ order.trackingCompany }}
+                  </p>
+                }
+                <p class="text-sm">
+                  <span class="text-muted">{{ 'orders.tracking.number' | transloco }}:</span>
+                  <b dir="ltr" class="tabular-nums">{{ order.trackingNumber }}</b>
+                </p>
+              </section>
+            }
             <section class="grid gap-2 rounded-2xl border border-border bg-surface/60 p-5">
               <h2 class="font-semibold">{{ 'checkout.shipping' | transloco }}</h2>
               <p class="text-sm">{{ order.shippingName }}</p>

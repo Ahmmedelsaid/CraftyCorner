@@ -25,6 +25,8 @@ export interface Order {
   latitude: number | null;
   longitude: number | null;
   items: OrderItem[];
+  trackingCompany: string | null;
+  trackingNumber: string | null;
 }
 
 /** صف في سجل الطلبات: صور مصغّرة بدل كل المنتجات. */

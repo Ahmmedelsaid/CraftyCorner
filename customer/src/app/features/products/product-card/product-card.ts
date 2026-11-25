@@ -7,13 +7,27 @@ import { PricePipe } from '@shared/pipes/price.pipe';
 import { Icon } from '@shared/ui/icon';
 import { LocalizedPipe } from '@shared/pipes/localized.pipe';
 import { ImgFade } from '../../../shared/directives/img-fade';
+import { Stars } from '@shared/ui/stars';
+import { WishlistButton } from '../../wishlist/wishlist-button';
 
 @Component({
   selector: 'app-product-card',
-  imports: [ImgFade, LocalizedPipe, RouterLink, TranslocoPipe, PricePipe, Icon],
+  imports: [
+    WishlistButton,
+    Stars,
+    ImgFade,
+    LocalizedPipe,
+    RouterLink,
+    TranslocoPipe,
+    PricePipe,
+    Icon,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="group/card relative h-full">
+      <div class="absolute end-4 top-4 z-10">
+        <app-wishlist-button [product]="product()" />
+      </div>
       <a
         [routerLink]="['/products', product().id]"
         class="card group flex h-full flex-col overflow-hidden transition duration-300 hover:-translate-y-1.5 hover:border-accent/40 hover:shadow-glow"
@@ -41,6 +55,12 @@ import { ImgFade } from '../../../shared/directives/img-fade';
           <span class="text-xs font-semibold text-accent">{{
             product().categoryName | localized: product().categoryNameEn
           }}</span>
+          @if (product().ratingCount > 0) {
+            <span class="flex items-center gap-1 text-xs text-muted">
+              <app-stars [value]="product().ratingAverage" [size]="0.85" />
+              ({{ product().ratingCount }})
+            </span>
+          }
           <h3 class="line-clamp-2 text-sm font-semibold leading-snug sm:text-base">
             {{ product().name | localized: product().nameEn }}
           </h3>

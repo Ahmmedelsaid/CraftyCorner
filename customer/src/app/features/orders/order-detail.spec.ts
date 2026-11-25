@@ -29,6 +29,8 @@ const order: Order = {
   itemCount: 2,
   createdAt: '2026-11-24T10:00:00',
   cancelledAt: null,
+  trackingCompany: null,
+  trackingNumber: null,
   shippingName: 'Ana Test',
   phone: '01011252834',
   address: '12 Nile St',

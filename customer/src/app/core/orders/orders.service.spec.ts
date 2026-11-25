@@ -28,6 +28,8 @@ const order: Order = {
   itemCount: 1,
   createdAt: '2026-11-23T10:00:00',
   cancelledAt: null,
+  trackingCompany: null,
+  trackingNumber: null,
   ...request,
   items: [
     { productId: 1, name: 'Phone', imageUrl: null, unitPrice: 100, quantity: 1, lineTotal: 100 },

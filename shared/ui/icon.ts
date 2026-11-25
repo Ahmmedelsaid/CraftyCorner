@@ -38,7 +38,9 @@ export type IconName =
   | 'watch'
   | 'tv'
   | 'chat'
-  | 'help';
+  | 'help'
+  | 'heart'
+  | 'star';
 
 /** أيقونات SVG بسيطة (stroke) بتاخد لون النص الحالي. الحجم بالـ rem. */
 @Component({
@@ -125,6 +127,17 @@ export type IconName =
         @case ('trash') {
           <path
             d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"
+          />
+        }
+        @case ('heart') {
+          <path
+            d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 5 6 5c2 0 3.4 1.1 4 2.3h4C14.6 6.1 16 5 18 5c3.3 0 5.1 3.4 3.6 6.8C19.5 16.4 12 21 12 21z"
+          />
+        }
+        @case ('star') {
+          <path
+            d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"
+            fill="currentColor"
           />
         }
         @case ('check') {

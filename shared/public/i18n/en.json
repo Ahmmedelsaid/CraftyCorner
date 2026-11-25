@@ -336,6 +336,11 @@
       "received": "We received your order.",
       "call": "We will call you to confirm the order and the address.",
       "deliver": "We prepare and deliver it, and you pay cash on arrival."
+    },
+    "tracking": {
+      "title": "Shipment tracking",
+      "company": "Courier",
+      "number": "Tracking number"
     }
   },
   "header": {
@@ -468,7 +473,8 @@
       "products": "Products",
       "messages": "Messages",
       "team": "Team",
-      "categories": "Categories"
+      "categories": "Categories",
+      "reviews": "Reviews"
     },
     "all": "All",
     "search": "Search",
@@ -545,7 +551,8 @@
       "cancelNo": "Keep it",
       "updated": "Order status updated.",
       "updateFailed": "Could not change the status. Refresh and try again.",
-      "waMessage": "Hello {{name}}, this is Crafty Corner about your order #{{id}}."
+      "waMessage": "Hello {{name}}, this is Crafty Corner about your order #{{id}}.",
+      "waShipped": "Hello {{name}}, your Crafty Corner order #{{id}} is on its way. Courier: {{company}}, tracking number: {{number}}."
     },
     "products": {
       "add": "New product",
@@ -655,6 +662,42 @@
       "nameEn": "English name",
       "enPlaceholder": "e.g. Trays & Vases",
       "nameRequired": "The Arabic name is required."
+    },
+    "reviews": {
+      "intro": "What customers wrote about your products. Remove anything inappropriate.",
+      "empty": "No reviews yet.",
+      "delete": "Delete"
+    },
+    "tracking": {
+      "title": "Shipping and tracking",
+      "hint": "Enter the courier and the tracking number. The customer sees them on their order, and gets an email when the order is Shipped.",
+      "company": "Courier",
+      "companyPlaceholder": "e.g. Bosta, Aramex",
+      "number": "Tracking number",
+      "sendWhatsapp": "Send tracking on WhatsApp"
     }
+  },
+  "wishlist": {
+    "title": "Favourites",
+    "subtitle": "Products you saved to come back to.",
+    "empty": "Nothing saved yet",
+    "emptyHint": "Tap the heart on any product to keep it here.",
+    "browse": "Browse products",
+    "add": "Save to favourites",
+    "remove": "Remove from favourites",
+    "failed": "Could not update your favourites. Try again."
+  },
+  "reviews": {
+    "title": "Ratings and reviews",
+    "count": "{{count}} reviews",
+    "none": "No reviews yet.",
+    "signIn": "Sign in to review this product",
+    "yourRating": "Your rating",
+    "commentPlaceholder": "Tell others what you think (optional)",
+    "submit": "Submit review",
+    "afterDelivery": "You can review this product after it is delivered to you.",
+    "thanks": "Thank you for your review!",
+    "failed": "Could not save your review. Try again.",
+    "delete": "Delete my review"
   }
 }

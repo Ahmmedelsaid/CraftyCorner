@@ -161,6 +161,7 @@ export class AdminApp {
     { path: '/', key: 'dashboard', icon: 'bolt', exact: true },
     { path: '/orders', key: 'orders', icon: 'cart', exact: false, badge: 'orders' },
     { path: '/products', key: 'products', icon: 'box', exact: false },
+    { path: '/reviews', key: 'reviews', icon: 'star', exact: false },
     { path: '/categories', key: 'categories', icon: 'menu', exact: false },
     { path: '/messages', key: 'messages', icon: 'mail', exact: false, badge: 'messages' },
     { path: '/team', key: 'team', icon: 'user', exact: false },

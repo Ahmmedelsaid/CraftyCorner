@@ -34,6 +34,11 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('./admin-product-form').then((m) => m.AdminProductForm),
   },
   {
+    path: 'reviews',
+    data: { title: 'admin.nav.reviews' },
+    loadComponent: () => import('./admin-reviews').then((m) => m.AdminReviews),
+  },
+  {
     path: 'categories',
     data: { title: 'admin.nav.categories' },
     loadComponent: () => import('./admin-categories').then((m) => m.AdminCategories),
