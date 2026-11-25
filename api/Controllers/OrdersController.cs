@@ -140,7 +140,7 @@ public class OrdersController(
         {
             UserId = userId,
             ShippingName = dto.ShippingName.Trim(),
-            Phone = dto.Phone.Trim(),
+            Phone = EgyptPhoneAttribute.Normalize(dto.Phone)!,
             Address = dto.Address.Trim(),
             City = dto.City.Trim(),
             Latitude = dto.Latitude,

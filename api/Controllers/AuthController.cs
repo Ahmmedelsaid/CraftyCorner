@@ -25,7 +25,18 @@ public class AuthController(
     ILogger<AuthController> logger
 ) : ControllerBase
 {
-    public const string RefreshCookieName = "vc_refresh";
+    private const string StoreCookieName = "vc_refresh";
+    private const string AdminCookieName = "cc_admin_refresh";
+
+    /// <summary>
+    /// The store and the dashboard are separate apps, but in development both live on localhost and the browser
+    /// shares cookies between ports. Each app therefore gets its own refresh cookie, chosen by the
+    /// X-Client-App header the dashboard sends, so signing in to one never replaces the other's session.
+    /// </summary>
+    private string RefreshCookieName =>
+        string.Equals(Request.Headers["X-Client-App"], "admin", StringComparison.OrdinalIgnoreCase)
+            ? AdminCookieName
+            : StoreCookieName;
 
     private readonly JwtOptions jwt = jwtOptions.Value;
 
@@ -60,6 +71,7 @@ public class AuthController(
         {
             Email = email,
             FullName = dto.FullName.Trim(),
+            Phone = EgyptPhoneAttribute.Normalize(dto.Phone),
             PasswordHash = string.Empty,
         };
         user.PasswordHash = hasher.HashPassword(user, dto.Password);
@@ -211,6 +223,35 @@ public class AuthController(
 
         var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
         return user is null || !user.IsActive ? Unauthorized() : UserDto.From(user);
+    }
+
+    /// <summary>Updates the signed-in customer's name, phone and default delivery address.</summary>
+    [Authorize]
+    [HttpPut("me")]
+    public async Task<ActionResult<UserDto>> UpdateProfile(UpdateProfileDto dto)
+    {
+        if (!int.TryParse(User.FindFirstValue("sub"), out var id))
+            return Unauthorized();
+
+        var address = string.IsNullOrWhiteSpace(dto.Address) ? null : dto.Address.Trim();
+        var city = string.IsNullOrWhiteSpace(dto.City) ? null : dto.City.Trim();
+        if ((address is null) != (city is null))
+            return Problem(
+                detail: "Enter both the address and the city, or leave both empty.",
+                statusCode: StatusCodes.Status400BadRequest
+            );
+
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user is null || !user.IsActive)
+            return Unauthorized();
+
+        user.FullName = dto.FullName.Trim();
+        user.Phone = EgyptPhoneAttribute.Normalize(dto.Phone);
+        user.Address = address;
+        user.City = city;
+        await db.SaveChangesAsync();
+
+        return UserDto.From(user);
     }
 
     /// <summary>Creates a refresh token for a new login and sets it as an HttpOnly cookie.</summary>

@@ -5,11 +5,7 @@ namespace CraftyCorner.Api.Dtos;
 
 public record PlaceOrderDto(
     [Required, StringLength(100, MinimumLength = 2)] string ShippingName,
-    [
-        Required,
-        RegularExpression(ValidationPatterns.Phone, ErrorMessage = ValidationPatterns.PhoneMessage)
-    ]
-        string Phone,
+    [Required, EgyptPhone] string Phone,
     [Required, StringLength(300, MinimumLength = 5)] string Address,
     [Required, StringLength(100, MinimumLength = 2)] string City,
     [StringLength(500)] string? Notes,

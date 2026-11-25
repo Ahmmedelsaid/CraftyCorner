@@ -63,3 +63,48 @@ public record AdminStatsDto(
 );
 
 public record UploadResultDto(string Url);
+
+/// <summary>An owner account in the dashboard's Team page.</summary>
+public record AdminUserDto(
+    int Id,
+    string Email,
+    string FullName,
+    bool IsActive,
+    DateTime CreatedAt,
+    bool IsCurrentUser
+);
+
+public record CreateAdminDto(
+    [Required, EmailAddress, StringLength(254)] string Email,
+    [Required, StringLength(100, MinimumLength = 2)] string FullName,
+    [
+        Required,
+        StringLength(100, MinimumLength = 8),
+        RegularExpression(
+            ValidationPatterns.Password,
+            ErrorMessage = ValidationPatterns.PasswordMessage
+        )
+    ]
+        string Password
+);
+
+public record UpdateAdminDto(
+    [Required, EmailAddress, StringLength(254)] string Email,
+    [Required, StringLength(100, MinimumLength = 2)] string FullName
+);
+
+public record SetPasswordDto(
+    [
+        Required,
+        StringLength(100, MinimumLength = 8),
+        RegularExpression(
+            ValidationPatterns.Password,
+            ErrorMessage = ValidationPatterns.PasswordMessage
+        )
+    ]
+        string NewPassword,
+    /// <summary>Required when changing your own password.</summary>
+    string? CurrentPassword
+);
+
+public record SetActiveDto(bool IsActive);

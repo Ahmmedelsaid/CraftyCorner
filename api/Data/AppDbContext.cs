@@ -121,6 +121,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(u => u.Email).HasMaxLength(254);
             entity.Property(u => u.PasswordHash).HasMaxLength(500);
             entity.Property(u => u.FullName).HasMaxLength(100);
+            entity.Property(u => u.Phone).HasMaxLength(20);
+            entity.Property(u => u.Address).HasMaxLength(300);
+            entity.Property(u => u.City).HasMaxLength(100);
 
             // الـ Role بتتخزن كنص ("Admin") مش رقم، عشان تتقري بسهولة في الـ database
             entity.Property(u => u.Role).HasConversion<string>().HasMaxLength(20);

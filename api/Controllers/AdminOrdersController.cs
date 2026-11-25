@@ -26,6 +26,8 @@ public class AdminOrdersController(AppDbContext db, TimeProvider clock) : Contro
     public async Task<ActionResult<PagedResult<AdminOrderListDto>>> List(
         string? status,
         string? search,
+        DateTimeOffset? from,
+        DateTimeOffset? to,
         int page = 1,
         int pageSize = 20
     )
@@ -34,6 +36,18 @@ public class AdminOrdersController(AppDbContext db, TimeProvider clock) : Contro
         pageSize = Math.Clamp(pageSize, 1, 100);
 
         var query = db.Orders.AsNoTracking();
+
+        // from (شامل) و to (غير شامل): لحظات UTC، والموقع بيبعت بداية اليوم بتوقيت المستخدم
+        if (from is { } fromDate)
+        {
+            var start = fromDate.UtcDateTime;
+            query = query.Where(o => o.CreatedAt >= start);
+        }
+        if (to is { } toDate)
+        {
+            var end = toDate.UtcDateTime;
+            query = query.Where(o => o.CreatedAt < end);
+        }
 
         if (!string.IsNullOrWhiteSpace(status))
         {

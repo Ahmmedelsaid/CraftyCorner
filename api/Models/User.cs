@@ -14,6 +14,14 @@ public class User
 
     public UserRole Role { get; set; } = UserRole.Customer;
 
+    /// <summary>Egyptian mobile in local form (01XXXXXXXXX). The shop calls the customer on it to confirm orders.</summary>
+    public string? Phone { get; set; }
+
+    /// <summary>The customer's default delivery address, pre-filled at checkout.</summary>
+    public string? Address { get; set; }
+
+    public string? City { get; set; }
+
     public bool IsActive { get; set; } = true;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
