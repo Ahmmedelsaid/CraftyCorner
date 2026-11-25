@@ -20,6 +20,14 @@ namespace CraftyCorner.Api.Tests;
 /// </summary>
 public sealed class ApiFactory : WebApplicationFactory<Program>
 {
+    private readonly string? databaseFile;
+
+    /// <summary>Tests: one shared in-memory database.</summary>
+    public ApiFactory() { }
+
+    /// <summary>Browser host: a database file, one connection per request.</summary>
+    internal ApiFactory(string databaseFile) => this.databaseFile = databaseFile;
+
     public const string Password = "Passw0rd!1";
 
     private readonly SqliteConnection connection = new("DataSource=:memory:");
@@ -59,9 +67,20 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
             )
                 services.Remove(descriptor);
 
-            if (connection.State != System.Data.ConnectionState.Open)
-                connection.Open();
-            services.AddDbContext<AppDbContext>(options => options.UseSqlite(connection));
+            // Tests share one open in-memory connection. A browser run (a file) needs one connection per
+            // request, because the page fires several requests at once.
+            if (databaseFile is null)
+            {
+                if (connection.State != System.Data.ConnectionState.Open)
+                    connection.Open();
+                services.AddDbContext<AppDbContext>(options => options.UseSqlite(connection));
+            }
+            else
+            {
+                services.AddDbContext<AppDbContext>(options =>
+                    options.UseSqlite($"Data Source={databaseFile};Default Timeout=30;Pooling=False")
+                );
+            }
         });
     }
 
@@ -99,6 +118,16 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
             return user.Id;
         });
     }
+
+    /// <summary>An admin with a fixed email (for the browser test host).</summary>
+    public void AddAdmin(string email) =>
+        WithDb(db =>
+        {
+            var admin = new User { Email = email, FullName = "E2E Admin", PasswordHash = "", Role = UserRole.Admin };
+            admin.PasswordHash = new PasswordHasher<User>().HashPassword(admin, Password);
+            db.Users.Add(admin);
+            return db.SaveChanges();
+        });
 
     public string EmailOf(int userId) => WithDb(db => db.Users.Single(u => u.Id == userId).Email);
 
