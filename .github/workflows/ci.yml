@@ -22,7 +22,7 @@ jobs:
       - run: npx ng build admin
 
   api:
-    name: API (build)
+    name: API (build and test)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +30,7 @@ jobs:
         with:
           dotnet-version: 10.0.x
       - run: dotnet build api --configuration Release
+      - run: dotnet test api.tests --configuration Release
 
   docker:
     name: Docker image (build and smoke test)
