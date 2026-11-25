@@ -31,6 +31,8 @@ services:
       Jwt__Key: ${JWT_KEY:-local-demo-only-change-me-0123456789abcdef-xyz}
       Database__MigrateOnStartup: "true"
       Seed__DemoData: "true"
+      # the host names the site answers to (the real domain in production), separated by semicolons
+      AllowedHosts: ${ALLOWED_HOSTS:-localhost}
       Email__WebUrl: ${PUBLIC_URL:-http://localhost:8080}
     volumes:
       - uploads:/data/uploads

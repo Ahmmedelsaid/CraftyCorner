@@ -77,6 +77,49 @@ public static class OrderEmails
         );
     }
 
+    /// <summary>Tells the customer their order is on its way, with the courier and tracking number if the owner entered them.</summary>
+    public static EmailMessage ForShipped(Order order, string customerEmail, string customerName, string webUrl)
+    {
+        var orderUrl = $"{webUrl.TrimEnd('/')}/orders/{order.Id}";
+        var name = OneLine(customerName);
+        var hasTracking = !string.IsNullOrWhiteSpace(order.TrackingNumber);
+        var company = string.IsNullOrWhiteSpace(order.TrackingCompany) ? null : OneLine(order.TrackingCompany);
+        var number = hasTracking ? OneLine(order.TrackingNumber!) : null;
+
+        var text = new StringBuilder();
+        text.AppendLine($"أهلاً {name}، طلبك رقم {order.Id} خرج للتوصيل.");
+        if (hasTracking)
+            text.AppendLine($"شركة الشحن: {company ?? "-"} | رقم التتبع: {number}");
+        text.AppendLine();
+        text.AppendLine($"Hello {name}, your order #{order.Id} is on its way.");
+        if (hasTracking)
+            text.AppendLine($"Courier: {company ?? "-"} | Tracking number: {number}");
+        text.AppendLine();
+        text.AppendLine($"تابع طلبك / Track your order: {orderUrl}");
+
+        var html = new StringBuilder();
+        html.Append(Heading($"طلبك رقم {order.Id} في الطريق", rtl: true));
+        html.Append(Paragraph($"أهلاً {Encode(name)}، طلبك خرج للتوصيل.", rtl: true));
+        html.Append(Divider());
+        html.Append(Heading($"Your order #{order.Id} is on its way"));
+        html.Append(Paragraph($"Hello {Encode(name)}, your order has been handed to the courier."));
+        if (hasTracking)
+            html.Append(
+                Details([
+                    ("شركة الشحن / Courier", Encode(company ?? "-")),
+                    ("رقم التتبع / Tracking number", Encode(number!)),
+                ])
+            );
+        html.Append(Button(orderUrl, "تابع طلبك / Track your order"));
+
+        return new EmailMessage(
+            To: customerEmail,
+            Subject: $"Crafty Corner | طلبك #{order.Id} في الطريق / Order #{order.Id} is on its way",
+            Body: text.ToString(),
+            Html: Layout($"Order #{order.Id}", $"طلبك رقم {order.Id} في الطريق / Your order is on its way", html.ToString())
+        );
+    }
+
     /// <summary>Alert to the shop with everything needed to call the customer and deliver.</summary>
     public static EmailMessage ForShop(Order order, string recipient, string customerEmail)
     {

@@ -35,6 +35,10 @@ public class Order
 
     public decimal Total { get; set; }
 
+    /// <summary>Courier name and tracking number, entered by the owner when the order is handed over.</summary>
+    public string? TrackingCompany { get; set; }
+    public string? TrackingNumber { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? CancelledAt { get; set; }
 

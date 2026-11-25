@@ -106,7 +106,9 @@ public class AdminProductsController(AppDbContext db) : ControllerBase
                 p.BrandId,
                 p.NameEn,
                 p.DescriptionEn,
-                p.Category.NameEn
+                p.Category.NameEn,
+                0,
+                0
             ))
             .FirstOrDefaultAsync();
 

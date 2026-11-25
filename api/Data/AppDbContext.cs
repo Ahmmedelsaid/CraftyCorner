@@ -10,6 +10,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Product> Products => Set<Product>();
 
     public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
 
     public DbSet<Brand> Brands => Set<Brand>();
 
@@ -85,6 +87,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(o => o.City).HasMaxLength(100);
             entity.Property(o => o.Notes).HasMaxLength(500);
             entity.Property(o => o.Total).HasPrecision(18, 2);
+            entity.Property(o => o.TrackingCompany).HasMaxLength(60);
+            entity.Property(o => o.TrackingNumber).HasMaxLength(60);
 
             // سجل الطلبات بيتعرض بالأحدث أولًا لكل عميل
             entity.HasIndex(o => new { o.UserId, o.CreatedAt });
@@ -190,6 +194,26 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .WithMany(c => c.Children)
                 .HasForeignKey(c => c.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Review>(entity =>
+        {
+            entity.Property(r => r.Comment).HasMaxLength(1000);
+
+            // تقييم واحد لكل عميل على المنتج
+            entity.HasIndex(r => new { r.ProductId, r.UserId }).IsUnique();
+            entity.HasIndex(r => new { r.ProductId, r.CreatedAt });
+
+            entity.HasOne(r => r.Product).WithMany(p => p.Reviews).HasForeignKey(r => r.ProductId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(r => r.User).WithMany().HasForeignKey(r => r.UserId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<WishlistItem>(entity =>
+        {
+            entity.HasIndex(w => new { w.UserId, w.ProductId }).IsUnique();
+
+            entity.HasOne(w => w.User).WithMany().HasForeignKey(w => w.UserId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(w => w.Product).WithMany().HasForeignKey(w => w.ProductId).OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Brand>(entity =>

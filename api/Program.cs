@@ -179,6 +179,23 @@ builder
                 NameClaimType = "name",
                 RoleClaimType = "role",
             };
+
+            // الأدمن/العميل الموقوف يتقفل فوراً، مش بعد ما التوكن (15 دقيقة) ينتهي
+            options.Events = new JwtBearerEvents
+            {
+                OnTokenValidated = async context =>
+                {
+                    if (!int.TryParse(context.Principal?.FindFirst("sub")?.Value, out var userId))
+                    {
+                        context.Fail("Invalid subject.");
+                        return;
+                    }
+
+                    var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+                    if (!await db.Users.AnyAsync(u => u.Id == userId && u.IsActive))
+                        context.Fail("The account is not active.");
+                },
+            };
         }
     );
 builder.Services.AddAuthorization();
@@ -226,6 +243,27 @@ if (app.Configuration.GetValue<bool>("Proxy:TrustForwardedHeaders"))
 
 // لازم أول حاجة في الـ pipeline عشان يمسك أي exception بعده
 app.UseExceptionHandler();
+
+// هيدرز الأمان: بتتحط على كل response (الـ API والموقع)
+app.Use(
+    async (context, next) =>
+    {
+        var headers = context.Response.Headers;
+        headers["X-Content-Type-Options"] = "nosniff";
+        headers["X-Frame-Options"] = "DENY";
+        headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+        headers["Permissions-Policy"] = "camera=(), microphone=(), payment=(), usb=()";
+        // الـ API بيرجّع JSON بس: ممنوع أي محتوى نشط. الموقع: نمنع الـ iframe والـ plugins ونقفل الـ base و الـ forms
+        headers["Content-Security-Policy"] = context.Request.Path.StartsWithSegments("/api")
+            ? "default-src 'none'; frame-ancestors 'none'"
+            : "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'";
+        await next();
+    }
+);
+
+// HSTS: المتصفح يفضل يفتح الموقع HTTPS بس (مش في التطوير)
+if (!app.Environment.IsDevelopment())
+    app.UseHsts();
 
 // بيحوّل الـ 404 و 405 و 415 الفاضية لـ ProblemDetails
 app.UseStatusCodePages();

@@ -89,3 +89,10 @@ see [docs/DEPLOY.md](docs/DEPLOY.md) and `.env.example`.
 - The catalogue shipped in `api/Data/SeedCatalog.cs` is **sample data** (names, prices, stock are placeholders;
   photos are reference images). The owner replaces it from the dashboard.
 - Shop details (phone, email, address, hours) live in `customer/src/app/core/site.ts`; empty fields are hidden.
+
+## Before going live (security)
+
+- Set `AllowedHosts` (env `AllowedHosts`, or `ALLOWED_HOSTS` in Docker) to the real domain. It is `localhost` by default, so a deployed site answers 400 until it is set.
+- Use a long random `Jwt__Key` and a strong admin password, never `admin123`. Keep secrets in user-secrets or environment variables.
+- Serve everything over HTTPS (HSTS is on outside Development), and put the dashboard on a subdomain of the same site so the Strict refresh cookie works.
+- The API sends security headers on every response, locks an account for 15 minutes after 5 wrong passwords, and rejects the token of a deactivated account at once.

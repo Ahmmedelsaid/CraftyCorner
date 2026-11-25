@@ -24,5 +24,10 @@ public class User
 
     public bool IsActive { get; set; } = true;
 
+    /// <summary>Consecutive wrong passwords. After a few, the account is locked for a while (see AuthController).</summary>
+    public int FailedLoginCount { get; set; }
+
+    public DateTime? LockedUntil { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

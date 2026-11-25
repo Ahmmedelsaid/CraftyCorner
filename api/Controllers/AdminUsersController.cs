@@ -107,6 +107,8 @@ public class AdminUsersController(
         }
 
         user.PasswordHash = hasher.HashPassword(user, dto.NewPassword);
+        user.FailedLoginCount = 0;
+        user.LockedUntil = null;
         await db.SaveChangesAsync();
         await RevokeSessionsAsync(user.Id);
 

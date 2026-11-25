@@ -33,7 +33,9 @@ public class ProductsController(AppDbContext db) : ControllerBase
             p.BrandId,
             p.NameEn,
             p.DescriptionEn,
-            p.Category.NameEn
+            p.Category.NameEn,
+            p.Reviews.Average(r => (double?)r.Rating) ?? 0,
+            p.Reviews.Count()
         );
 
     [HttpGet]
@@ -100,7 +102,9 @@ public class ProductsController(AppDbContext db) : ControllerBase
                 p.Brand!.Name,
                 p.Category!.Name,
                 p.NameEn,
-                p.Category.NameEn
+                p.Category.NameEn,
+                p.Reviews.Average(r => (double?)r.Rating) ?? 0,
+                p.Reviews.Count()
             ))
             .ToListAsync();
 

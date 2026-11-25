@@ -105,9 +105,34 @@ public class AuthController(
             return InvalidCredentials();
         }
 
+        var now = clock.GetUtcNow().UtcDateTime;
+        if (user.LockedUntil is { } lockedUntil && lockedUntil > now)
+            return TooManyAttempts(lockedUntil - now);
+
         var result = hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
-        if (result == PasswordVerificationResult.Failed || !user.IsActive)
+        if (result == PasswordVerificationResult.Failed)
+        {
+            // قفل مؤقت للحساب بعد كذا محاولة غلط، فالتخمين من أكتر من IP مايفيدش
+            user.FailedLoginCount++;
+            if (user.FailedLoginCount >= MaxFailedLogins)
+            {
+                user.LockedUntil = now.Add(LockoutDuration);
+                user.FailedLoginCount = 0;
+                logger.LogWarning("User {UserId} locked after repeated failed logins", user.Id);
+            }
+            await db.SaveChangesAsync();
             return InvalidCredentials();
+        }
+
+        if (!user.IsActive)
+            return InvalidCredentials();
+
+        if (user.FailedLoginCount != 0 || user.LockedUntil is not null)
+        {
+            user.FailedLoginCount = 0;
+            user.LockedUntil = null;
+            await db.SaveChangesAsync();
+        }
 
         if (result == PasswordVerificationResult.SuccessRehashNeeded)
         {
@@ -310,6 +335,18 @@ public class AuthController(
         };
 
     // نفس الرسالة للإيميل الغلط والباسورد الغلط، عشان ما نكشفش أي الإيميلات مسجّلة
+    private const int MaxFailedLogins = 5;
+    private static readonly TimeSpan LockoutDuration = TimeSpan.FromMinutes(15);
+
+    private ActionResult TooManyAttempts(TimeSpan remaining)
+    {
+        Response.Headers.RetryAfter = ((int)Math.Ceiling(remaining.TotalSeconds)).ToString();
+        return Problem(
+            detail: "Too many failed attempts. Try again in a few minutes.",
+            statusCode: StatusCodes.Status429TooManyRequests
+        );
+    }
+
     private ActionResult InvalidCredentials() =>
         Problem(
             detail: "Invalid email or password.",

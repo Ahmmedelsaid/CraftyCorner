@@ -9,5 +9,7 @@ public record ProductListDto(
     string BrandName,
     string CategoryName,
     string? NameEn,
-    string? CategoryNameEn
+    string? CategoryNameEn,
+    double RatingAverage,
+    int RatingCount
 );

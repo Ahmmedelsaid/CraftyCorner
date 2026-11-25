@@ -19,5 +19,7 @@ public record ProductDetailsDto(
     int BrandId = 0,
     string? NameEn = null,
     string? DescriptionEn = null,
-    string? CategoryNameEn = null
+    string? CategoryNameEn = null,
+    double RatingAverage = 0,
+    int RatingCount = 0
 );

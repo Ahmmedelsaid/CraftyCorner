@@ -20,6 +20,8 @@ public class Product
     public int CategoryId { get; set; }
     public int BrandId { get; set; }
 
+    public ICollection<Review> Reviews { get; set; } = [];
+
     public Category? Category { get; set; }
     public Brand? Brand { get; set; }
 

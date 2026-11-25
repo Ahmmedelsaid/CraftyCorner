@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using CraftyCorner.Api.Data;
 using CraftyCorner.Api.Dtos;
 using CraftyCorner.Api.Models;
+using CraftyCorner.Api.Services;
 
 namespace CraftyCorner.Api.Controllers;
 
@@ -11,7 +13,13 @@ namespace CraftyCorner.Api.Controllers;
 [ApiController]
 [Authorize(Roles = nameof(UserRole.Admin))]
 [Route("api/admin/orders")]
-public class AdminOrdersController(AppDbContext db, TimeProvider clock) : ControllerBase
+public class AdminOrdersController(
+    AppDbContext db,
+    TimeProvider clock,
+    IEmailQueue emails,
+    IOptions<EmailOptions> emailOptions,
+    ILogger<AdminOrdersController> logger
+) : ControllerBase
 {
     /// <summary>Which statuses an order may move to from each status. Delivered and Cancelled are final.</summary>
     private static readonly Dictionary<OrderStatus, OrderStatus[]> Transitions = new()
@@ -91,6 +99,59 @@ public class AdminOrdersController(AppDbContext db, TimeProvider clock) : Contro
         return order is null ? NotFound() : OrderDto.From(order);
     }
 
+    /// <summary>
+    /// Saves the courier and tracking number the owner got when handing the order over. When the order is
+    /// Shipped, the customer is emailed the details (a failure to send never fails the request).
+    /// </summary>
+    [HttpPut("{id:int}/tracking")]
+    public async Task<ActionResult<OrderDto>> SetTracking(int id, UpdateTrackingDto dto)
+    {
+        var order = await db.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
+        if (order is null)
+            return NotFound();
+
+        if (order.Status == OrderStatus.Cancelled)
+            return Problem(detail: "A cancelled order has no shipment.", statusCode: StatusCodes.Status409Conflict);
+
+        var company = string.IsNullOrWhiteSpace(dto.Company) ? null : dto.Company.Trim();
+        var number = string.IsNullOrWhiteSpace(dto.Number) ? null : dto.Number.Trim();
+        var changed = order.TrackingCompany != company || order.TrackingNumber != number;
+
+        order.TrackingCompany = company;
+        order.TrackingNumber = number;
+        await db.SaveChangesAsync();
+
+        if (changed && number is not null && order.Status == OrderStatus.Shipped)
+            await NotifyShippedAsync(order);
+
+        return OrderDto.From(order);
+    }
+
+    private async Task NotifyShippedAsync(Order order)
+    {
+        if (!emails.Enabled)
+            return;
+
+        try
+        {
+            var customer = await db
+                .Users.AsNoTracking()
+                .Where(u => u.Id == order.UserId)
+                .Select(u => new { u.Email, u.FullName })
+                .FirstOrDefaultAsync();
+            if (customer is null)
+                return;
+
+            await emails.EnqueueAsync(
+                OrderEmails.ForShipped(order, customer.Email, customer.FullName, emailOptions.Value.WebUrl)
+            );
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Could not queue the shipping email for order {OrderId}", order.Id);
+        }
+    }
+
     [HttpPost("{id:int}/status")]
     public async Task<ActionResult<OrderDto>> SetStatus(int id, UpdateOrderStatusDto dto)
     {
@@ -146,6 +207,8 @@ public class AdminOrdersController(AppDbContext db, TimeProvider clock) : Contro
         order.Status = next;
         if (next == OrderStatus.Cancelled)
             order.CancelledAt = now;
+        if (next == OrderStatus.Shipped)
+            await NotifyShippedAsync(order);
         return OrderDto.From(order);
     }
 }
