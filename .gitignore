@@ -10,6 +10,9 @@ appsettings.Local.json
 node_modules/
 dist/
 .angular/
+/out-tsc
+/coverage
+__screenshots__/
 *.log
 
 # Env / secrets

@@ -2,7 +2,7 @@
 **/bin
 **/obj
 **/.angular
-web/dist
+dist
 .git
 .github
 docs

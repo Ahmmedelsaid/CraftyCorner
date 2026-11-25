@@ -11,7 +11,7 @@ Orders are placed on the site (cart and checkout, cash on delivery). The owner m
 ## Brand
 
 Colors, fonts and shapes are frozen in [design/BRAND.md](design/BRAND.md). The design tokens live in
-`web/src/styles.css` (Tailwind v4 `@theme`).
+`shared/styles.css` (Tailwind v4 `@theme`).
 
 ## Roadmap
 
@@ -54,7 +54,7 @@ dotnet user-secrets set "Jwt:Key" "<at least 32 random characters>" --project ap
 dotnet ef database update --project api
 dotnet run --project api            # Development seeds the sample catalogue (http://localhost:5034)
 
-cd web && npm install
+npm install
 npm start                           # the store, http://localhost:4200
 npm run start:admin                 # the owner dashboard, http://localhost:4201
 ```
@@ -63,17 +63,20 @@ Or start all three at once on Windows with `.\dev.ps1`.
 
 ## Two apps, one API
 
-`web/` is an Angular workspace with two separate applications talking to the same API and database:
+```
+api/        the .NET API (one API, one MySQL database)
+customer/   the store, Angular app, http://localhost:4200
+admin/      the owner dashboard, Angular app, http://localhost:4201
+shared/     code both apps use: auth, API models, i18n, theme (styles.css), environments, public assets
+```
 
-| App | Folder | Dev URL |
-| --- | --- | --- |
-| Store (customers) | `web/src` | http://localhost:4200 |
-| Owner dashboard | `web/projects/admin` | http://localhost:4201 |
+The repo root is one Angular workspace (`angular.json`, `package.json`, one `node_modules`) with two separate
+applications, `customer` and `admin`. Both import the shared code through the `@shared/*` alias.
 
 The dashboard has its own sign-in page (owner accounts only) and the store has no dashboard code at all; the
-header just links to it (`adminUrl` in `web/src/environments`). Models, auth, i18n and the theme are shared:
-the dashboard imports them from the store's `src/app` through the `@web/*` alias. In development both apps are
-on `localhost`, so the browser shares the sign-in cookie between them.
+header just links to it (`adminUrl` in `shared/environments`). Each app keeps its own sign-in cookie
+(the API picks it from the `X-Client-App` header), so being signed in as a customer on :4200 and as the owner
+on :4201 at the same time works.
 
 Deployment of the dashboard (own domain, subdomain or a path) is still undecided, so the Docker image
 currently serves the store only.
@@ -85,4 +88,4 @@ see [docs/DEPLOY.md](docs/DEPLOY.md) and `.env.example`.
 
 - The catalogue shipped in `api/Data/SeedCatalog.cs` is **sample data** (names, prices, stock are placeholders;
   photos are reference images). The owner replaces it from the dashboard.
-- Shop details (phone, email, address, hours) live in `web/src/app/core/site.ts`; empty fields are hidden.
+- Shop details (phone, email, address, hours) live in `customer/src/app/core/site.ts`; empty fields are hidden.

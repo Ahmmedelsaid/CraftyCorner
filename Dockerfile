@@ -4,10 +4,13 @@
 # ---- 1) بناء الموقع (Angular)
 FROM node:22-alpine AS web
 WORKDIR /web
-COPY web/package.json web/package-lock.json ./
+COPY package.json package-lock.json ./
 RUN npm ci
-COPY web/ ./
-RUN npx ng build web
+COPY angular.json tsconfig.json .postcssrc.json ./
+COPY customer/ customer/
+COPY admin/ admin/
+COPY shared/ shared/
+RUN npx ng build customer
 
 # ---- 2) نشر الـ API
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS api
@@ -22,7 +25,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=api /out ./
 # ملفات الموقع في wwwroot: الـ API بيخدمها (انظر Program.cs)
-COPY --from=web /web/dist/web/browser ./wwwroot
+COPY --from=web /web/dist/customer/browser ./wwwroot
 
 ENV ASPNETCORE_ENVIRONMENT=Production \
     ASPNETCORE_HTTP_PORTS=8080 \
