@@ -370,7 +370,34 @@
       "title": "Shipment tracking",
       "company": "Courier",
       "number": "Tracking number"
-    }
+    },
+    "placedOn": "Placed on",
+    "delivery": "Delivery",
+    "deliveryNote": "Arranged by phone",
+    "statusNote": {
+      "Placed": "We received your order. We will call you soon to confirm it and the address. You can cancel until we confirm.",
+      "Confirmed": "Your order is confirmed. We are getting it ready.",
+      "Preparing": "We are preparing your order with care.",
+      "Shipped": "Your order is on its way. The courier will call you before arriving, and you pay cash on delivery.",
+      "Delivered": "Delivered. We hope you love it! You can rate the products from their pages.",
+      "Cancelled": "This order was cancelled, and its items went back to stock. You can place a new order any time."
+    },
+    "help": {
+      "title": "Need help with this order?",
+      "text": "Write to us and mention the order number. We usually reply within one working day.",
+      "contact": "Contact us"
+    },
+    "filter": {
+      "all": "All",
+      "active": "In progress",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "count": "{{count}} orders",
+    "moreItems": "+{{count}}",
+    "listSubtitle": "Follow your orders and see what happens next.",
+    "noMatch": "No orders in this group.",
+    "viewDetails": "View details"
   },
   "header": {
     "promo": "Cash on delivery across Egypt",

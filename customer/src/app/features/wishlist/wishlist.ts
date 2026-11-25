@@ -11,7 +11,7 @@ import { ProductCard } from '../products/product-card/product-card';
   imports: [ProductCard, RouterLink, TranslocoPipe, Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <section class="mx-auto max-w-6xl px-4 py-10">
+    <section class="mx-auto max-w-7xl px-4 py-10">
       <h1 class="mb-1 font-display text-3xl">{{ 'wishlist.title' | transloco }}</h1>
       <p class="mb-8 text-muted">{{ 'wishlist.subtitle' | transloco }}</p>
 

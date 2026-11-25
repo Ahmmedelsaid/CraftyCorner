@@ -8,6 +8,8 @@ export interface OrderItem {
   unitPrice: number;
   quantity: number;
   lineTotal: number;
+  /** English name of the product (from the catalogue), when the owner entered one. */
+  nameEn?: string | null;
 }
 
 export interface Order {

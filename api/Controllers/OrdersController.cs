@@ -73,6 +73,7 @@ public class OrdersController(
         var order = await db
             .Orders.AsNoTracking()
             .Include(o => o.Items.OrderBy(i => i.Id))
+            .ThenInclude(i => i.Product)
             .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
 
         return order is null ? NotFoundOrder() : OrderDto.From(order);

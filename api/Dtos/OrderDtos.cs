@@ -19,7 +19,8 @@ public record OrderItemDto(
     string? ImageUrl,
     decimal UnitPrice,
     int Quantity,
-    decimal LineTotal
+    decimal LineTotal,
+    string? NameEn = null
 );
 
 public record OrderDto(
@@ -63,7 +64,8 @@ public record OrderDto(
                     i.ImageUrl,
                     i.UnitPrice,
                     i.Quantity,
-                    i.UnitPrice * i.Quantity
+                    i.UnitPrice * i.Quantity,
+                    i.Product?.NameEn
                 )),
             ],
             order.TrackingCompany,

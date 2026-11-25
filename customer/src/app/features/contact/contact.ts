@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from '@shared/core/auth/auth.service';
 import {
@@ -360,6 +360,7 @@ export class Contact {
   private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly site = inject(SITE_INFO);
+  private readonly route = inject(ActivatedRoute);
   private readonly whatsapp = inject(SHOP_WHATSAPP);
 
   protected readonly messageMax = MESSAGE_MAX;
@@ -432,6 +433,17 @@ export class Contact {
   protected readonly sent = signal(false);
   protected readonly serverError = signal<string | null>(null);
   private readonly submitted = signal(false);
+
+  constructor() {
+    // /contact?topic=order&order=6 (from an order page) opens the form ready for that order
+    const query = this.route.snapshot.queryParamMap;
+    const topic = query.get('topic');
+    if (topic && (TOPICS as readonly string[]).includes(topic)) {
+      this.form.controls.topic.setValue(topic as Topic);
+    }
+    const order = query.get('order');
+    if (order && /^\d{1,8}$/.test(order)) this.form.controls.orderNumber.setValue(order);
+  }
 
   protected nameError(): string | null {
     const c = this.form.controls.name;
