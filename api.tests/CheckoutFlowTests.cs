@@ -113,6 +113,52 @@ public class CheckoutFlowTests(ApiFactory factory) : IClassFixture<ApiFactory>
         Assert.Equal(0m, free.WithDb(db => db.Orders.Single().ShippingFee));
     }
 
+    [Theory]
+    [InlineData("Alexandria")]
+    [InlineData("Aswan")]
+    public async Task An_order_outside_the_delivery_area_is_refused_and_nothing_is_taken_from_stock(string city)
+    {
+        var productId = factory.AddProduct(stock: 5);
+        var client = await factory.ClientFor(factory.AddUser());
+        await AddToCart(client, productId, 1);
+
+        var response = await client.PostAsJsonAsync(
+            "/api/orders",
+            new { shippingName = "Ana Test", phone = "01012345678", address = "1 Corniche Road", city }
+        );
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains("Cairo, Giza, Qalyubia", await response.Content.ReadAsStringAsync());
+        Assert.Equal(5, Stock(productId));
+    }
+
+    [Theory]
+    [InlineData("Cairo")]
+    [InlineData("giza")]
+    [InlineData(" Qalyubia ")]
+    public async Task The_delivery_governorates_are_accepted_whatever_the_capitals(string city)
+    {
+        var productId = factory.AddProduct(stock: 5);
+        var client = await factory.ClientFor(factory.AddUser());
+        await AddToCart(client, productId, 1);
+
+        var response = await client.PostAsJsonAsync(
+            "/api/orders",
+            new { shippingName = "Ana Test", phone = "01012345678", address = "12 Nile St, Dokki", city }
+        );
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task The_storefront_can_read_the_fee_and_the_delivery_areas()
+    {
+        var shop = await factory.CreateClient().GetFromJsonAsync<CraftyCorner.Api.Controllers.ShopInfoDto>("/api/shop");
+
+        Assert.Equal(100m, shop!.ShippingFee);
+        Assert.Equal(["Cairo", "Giza", "Qalyubia"], shop.DeliveryCities);
+    }
+
     [Fact]
     public async Task An_empty_cart_cannot_be_ordered()
     {

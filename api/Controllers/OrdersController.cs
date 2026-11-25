@@ -94,6 +94,13 @@ public class OrdersController(
                 statusCode: StatusCodes.Status400BadRequest
             );
 
+        // the shop only delivers to some governorates for now
+        if (!shop.Value.DeliveryCities.Contains(dto.City.Trim(), StringComparer.OrdinalIgnoreCase))
+            return Problem(
+                detail: $"We deliver to {string.Join(", ", shop.Value.DeliveryCities)} only.",
+                statusCode: StatusCodes.Status400BadRequest
+            );
+
         var cart = await db
             .CartItems.Include(c => c.Product)
             .Where(c => c.UserId == userId)

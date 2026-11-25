@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, map, of } from 'rxjs';
-import { GOVERNORATES } from '../../core/geo/governorates';
+import { ShopService } from '../../core/shop/shop.service';
 import { Category } from '@shared/core/models/api.models';
 import { CatalogService } from '@shared/core/services/catalog.service';
 import { ProductsService } from '../../core/services/products.service';
@@ -17,26 +17,41 @@ import { Icon, IconName } from '@shared/ui/icon';
   template: `
     <div class="mx-auto grid max-w-7xl gap-12 px-4 pt-6">
       <header
-        class="relative isolate overflow-hidden rounded-3xl bg-linear-to-br from-accent via-[#1d4ed8] to-[#1e3a8a] px-6 py-10 text-white shadow-lift sm:px-10 sm:py-14"
+        class="relative isolate overflow-hidden rounded-3xl bg-ink px-6 py-10 text-white shadow-lift sm:px-12 sm:py-14"
       >
-        <div
+        <span
           aria-hidden="true"
-          class="pointer-events-none absolute -end-20 -top-20 -z-10 size-80 rounded-full bg-white/10 blur-2xl"
-        ></div>
-        <app-icon
-          name="bolt"
-          [size]="14"
-          class="pointer-events-none absolute -end-6 -top-6 -z-10 text-white opacity-[0.07]"
-        />
+          class="pointer-events-none absolute -end-24 -top-28 -z-10 size-96 rounded-full bg-accent/40 blur-3xl"
+        ></span>
+        <span
+          aria-hidden="true"
+          class="pointer-events-none absolute -bottom-28 end-12 -z-10 hidden h-64 w-52 rounded-t-full border border-white/15 sm:block"
+        ></span>
+        <span
+          aria-hidden="true"
+          class="pointer-events-none absolute -bottom-28 end-28 -z-10 hidden h-48 w-36 rounded-t-full border border-white/10 sm:block"
+        ></span>
         <p
-          class="inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide"
+          class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide"
         >
+          <app-icon name="heart" [size]="0.9" />
           {{ 'about.eyebrow' | transloco }}
         </p>
-        <h1 class="mt-4 max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-5xl">
+        <h1 class="mt-5 max-w-2xl font-display text-4xl leading-tight sm:text-6xl">
           {{ 'about.title' | transloco }}
         </h1>
-        <p class="mt-4 max-w-2xl text-white/85 sm:text-lg">{{ 'about.subtitle' | transloco }}</p>
+        <p class="mt-5 max-w-2xl text-white/80 sm:text-lg">{{ 'about.subtitle' | transloco }}</p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a routerLink="/products" class="btn btn-accent px-6 py-2.5">
+            {{ 'about.cta.shop' | transloco }}
+          </a>
+          <a
+            routerLink="/contact"
+            class="btn !border-white/30 !bg-white/10 !text-white hover:!bg-white/20"
+          >
+            {{ 'about.cta.contact' | transloco }}
+          </a>
+        </div>
       </header>
 
       <section class="grid items-center gap-8 lg:grid-cols-[1.2fr_1fr]" aria-labelledby="story">
@@ -115,6 +130,7 @@ import { Icon, IconName } from '@shared/ui/icon';
   `,
 })
 export class About {
+  private readonly shop = inject(ShopService);
   private readonly products = inject(ProductsService);
   private readonly catalog = inject(CatalogService);
 
@@ -149,7 +165,7 @@ export class About {
     const categories = this.categoryCount();
     if (products !== null) items.push({ key: 'products', value: `${products}+` });
     if (categories !== null) items.push({ key: 'categories', value: `${categories}` });
-    items.push({ key: 'governorates', value: `${GOVERNORATES.length}` });
+    items.push({ key: 'governorates', value: `${this.shop.governorates().length}` });
     return items;
   });
 }

@@ -150,11 +150,11 @@ import { Reveal } from '../../shared/directives/reveal';
                 </div>
                 <div class="flex justify-between">
                   <dt class="text-muted">{{ 'cart.shipping' | transloco }}</dt>
-                  <dd>{{ current.shippingFee | price }}</dd>
+                  <dd>{{ current.shippingFee ?? 0 | price }}</dd>
                 </div>
                 <div class="flex justify-between border-t border-border pt-3 text-base font-bold">
                   <dt>{{ 'cart.total' | transloco }}</dt>
-                  <dd class="text-accent">{{ current.total | price }}</dd>
+                  <dd class="text-accent">{{ current.total ?? current.subtotal | price }}</dd>
                 </div>
               </dl>
               @if (hasUnavailable()) {

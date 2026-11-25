@@ -16,16 +16,12 @@ import { egyptPhoneValidator } from '@shared/core/forms/egypt-phone';
 import { CartService } from '../../core/cart/cart.service';
 import { firstError } from '@shared/core/forms/form-errors';
 import { GeocodingService, ReverseGeocode } from '../../core/geo/geocoding.service';
-import {
-  GOVERNORATES,
-  LatLng,
-  findGovernorate,
-  matchGovernorate,
-} from '../../core/geo/governorates';
+import { LatLng, findGovernorate, matchGovernorate } from '../../core/geo/governorates';
 import { LanguageService } from '@shared/core/i18n/language.service';
 import { ApiError } from '@shared/core/models/api.models';
 import { PlaceOrderRequest } from '@shared/core/orders/order.models';
 import { OrdersService, orderErrorKey } from '../../core/orders/orders.service';
+import { ShopService } from '../../core/shop/shop.service';
 import { PricePipe } from '@shared/pipes/price.pipe';
 import { Icon } from '@shared/ui/icon';
 import { LocationPicker } from '../../shared/ui/location-picker';
@@ -164,7 +160,7 @@ import { Reveal } from '../../shared/directives/reveal';
                     <option value="" disabled>
                       {{ 'checkout.fields.cityPlaceholder' | transloco }}
                     </option>
-                    @for (governorate of governorates; track governorate.value) {
+                    @for (governorate of governorates(); track governorate.value) {
                       <option [value]="governorate.value">
                         {{ lang() === 'ar' ? governorate.ar : governorate.value }}
                       </option>
@@ -173,6 +169,15 @@ import { Reveal } from '../../shared/directives/reveal';
                   @if (cityError(); as key) {
                     <p id="co-city-error" class="mt-1.5 text-sm text-danger">
                       {{ key | transloco }}
+                    </p>
+                  }
+                  @if (outsideArea()) {
+                    <p role="alert" class="mt-1.5 text-sm text-danger">
+                      {{ 'checkout.outsideArea' | transloco: { areas: areasText() } }}
+                    </p>
+                  } @else {
+                    <p class="mt-1.5 text-xs text-muted">
+                      {{ 'checkout.deliveryAreas' | transloco: { areas: areasText() } }}
                     </p>
                   }
                 </div>
@@ -314,11 +319,11 @@ import { Reveal } from '../../shared/directives/reveal';
                 </div>
                 <div class="flex justify-between">
                   <dt class="text-muted">{{ 'cart.shipping' | transloco }}</dt>
-                  <dd>{{ current.shippingFee | price }}</dd>
+                  <dd>{{ current.shippingFee ?? 0 | price }}</dd>
                 </div>
                 <div class="flex justify-between border-t border-border pt-3 text-base font-bold">
                   <dt>{{ 'cart.total' | transloco }}</dt>
-                  <dd class="text-accent">{{ current.total | price }}</dd>
+                  <dd class="text-accent">{{ current.total ?? current.subtotal | price }}</dd>
                 </div>
                 <p class="text-xs text-muted">{{ 'checkout.shippingNote' | transloco }}</p>
               </dl>
@@ -363,7 +368,15 @@ export class Checkout {
 
   protected readonly cart = this.cartService.cart;
   protected readonly lang = this.language.lang;
-  protected readonly governorates = GOVERNORATES;
+  protected readonly shop = inject(ShopService);
+  protected readonly governorates = this.shop.governorates;
+  /** "Cairo, Giza, Qalyubia" in the language of the page. */
+  protected readonly areasText = computed(() =>
+    this.shop
+      .governorates()
+      .map((governorate) => (this.lang() === 'ar' ? governorate.ar : governorate.value))
+      .join(this.lang() === 'ar' ? '، ' : ', '),
+  );
   protected readonly hasUnavailable = computed(
     () => this.cart()?.items.some((item) => !item.isAvailable) ?? false,
   );
@@ -398,6 +411,8 @@ export class Checkout {
   private lookup?: Subscription;
 
   protected readonly submitting = signal(false);
+  /** The pin the customer dropped is outside the delivery area. */
+  protected readonly outsideArea = signal(false);
   protected readonly serverError = signal<string | null>(null);
   private readonly submitted = signal(false);
 
@@ -453,6 +468,7 @@ export class Checkout {
 
   /** العميل غيّر المحافظة بنفسه: الخريطة تروح لها، والدبوس القديم (كان في محافظة تانية) يتشال. */
   protected onGovernorateChange(): void {
+    this.outsideArea.set(false);
     this.lookup?.unsubscribe();
     this.suggesting.set(false);
     this.pin.set(null);
@@ -477,7 +493,14 @@ export class Checkout {
   private applySuggestion(result: ReverseGeocode): void {
     // الدبوس هو الحقيقة: المحافظة تتظبط عليه (من غير ما نحرّك الخريطة)
     const governorate = matchGovernorate(result.state, result.isoCode);
-    if (governorate) this.form.controls.city.setValue(governorate.value);
+    if (governorate && this.shop.delivers(governorate.value)) {
+      this.form.controls.city.setValue(governorate.value);
+      this.outsideArea.set(false);
+    } else if (governorate) {
+      // the pin is somewhere we do not deliver to yet: say so, and leave the governorate for the customer to choose
+      this.form.controls.city.setValue('');
+      this.outsideArea.set(true);
+    }
 
     // ما نكتبش فوق عنوان العميل كتبه بنفسه
     const address = this.form.controls.address;

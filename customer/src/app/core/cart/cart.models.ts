@@ -18,9 +18,9 @@ export interface Cart {
   itemCount: number;
   subtotal: number;
   /** Delivery fee, charged once per order (0 while nothing in the cart can be ordered). */
-  shippingFee: number;
+  shippingFee?: number;
   /** What the customer pays: subtotal + shipping fee. */
-  total: number;
+  total?: number;
 }
 
 /** أقصى كمية من المنتج الواحد (نفس حد الـ API). */

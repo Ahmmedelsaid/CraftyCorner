@@ -95,6 +95,10 @@ describe('Checkout page', () => {
     const fixture = TestBed.createComponent(Checkout);
     await fixture.whenStable();
     http.expectOne(`${API}/cart`).flush(cart);
+    // the shop's rules (fee and delivery areas), asked for once
+    http
+      .expectOne(`${API}/shop`)
+      .flush({ shippingFee: 100, deliveryCities: ['Cairo', 'Giza', 'Qalyubia'] });
     await fixture.whenStable();
     return { fixture, element: fixture.nativeElement as HTMLElement };
   }

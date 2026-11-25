@@ -40,7 +40,8 @@ export type IconName =
   | 'chat'
   | 'help'
   | 'heart'
-  | 'star';
+  | 'star'
+  | 'pencil';
 
 /** أيقونات SVG بسيطة (stroke) بتاخد لون النص الحالي. الحجم بالـ rem. */
 @Component({
@@ -139,6 +140,10 @@ export type IconName =
             d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"
             fill="currentColor"
           />
+        }
+        @case ('pencil') {
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
         }
         @case ('check') {
           <path d="m5 12 5 5 9-10" />

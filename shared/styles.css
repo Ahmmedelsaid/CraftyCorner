@@ -276,6 +276,15 @@
   }
 
   /* ظهور ناعم لما العنصر يدخل الشاشة (directive: appReveal) */
+  /* browser autofill paints a blue box: keep the field in the shop's colours */
+  .field:-webkit-autofill,
+  .field:-webkit-autofill:hover,
+  .field:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--color-fg);
+    box-shadow: 0 0 0 1000px var(--color-surface) inset;
+    transition: background-color 9999s ease-out;
+  }
+
   .reveal {
     opacity: 0;
     transform: translateY(26px);

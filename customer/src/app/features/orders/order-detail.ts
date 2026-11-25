@@ -253,13 +253,13 @@ import { Reveal } from '../../shared/directives/reveal';
               <dl class="grid gap-2 border-t border-border bg-surface-2/40 px-5 py-4 text-sm">
                 <div class="flex justify-between">
                   <dt class="text-muted">{{ 'cart.subtotal' | transloco }}</dt>
-                  <dd class="font-medium">{{ order.total - order.shippingFee | price }}</dd>
+                  <dd class="font-medium">{{ order.total - (order.shippingFee ?? 0) | price }}</dd>
                 </div>
                 <div class="flex justify-between">
                   <dt class="text-muted">{{ 'orders.delivery' | transloco }}</dt>
                   <dd class="font-medium">
-                    @if (order.shippingFee > 0) {
-                      {{ order.shippingFee | price }}
+                    @if ((order.shippingFee ?? 0) > 0) {
+                      {{ order.shippingFee ?? 0 | price }}
                     } @else {
                       {{ 'orders.deliveryNote' | transloco }}
                     }

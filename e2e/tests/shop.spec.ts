@@ -172,7 +172,8 @@ test.describe('customer', () => {
     await page.goto('/cart');
     await expect(page.getByText('Your cart is empty')).toBeVisible();
     await page.goto('/account');
-    await expect(page.locator('textarea').first()).toHaveValue(/12 Nile Street/);
+    // shown as the saved default address (the fields only open with Edit)
+    await expect(page.getByText(/12 Nile Street/)).toBeVisible();
 
     // ----- the owner works the order (needs an admin account)
     test.skip(!HAS_ADMIN, 'set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD to run the owner steps');

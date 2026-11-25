@@ -414,7 +414,7 @@ export class Contact {
       this.auth.user()?.email ?? '',
       [Validators.required, Validators.email, Validators.maxLength(254)],
     ],
-    phone: ['', [Validators.pattern(PHONE_PATTERN)]],
+    phone: [this.auth.user()?.phone ?? '', [Validators.pattern(PHONE_PATTERN)]],
     orderNumber: ['', [Validators.pattern(/^\d{1,8}$/)]],
     message: [
       '',

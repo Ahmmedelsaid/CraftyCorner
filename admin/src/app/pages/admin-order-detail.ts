@@ -159,11 +159,13 @@ import { AdminService } from '../data/admin.service';
             <div class="grid gap-1 border-t border-border bg-surface-2/50 px-5 py-4">
               <p class="flex justify-between text-sm text-muted">
                 <span>{{ 'cart.subtotal' | transloco }}</span>
-                <span class="tabular-nums">{{ order.total - order.shippingFee | price }}</span>
+                <span class="tabular-nums">{{
+                  order.total - (order.shippingFee ?? 0) | price
+                }}</span>
               </p>
               <p class="flex justify-between text-sm text-muted">
                 <span>{{ 'cart.shipping' | transloco }}</span>
-                <span class="tabular-nums">{{ order.shippingFee | price }}</span>
+                <span class="tabular-nums">{{ order.shippingFee ?? 0 | price }}</span>
               </p>
               <p class="flex justify-between text-lg font-bold">
                 <span>{{ 'orders.total' | transloco }}</span>

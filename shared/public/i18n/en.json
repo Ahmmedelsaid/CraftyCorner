@@ -12,7 +12,7 @@
   "home": {
     "eyebrow": "Handmade · Home decor",
     "title": "Handcrafted decor for cozy homes",
-    "subtitle": "Plaster and ceramic pieces made by hand, one at a time. Pick what you love and we prepare it and deliver it to your door anywhere in Egypt.",
+    "subtitle": "Plaster and ceramic pieces made by hand, one at a time. Pick what you love and we prepare it and deliver it to your door in Cairo, Giza and Qalyubia.",
     "shopNow": "Shop now",
     "newArrivals": "New arrivals",
     "viewAll": "View all",
@@ -24,8 +24,8 @@
         "text": "Pay when your order arrives."
       },
       "delivery": {
-        "title": "Delivery across Egypt",
-        "text": "To every governorate."
+        "title": "Delivery to Cairo, Giza and Qalyubia",
+        "text": "We call you to arrange the time."
       },
       "support": {
         "title": "Gift-ready packing",
@@ -53,7 +53,7 @@
       },
       "receive": {
         "title": "Receive",
-        "text": "We prepare your order by hand and deliver it to any governorate in Egypt."
+        "text": "We prepare your order by hand and deliver it in Cairo, Giza or Qalyubia."
       }
     }
   },
@@ -90,7 +90,7 @@
       "sideTitle": "Your Crafty Corner account",
       "perk1": "Follow all your orders and their status in one place.",
       "perk2": "Your address and details are saved, so the next order is faster.",
-      "perk3": "Cash on delivery all over Egypt.",
+      "perk3": "Cash on delivery in Cairo, Giza and Qalyubia.",
       "ruleLength": "At least 8 characters",
       "ruleLetter": "One letter",
       "ruleNumber": "One number",
@@ -172,7 +172,11 @@
       "orders": "My orders",
       "favourites": "Favourites",
       "contact": "Contact us"
-    }
+    },
+    "edit": "Edit",
+    "addAddress": "Add address",
+    "notSet": "Not added yet",
+    "noAddress": "No default address yet. Add one and the checkout will fill it in for you."
   },
   "products": {
     "title": "All pieces",
@@ -328,7 +332,9 @@
     },
     "saveDefault": "Save these details as my default address",
     "emptyHint": "If you have just placed an order, you will find it, and its status, in My orders.",
-    "viewOrders": "View my orders"
+    "viewOrders": "View my orders",
+    "deliveryAreas": "We deliver to {{areas}} for now.",
+    "outsideArea": "That pin is outside our delivery area. For now we deliver to {{areas}} only."
   },
   "orders": {
     "title": "My orders",
@@ -402,14 +408,14 @@
     "viewDetails": "View details"
   },
   "header": {
-    "promo": "Cash on delivery across Egypt",
+    "promo": "Cash on delivery in Cairo, Giza and Qalyubia",
     "allProducts": "All products",
     "searchLabel": "Search products"
   },
   "about": {
     "eyebrow": "About us",
     "title": "Decor made by hand",
-    "subtitle": "Crafty Corner makes plaster and ceramic decor by hand and delivers it to your door anywhere in Egypt.",
+    "subtitle": "Crafty Corner makes plaster and ceramic decor by hand and delivers it to your door in Cairo, Giza and Qalyubia.",
     "storyTitle": "Our story",
     "story1": "Crafty Corner started from a love of handmade things. Every piece, from lanterns to incense burners to figurines, is shaped, painted and prepared by hand.",
     "story2": "That is why every piece is a little different. We wrap every order with care so it reaches you just as it left our hands.",
@@ -426,11 +432,11 @@
       },
       "prices": {
         "title": "Clear prices",
-        "text": "The price you see is the price you pay. No hidden fees at checkout."
+        "text": "The delivery fee is shown in your cart before you order, and you pay in cash on delivery. No hidden fees."
       },
       "delivery": {
-        "title": "Delivery everywhere",
-        "text": "We deliver to all 27 governorates and we call you to arrange the time."
+        "title": "Delivery to your door",
+        "text": "We deliver in Cairo, Giza and Qalyubia for now, and we call you to arrange the time."
       },
       "support": {
         "title": "Friendly support",
@@ -455,7 +461,11 @@
     "ctaTitle": "Ready to pick your piece?",
     "ctaText": "Have a question first? We are happy to help.",
     "shop": "Start shopping",
-    "contact": "Contact us"
+    "contact": "Contact us",
+    "cta": {
+      "shop": "Start shopping",
+      "contact": "Contact us"
+    }
   },
   "contact": {
     "eyebrow": "Contact us",
@@ -518,7 +528,7 @@
       },
       "delivery": {
         "q": "How does delivery work?",
-        "a": "After you order, we call you to arrange the time. We deliver to every governorate."
+        "a": "After you order, we call you to arrange the time. For now we deliver in Cairo, Giza and Qalyubia."
       },
       "track": "Track my order",
       "cancel": {

@@ -8,10 +8,10 @@ import { catchError, of } from 'rxjs';
 import { AuthService } from '@shared/core/auth/auth.service';
 import { egyptPhoneValidator } from '@shared/core/forms/egypt-phone';
 import { firstError, initialOf } from '@shared/core/forms/form-errors';
-import { GOVERNORATES } from '../../core/geo/governorates';
 import { LanguageService } from '@shared/core/i18n/language.service';
 import { OrderSummary } from '@shared/core/orders/order.models';
 import { OrdersService } from '../../core/orders/orders.service';
+import { ShopService } from '../../core/shop/shop.service';
 import { WishlistService } from '../../core/wishlist/wishlist.service';
 import { ToastService } from '@shared/core/toast/toast.service';
 import { DateTimePipe } from '@shared/pipes/date-time.pipe';
@@ -131,87 +131,138 @@ import { Reveal } from '../../shared/directives/reveal';
               appReveal
               class="grid gap-5 rounded-2xl border border-border bg-surface p-5 sm:p-6"
             >
-              <h2 class="flex items-center gap-2 text-lg font-bold">
-                <span
-                  class="grid size-8 place-items-center rounded-full bg-accent-soft text-accent"
-                >
-                  <app-icon name="user" [size]="1.05" />
-                </span>
-                {{ 'account.profile' | transloco }}
-              </h2>
+              <div class="flex items-center justify-between gap-3">
+                <h2 class="flex items-center gap-2 text-lg font-bold">
+                  <span
+                    class="grid size-8 place-items-center rounded-full bg-accent-soft text-accent"
+                  >
+                    <app-icon name="user" [size]="1.05" />
+                  </span>
+                  {{ 'account.profile' | transloco }}
+                </h2>
+                @if (editing() !== 'profile') {
+                  <button type="button" class="btn !px-3 !py-1.5 text-sm" (click)="edit('profile')">
+                    <app-icon name="pencil" [size]="0.95" />
+                    {{ 'account.edit' | transloco }}
+                  </button>
+                }
+              </div>
 
-              <div class="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label for="acc-name" class="mb-1.5 block text-sm font-medium">
-                    {{ 'account.name' | transloco }}
-                  </label>
-                  <div class="relative">
-                    <app-icon
-                      name="user"
-                      [size]="1.05"
-                      class="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-muted"
-                    />
-                    <input
-                      id="acc-name"
-                      formControlName="fullName"
-                      autocomplete="name"
-                      class="field !py-2.5 !ps-10"
-                      [attr.aria-invalid]="nameError() ? 'true' : null"
-                    />
+              @if (editing() === 'profile') {
+                <div class="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label for="acc-name" class="mb-1.5 block text-sm font-medium">
+                      {{ 'account.name' | transloco }}
+                    </label>
+                    <div class="relative">
+                      <app-icon
+                        name="user"
+                        [size]="1.05"
+                        class="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-muted"
+                      />
+                      <input
+                        id="acc-name"
+                        formControlName="fullName"
+                        autocomplete="name"
+                        class="field !py-2.5 !ps-10"
+                        [attr.aria-invalid]="nameError() ? 'true' : null"
+                      />
+                    </div>
+                    @if (nameError(); as key) {
+                      <p class="mt-1.5 text-sm text-danger">{{ key | transloco }}</p>
+                    }
                   </div>
-                  @if (nameError(); as key) {
-                    <p class="mt-1.5 text-sm text-danger">{{ key | transloco }}</p>
-                  }
+
+                  <div>
+                    <label for="acc-phone" class="mb-1.5 block text-sm font-medium">
+                      {{ 'account.phone' | transloco }}
+                    </label>
+                    <div class="relative" dir="ltr">
+                      <app-icon
+                        name="phone"
+                        [size]="1.05"
+                        class="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-muted"
+                      />
+                      <input
+                        id="acc-phone"
+                        type="tel"
+                        formControlName="phone"
+                        autocomplete="tel"
+                        inputmode="tel"
+                        class="field !py-2.5 !ps-10"
+                        placeholder="01012345678"
+                        [attr.aria-invalid]="phoneError() ? 'true' : null"
+                      />
+                    </div>
+                    @if (phoneError(); as key) {
+                      <p class="mt-1.5 text-sm text-danger">{{ key | transloco }}</p>
+                    } @else {
+                      <p class="mt-1.5 text-xs text-muted">{{ 'account.phoneHint' | transloco }}</p>
+                    }
+                  </div>
                 </div>
 
                 <div>
-                  <label for="acc-phone" class="mb-1.5 block text-sm font-medium">
-                    {{ 'account.phone' | transloco }}
+                  <label for="acc-email" class="mb-1.5 block text-sm font-medium">
+                    {{ 'account.email' | transloco }}
                   </label>
                   <div class="relative" dir="ltr">
                     <app-icon
-                      name="phone"
+                      name="mail"
                       [size]="1.05"
                       class="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-muted"
                     />
                     <input
-                      id="acc-phone"
-                      type="tel"
-                      formControlName="phone"
-                      autocomplete="tel"
-                      inputmode="tel"
-                      class="field !py-2.5 !ps-10"
-                      placeholder="01012345678"
-                      [attr.aria-invalid]="phoneError() ? 'true' : null"
+                      id="acc-email"
+                      class="field cursor-not-allowed bg-surface-2/60 !py-2.5 !ps-10 text-muted"
+                      readonly
+                      [value]="user.email"
                     />
                   </div>
-                  @if (phoneError(); as key) {
-                    <p class="mt-1.5 text-sm text-danger">{{ key | transloco }}</p>
-                  } @else {
-                    <p class="mt-1.5 text-xs text-muted">{{ 'account.phoneHint' | transloco }}</p>
-                  }
+                  <p class="mt-1.5 text-xs text-muted">{{ 'account.emailLocked' | transloco }}</p>
                 </div>
-              </div>
 
-              <div>
-                <label for="acc-email" class="mb-1.5 block text-sm font-medium">
-                  {{ 'account.email' | transloco }}
-                </label>
-                <div class="relative" dir="ltr">
-                  <app-icon
-                    name="mail"
-                    [size]="1.05"
-                    class="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-muted"
-                  />
-                  <input
-                    id="acc-email"
-                    class="field cursor-not-allowed bg-surface-2/60 !py-2.5 !ps-10 text-muted"
-                    readonly
-                    [value]="user.email"
-                  />
+                <div class="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
+                  <button type="button" class="btn" [disabled]="saving()" (click)="cancel()">
+                    {{ 'account.discard' | transloco }}
+                  </button>
+                  <button type="submit" class="btn btn-accent px-6" [disabled]="saving()">
+                    {{ (saving() ? 'account.saving' : 'account.save') | transloco }}
+                  </button>
                 </div>
-                <p class="mt-1.5 text-xs text-muted">{{ 'account.emailLocked' | transloco }}</p>
-              </div>
+              } @else {
+                <dl class="grid gap-4 sm:grid-cols-3">
+                  <div class="flex items-start gap-3">
+                    <app-icon name="user" [size]="1.1" class="mt-0.5 shrink-0 text-accent" />
+                    <div class="min-w-0">
+                      <dt class="text-xs text-muted">{{ 'account.name' | transloco }}</dt>
+                      <dd class="truncate font-semibold">{{ user.fullName }}</dd>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <app-icon name="phone" [size]="1.1" class="mt-0.5 shrink-0 text-accent" />
+                    <div class="min-w-0">
+                      <dt class="text-xs text-muted">{{ 'account.phone' | transloco }}</dt>
+                      <dd class="font-semibold" dir="ltr">
+                        @if (user.phone) {
+                          {{ user.phone }}
+                        } @else {
+                          <span class="font-normal text-muted">{{
+                            'account.notSet' | transloco
+                          }}</span>
+                        }
+                      </dd>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <app-icon name="mail" [size]="1.1" class="mt-0.5 shrink-0 text-accent" />
+                    <div class="min-w-0">
+                      <dt class="text-xs text-muted">{{ 'account.email' | transloco }}</dt>
+                      <dd class="truncate font-semibold" dir="ltr">{{ user.email }}</dd>
+                    </div>
+                  </div>
+                </dl>
+              }
             </section>
 
             <section
@@ -219,54 +270,90 @@ import { Reveal } from '../../shared/directives/reveal';
               [appReveal]="100"
               class="grid gap-5 rounded-2xl border border-border bg-surface p-5 sm:p-6"
             >
-              <div>
-                <h2 class="flex items-center gap-2 text-lg font-bold">
-                  <span
-                    class="grid size-8 place-items-center rounded-full bg-accent-soft text-accent"
-                  >
-                    <app-icon name="pin" [size]="1.05" />
-                  </span>
-                  {{ 'account.addressTitle' | transloco }}
-                </h2>
-                <p class="mt-1.5 text-sm text-muted">{{ 'account.addressHint' | transloco }}</p>
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h2 class="flex items-center gap-2 text-lg font-bold">
+                    <span
+                      class="grid size-8 place-items-center rounded-full bg-accent-soft text-accent"
+                    >
+                      <app-icon name="pin" [size]="1.05" />
+                    </span>
+                    {{ 'account.addressTitle' | transloco }}
+                  </h2>
+                  <p class="mt-1.5 text-sm text-muted">{{ 'account.addressHint' | transloco }}</p>
+                </div>
+                @if (editing() !== 'address') {
+                  <button type="button" class="btn !px-3 !py-1.5 text-sm" (click)="edit('address')">
+                    <app-icon [name]="user.address ? 'pencil' : 'plus'" [size]="0.95" />
+                    {{ (user.address ? 'account.edit' : 'account.addAddress') | transloco }}
+                  </button>
+                }
               </div>
 
-              <div class="grid gap-4 sm:grid-cols-[minmax(0,14rem)_1fr]">
-                <div>
-                  <label for="acc-city" class="mb-1.5 block text-sm font-medium">
-                    {{ 'checkout.fields.city' | transloco }}
-                  </label>
-                  <select
-                    id="acc-city"
-                    formControlName="city"
-                    autocomplete="address-level1"
-                    class="field !py-2.5"
-                  >
-                    <option value="">{{ 'checkout.fields.cityPlaceholder' | transloco }}</option>
-                    @for (governorate of governorates; track governorate.value) {
-                      <option [value]="governorate.value">
-                        {{ lang() === 'ar' ? governorate.ar : governorate.value }}
-                      </option>
-                    }
-                  </select>
+              @if (editing() === 'address') {
+                <div class="grid gap-4 sm:grid-cols-[minmax(0,14rem)_1fr]">
+                  <div>
+                    <label for="acc-city" class="mb-1.5 block text-sm font-medium">
+                      {{ 'checkout.fields.city' | transloco }}
+                    </label>
+                    <select
+                      id="acc-city"
+                      formControlName="city"
+                      autocomplete="address-level1"
+                      class="field !py-2.5"
+                    >
+                      <option value="">{{ 'checkout.fields.cityPlaceholder' | transloco }}</option>
+                      @for (governorate of governorates(); track governorate.value) {
+                        <option [value]="governorate.value">
+                          {{ lang() === 'ar' ? governorate.ar : governorate.value }}
+                        </option>
+                      }
+                    </select>
+                    <p class="mt-1.5 text-xs text-muted">
+                      {{ 'checkout.deliveryAreas' | transloco: { areas: areasText() } }}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label for="acc-address" class="mb-1.5 block text-sm font-medium">
+                      {{ 'checkout.fields.address' | transloco }}
+                    </label>
+                    <textarea
+                      id="acc-address"
+                      formControlName="address"
+                      rows="3"
+                      autocomplete="street-address"
+                      class="field resize-y"
+                    ></textarea>
+                  </div>
                 </div>
 
-                <div>
-                  <label for="acc-address" class="mb-1.5 block text-sm font-medium">
-                    {{ 'checkout.fields.address' | transloco }}
-                  </label>
-                  <textarea
-                    id="acc-address"
-                    formControlName="address"
-                    rows="3"
-                    autocomplete="street-address"
-                    class="field resize-y"
-                  ></textarea>
-                </div>
-              </div>
+                @if (addressError(); as key) {
+                  <p role="alert" class="text-sm text-danger">{{ key | transloco }}</p>
+                }
 
-              @if (addressError(); as key) {
-                <p role="alert" class="text-sm text-danger">{{ key | transloco }}</p>
+                <div class="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
+                  <button type="button" class="btn" [disabled]="saving()" (click)="cancel()">
+                    {{ 'account.discard' | transloco }}
+                  </button>
+                  <button type="submit" class="btn btn-accent px-6" [disabled]="saving()">
+                    {{ (saving() ? 'account.saving' : 'account.save') | transloco }}
+                  </button>
+                </div>
+              } @else if (user.address && user.city) {
+                <div class="flex items-start gap-3 rounded-xl bg-surface-2/50 p-4">
+                  <app-icon name="pin" [size]="1.1" class="mt-0.5 shrink-0 text-accent" />
+                  <div class="min-w-0">
+                    <p class="font-semibold">{{ user.city }}</p>
+                    <p class="mt-0.5 leading-relaxed text-muted">{{ user.address }}</p>
+                  </div>
+                </div>
+              } @else {
+                <p
+                  class="rounded-xl border border-dashed border-border px-4 py-5 text-center text-sm text-muted"
+                >
+                  {{ 'account.noAddress' | transloco }}
+                </p>
               }
             </section>
 
@@ -279,25 +366,7 @@ import { Reveal } from '../../shared/directives/reveal';
               </p>
             }
 
-            <!-- appears only when something was changed, and stays in reach while scrolling -->
-            @if (!form.pristine) {
-              <div
-                class="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent/40 bg-surface/95 p-3 shadow-lift backdrop-blur"
-              >
-                <p class="flex items-center gap-2 ps-1 text-sm font-medium">
-                  <span class="size-2 rounded-full bg-highlight"></span>
-                  {{ 'account.unsaved' | transloco }}
-                </p>
-                <div class="flex gap-2">
-                  <button type="button" class="btn" [disabled]="saving()" (click)="discard()">
-                    {{ 'account.discard' | transloco }}
-                  </button>
-                  <button type="submit" class="btn btn-accent px-6" [disabled]="saving()">
-                    {{ (saving() ? 'account.saving' : 'account.save') | transloco }}
-                  </button>
-                </div>
-              </div>
-            } @else if (saved()) {
+            @if (saved() && !editing()) {
               <p class="flex items-center gap-1.5 text-sm font-medium text-success">
                 <app-icon name="check" [size]="1" />
                 {{ 'account.saved' | transloco }}
@@ -394,7 +463,14 @@ export class Account {
   private readonly document = inject(DOCUMENT);
   protected readonly wishlist = inject(WishlistService);
   protected readonly lang = inject(LanguageService).lang;
-  protected readonly governorates = GOVERNORATES;
+  private readonly shop = inject(ShopService);
+  protected readonly governorates = this.shop.governorates;
+  protected readonly areasText = computed(() =>
+    this.shop
+      .governorates()
+      .map((governorate) => (this.lang() === 'ar' ? governorate.ar : governorate.value))
+      .join(this.lang() === 'ar' ? '، ' : ', '),
+  );
 
   protected readonly quickLinks: { key: string; path: string; icon: IconName }[] = [
     { key: 'orders', path: '/orders', icon: 'box' },
@@ -450,16 +526,32 @@ export class Account {
     address: [this.auth.user()?.address ?? '', [Validators.maxLength(300)]],
   });
 
+  /** Which part is open for editing: the saved details are shown, not left as open fields. */
+  protected readonly editing = signal<'profile' | 'address' | null>(null);
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly serverError = signal(false);
   private readonly submitted = signal(false);
 
-  /** Takes the customer to the field a chip is about. */
+  protected edit(part: 'profile' | 'address'): void {
+    this.saved.set(false);
+    this.editing.set(part);
+  }
+
+  protected cancel(): void {
+    this.discard();
+    this.editing.set(null);
+  }
+
+  /** A chip about a missing detail opens that part for editing and puts the cursor in the field. */
   protected focus(id: string): void {
-    const element = this.document.getElementById(id);
-    element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    element?.focus({ preventScroll: true });
+    this.edit(id === 'acc-city' ? 'address' : 'profile');
+    // the fields exist once the section has switched to editing
+    setTimeout(() => {
+      const element = this.document.getElementById(id);
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      element?.focus({ preventScroll: true });
+    });
   }
 
   /** Puts the saved values back in the form. */
@@ -536,6 +628,7 @@ export class Account {
           );
           this.saving.set(false);
           this.saved.set(true);
+          this.editing.set(null);
           this.submitted.set(false);
           this.toasts.show({ kind: 'success', key: 'account.saved' });
         },

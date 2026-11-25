@@ -103,8 +103,8 @@ test.describe('delivery map', () => {
       page.getByText('We could not read the address from the pin. Please type it in.'),
     ).toBeVisible();
 
-    await page.locator('#co-city').selectOption('Alexandria');
-    await page.locator('#co-address').fill('7 Corniche Road, Alexandria');
+    await page.locator('#co-city').selectOption('Qalyubia');
+    await page.locator('#co-address').fill('7 Shubra Road, Qalyubia');
     await page.getByRole('button', { name: 'Place order' }).click();
     await expect(page).toHaveURL(/\/orders\/\d+\?placed=1/);
   });
