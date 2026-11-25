@@ -88,6 +88,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(o => o.Notes).HasMaxLength(500);
             entity.Property(o => o.Total).HasPrecision(18, 2);
             entity.Property(o => o.ShippingFee).HasPrecision(18, 2);
+            entity.Property(o => o.PaymentMethod).HasConversion<string>().HasMaxLength(20);
+            entity.Property(o => o.PaymentStatus).HasConversion<string>().HasMaxLength(20);
+            entity.Property(o => o.PaymentReceipt).HasMaxLength(60);
+            entity.Property(o => o.PaymentReference).HasMaxLength(60);
+            entity.Property(o => o.PaymentNote).HasMaxLength(300);
+            // one screenshot belongs to one order (a second order cannot reuse it); orders without one are not affected
+            entity.HasIndex(o => o.PaymentReceipt).IsUnique();
             entity.Property(o => o.TrackingCompany).HasMaxLength(60);
             entity.Property(o => o.TrackingNumber).HasMaxLength(60);
 

@@ -26,7 +26,9 @@ public record AdminOrderListDto(
     DateTime CreatedAt,
     string ShippingName,
     string Phone,
-    string City
+    string City,
+    string PaymentMethod = "CashOnDelivery",
+    string PaymentStatus = "None"
 );
 
 public record UpdateOrderStatusDto([Required] string Status);

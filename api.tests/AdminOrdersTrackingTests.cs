@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using CraftyCorner.Api.Controllers;
@@ -28,6 +29,16 @@ public class AdminOrdersTrackingTests : IDisposable
         }
     }
 
+    private sealed class FakeHost : Microsoft.AspNetCore.Hosting.IWebHostEnvironment
+    {
+        public string ApplicationName { get; set; } = "tests";
+        public Microsoft.Extensions.FileProviders.IFileProvider WebRootFileProvider { get; set; } = new Microsoft.Extensions.FileProviders.NullFileProvider();
+        public string WebRootPath { get; set; } = "";
+        public string EnvironmentName { get; set; } = "Testing";
+        public string ContentRootPath { get; set; } = Path.GetTempPath();
+        public Microsoft.Extensions.FileProviders.IFileProvider ContentRootFileProvider { get; set; } = new Microsoft.Extensions.FileProviders.NullFileProvider();
+    }
+
     private AdminOrdersController Admin() =>
         TestDb.SignedInAs(
             new AdminOrdersController(
@@ -35,7 +46,8 @@ public class AdminOrdersTrackingTests : IDisposable
                 TimeProvider.System,
                 emails,
                 Options.Create(new EmailOptions { WebUrl = "https://shop.test" }),
-                NullLogger<AdminOrdersController>.Instance
+                NullLogger<AdminOrdersController>.Instance,
+                new ReceiptStore(new ConfigurationBuilder().Build(), new FakeHost())
             ),
             userId: 1,
             role: "Admin"

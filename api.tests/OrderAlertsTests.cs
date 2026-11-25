@@ -163,6 +163,8 @@ public class OrderAlertsTests
             return throws ? Task.FromException(new InvalidOperationException("Telegram is down")) : Task.CompletedTask;
         }
 
+        public Task ReceiptReplacedAsync(Order order) => Task.CompletedTask;
+
         public Task OrderCancelledAsync(Order order)
         {
             Cancelled.Add(order.Id);

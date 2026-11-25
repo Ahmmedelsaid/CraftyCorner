@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
+  API,
   HAS_ADMIN,
   adminApi,
   newCustomer,
@@ -233,5 +234,66 @@ test.describe('customer', () => {
     if (await confirm.isVisible()) await confirm.click();
 
     await expect(page.getByText('Cancelled').first()).toBeVisible();
+  });
+});
+
+test.describe('InstaPay', () => {
+  /** A 1x1 PNG: a real image, so the receipt check (it reads the first bytes) accepts it. */
+  const PNG = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEgAF/QualzQAAAABJRU5ErkJggg==',
+    'base64',
+  );
+
+  test('pays by InstaPay with a receipt, and the owner confirms it', async ({ page, request }) => {
+    test.skip(
+      !HAS_ADMIN,
+      'set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD (the owner confirms the payment)',
+    );
+    const shop = await (await request.get(`${API}/shop`)).json();
+    test.skip(!shop.instaPay, 'the shop has no InstaPay address (Shop__InstaPay__Handle)');
+
+    await useLanguage(page, 'en');
+    await register(page);
+    await openFirstProduct(page);
+    await page.getByRole('button', { name: 'Add to cart' }).click();
+    await page.goto('/checkout');
+    await page.locator('#co-city').selectOption('Giza');
+    await page.locator('#co-address').fill('12 Nile Street, Dokki, building 3');
+
+    // the shop's InstaPay address is shown, and the order cannot be placed without the receipt
+    await page.getByText('InstaPay', { exact: true }).click();
+    await expect(page.getByText(shop.instaPay.handle)).toBeVisible();
+    await page.getByRole('button', { name: 'Place order' }).first().click();
+    await expect(
+      page.getByText('Upload the receipt of your transfer to place the order.'),
+    ).toBeVisible();
+    await expect(page).toHaveURL(/\/checkout/);
+
+    // a file that is not an image is refused, a real one is accepted
+    await page.locator('input[type="file"]').setInputFiles({
+      name: 'x.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from('<script>alert(1)</script> not a png'),
+    });
+    await expect(page.getByText('Could not upload the image.')).toBeVisible();
+    await page
+      .locator('input[type="file"]')
+      .setInputFiles({ name: 'receipt.png', mimeType: 'image/png', buffer: PNG });
+    await expect(page.getByText('Receipt uploaded')).toBeVisible();
+    await page.locator('#co-reference').fill('IP-E2E-1');
+    await page.getByRole('button', { name: 'Place order' }).first().click();
+
+    await expect(page).toHaveURL(/\/orders\/\d+\?placed=1/);
+    const orderId = Number(new URL(page.url()).pathname.split('/').pop());
+    await expect(
+      page.getByText('We received your receipt and we are checking the transfer.'),
+    ).toBeVisible();
+
+    // the owner opens the screenshot (private: it needs the owner's token) and confirms the money
+    const admin = await adminApi(request);
+    await admin.confirmPayment(orderId);
+    await page.reload();
+    await expect(page.getByText('Payment confirmed. Thank you!')).toBeVisible();
+    await expect(page.getByText('IP-E2E-1')).toBeVisible();
   });
 });

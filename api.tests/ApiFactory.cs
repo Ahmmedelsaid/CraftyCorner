@@ -36,6 +36,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 
     private readonly SqliteConnection connection = new("DataSource=:memory:");
     private readonly string uploads = Path.Combine(Path.GetTempPath(), "cc-tests-" + Guid.NewGuid().ToString("N"));
+    private readonly string receipts = Path.Combine(Path.GetTempPath(), "cc-receipts-" + Guid.NewGuid().ToString("N"));
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -50,6 +51,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
                         ["Jwt:Issuer"] = "CraftyCorner",
                         ["Jwt:Audience"] = "CraftyCorner.Web",
                         ["Uploads:Path"] = uploads,
+                        ["Receipts:Path"] = receipts,
                         // plenty of logins per minute: the rate limit has its own test
                         ["RateLimit:AuthPermitLimit"] = "1000",
                     }
@@ -187,6 +189,8 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         {
             if (Directory.Exists(uploads))
                 Directory.Delete(uploads, recursive: true);
+            if (Directory.Exists(receipts))
+                Directory.Delete(receipts, recursive: true);
         }
         catch (IOException)
         {

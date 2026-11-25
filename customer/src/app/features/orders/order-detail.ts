@@ -3,7 +3,10 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { of, switchMap } from 'rxjs';
+import { environment } from '@env/environment';
 import { ApiError } from '@shared/core/models/api.models';
+import { ReceiptImage } from '@shared/ui/receipt-image';
+import { ReceiptUpload } from '../../shared/ui/receipt-upload';
 import { Order } from '@shared/core/orders/order.models';
 import { SHOP_WHATSAPP } from '../../core/site';
 import { OrdersService, orderErrorKey } from '../../core/orders/orders.service';
@@ -27,6 +30,8 @@ import { Reveal } from '../../shared/directives/reveal';
     DateTimePipe,
     Icon,
     OrderStatusBadge,
+    ReceiptImage,
+    ReceiptUpload,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -336,12 +341,74 @@ import { Reveal } from '../../shared/directives/reveal';
               </section>
             }
 
-            <section class="grid gap-1 rounded-2xl border border-border bg-surface p-5">
+            <section class="grid gap-3 rounded-2xl border border-border bg-surface p-5">
               <h2 class="font-bold">{{ 'checkout.payment' | transloco }}</h2>
-              <p class="flex items-center gap-2 text-sm text-muted">
-                <app-icon name="cash" [size]="1.05" class="shrink-0 text-accent" />
-                {{ 'checkout.cod' | transloco }}
-              </p>
+
+              @if (order.paymentMethod === 'InstaPay') {
+                <p class="flex items-center gap-2 text-sm font-medium">
+                  <app-icon name="phone" [size]="1.05" class="shrink-0 text-accent" />
+                  InstaPay
+                </p>
+
+                @switch (order.paymentStatus) {
+                  @case ('Confirmed') {
+                    <p
+                      role="status"
+                      class="flex items-start gap-2 rounded-lg bg-success/10 px-3 py-2 text-sm text-success"
+                    >
+                      <app-icon name="check" [size]="1.05" class="mt-0.5 shrink-0" />
+                      {{ 'payment.status.Confirmed' | transloco }}
+                    </p>
+                  }
+                  @case ('Rejected') {
+                    <div
+                      role="alert"
+                      class="grid gap-2 rounded-lg border border-danger/40 bg-danger/5 px-3 py-3 text-sm"
+                    >
+                      <p class="font-semibold text-danger">
+                        {{ 'payment.status.Rejected' | transloco }}
+                      </p>
+                      @if (order.paymentNote) {
+                        <p class="text-muted">{{ order.paymentNote }}</p>
+                      }
+                      <p>{{ 'payment.sendAnother' | transloco }}</p>
+                      <app-receipt-upload [(receiptId)]="newReceipt" />
+                      <button
+                        type="button"
+                        class="btn btn-accent"
+                        [disabled]="!newReceipt() || sendingReceipt()"
+                        (click)="sendReceipt(order)"
+                      >
+                        {{ 'payment.send' | transloco }}
+                      </button>
+                    </div>
+                  }
+                  @default {
+                    <p
+                      role="status"
+                      class="flex items-start gap-2 rounded-lg bg-highlight/20 px-3 py-2 text-sm"
+                    >
+                      <app-icon name="clock" [size]="1.05" class="mt-0.5 shrink-0" />
+                      {{ 'payment.status.AwaitingReview' | transloco }}
+                    </p>
+                  }
+                }
+
+                @if (order.paymentReference) {
+                  <p class="text-sm text-muted">
+                    {{ 'payment.reference' | transloco }}:
+                    <b dir="ltr" class="ms-1 tabular-nums text-fg">{{ order.paymentReference }}</b>
+                  </p>
+                }
+                @if (order.hasReceipt) {
+                  <app-receipt-image [url]="receiptUrl(order)" />
+                }
+              } @else {
+                <p class="flex items-center gap-2 text-sm text-muted">
+                  <app-icon name="cash" [size]="1.05" class="shrink-0 text-accent" />
+                  {{ 'checkout.cod' | transloco }}
+                </p>
+              }
             </section>
 
             <section class="grid gap-3 rounded-2xl border border-border bg-surface p-5">
@@ -458,6 +525,32 @@ export class OrderDetail {
   protected readonly confirming = signal(false);
   protected readonly cancelling = signal(false);
   protected readonly errorKey = signal<string | null>(null);
+
+  /** A new receipt, after the owner rejected the first one. */
+  protected readonly newReceipt = signal<string | null>(null);
+  protected readonly sendingReceipt = signal(false);
+
+  protected receiptUrl(order: Order): string {
+    return `${environment.apiUrl}/orders/${order.id}/receipt`;
+  }
+
+  protected sendReceipt(order: Order): void {
+    const receiptId = this.newReceipt();
+    if (!receiptId) return;
+    this.sendingReceipt.set(true);
+    this.errorKey.set(null);
+    this.orders.replaceReceipt(order.id, receiptId, null).subscribe({
+      next: (updated) => {
+        this.shown.set(updated);
+        this.newReceipt.set(null);
+        this.sendingReceipt.set(false);
+      },
+      error: (error: ApiError) => {
+        this.sendingReceipt.set(false);
+        this.errorKey.set(orderErrorKey(error));
+      },
+    });
+  }
 
   protected readonly state = toSignal(
     toObservable(this.id).pipe(

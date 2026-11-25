@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CraftyCorner.Api.Dtos;
 using CraftyCorner.Api.Models;
+using CraftyCorner.Api.Services;
 
 namespace CraftyCorner.Api.Controllers;
 
@@ -45,7 +46,7 @@ public class UploadsController(IConfiguration configuration, IWebHostEnvironment
                 return NotAnImage();
         }
 
-        var extension = DetectExtension(header);
+        var extension = ImageSniffer.Extension(header);
         if (extension is null)
             return NotAnImage();
 
@@ -64,16 +65,4 @@ public class UploadsController(IConfiguration configuration, IWebHostEnvironment
 
     private ObjectResult NotAnImage() =>
         Problem(detail: "Only JPG, PNG or WebP images are accepted.", statusCode: StatusCodes.Status400BadRequest);
-
-    private static string? DetectExtension(byte[] h)
-    {
-        if (h[0] == 0xFF && h[1] == 0xD8 && h[2] == 0xFF)
-            return ".jpg";
-        if (h[0] == 0x89 && h[1] == 0x50 && h[2] == 0x4E && h[3] == 0x47)
-            return ".png";
-        // WebP: "RIFF" ???? "WEBP"
-        if (h[0] == 0x52 && h[1] == 0x49 && h[2] == 0x46 && h[3] == 0x46 && h[8] == 0x57 && h[9] == 0x45 && h[10] == 0x42 && h[11] == 0x50)
-            return ".webp";
-        return null;
-    }
 }

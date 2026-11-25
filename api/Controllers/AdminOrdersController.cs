@@ -18,7 +18,8 @@ public class AdminOrdersController(
     TimeProvider clock,
     IEmailQueue emails,
     IOptions<EmailOptions> emailOptions,
-    ILogger<AdminOrdersController> logger
+    ILogger<AdminOrdersController> logger,
+    ReceiptStore receipts
 ) : ControllerBase
 {
     /// <summary>Which statuses an order may move to from each status. Delivered and Cancelled are final.</summary>
@@ -85,7 +86,9 @@ public class AdminOrdersController(
                 o.CreatedAt,
                 o.ShippingName,
                 o.Phone,
-                o.City
+                o.City,
+                o.PaymentMethod.ToString(),
+                o.PaymentStatus.ToString()
             ))
             .ToListAsync();
 
@@ -159,6 +162,92 @@ public class AdminOrdersController(
         }
     }
 
+    /// <summary>The transfer screenshot of an InstaPay order.</summary>
+    [HttpGet("{id:int}/receipt")]
+    public async Task<IActionResult> GetReceipt(int id)
+    {
+        var order = await db
+            .Orders.AsNoTracking()
+            .Where(o => o.Id == id)
+            .Select(o => new { o.UserId, o.PaymentReceipt })
+            .FirstOrDefaultAsync();
+        var path = order is null ? null : receipts.PathFor(order.UserId, order.PaymentReceipt);
+        if (path is null)
+            return NotFound();
+
+        Response.Headers.CacheControl = "private, no-store";
+        return PhysicalFile(path, ReceiptStore.ContentType(order!.PaymentReceipt!));
+    }
+
+    /// <summary>Confirms that the money arrived, or rejects the receipt (the customer is told and can upload another).</summary>
+    [HttpPost("{id:int}/payment")]
+    public async Task<ActionResult<OrderDto>> ReviewPayment(int id, PaymentDecisionDto dto)
+    {
+        var confirm = string.Equals(dto.Decision, "confirm", StringComparison.OrdinalIgnoreCase);
+        if (!confirm && !string.Equals(dto.Decision, "reject", StringComparison.OrdinalIgnoreCase))
+            return Problem(detail: "The decision is confirm or reject.", statusCode: StatusCodes.Status400BadRequest);
+
+        var order = await db.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
+        if (order is null)
+            return NotFound();
+
+        if (order.PaymentMethod != PaymentMethod.InstaPay || order.PaymentStatus != PaymentStatus.AwaitingReview)
+            return Problem(
+                detail: "There is no payment waiting for review on this order.",
+                statusCode: StatusCodes.Status409Conflict
+            );
+        if (order.Status == OrderStatus.Cancelled)
+            return Problem(detail: "This order is cancelled.", statusCode: StatusCodes.Status409Conflict);
+
+        order.PaymentStatus = confirm ? PaymentStatus.Confirmed : PaymentStatus.Rejected;
+        order.PaymentNote = confirm ? null : (string.IsNullOrWhiteSpace(dto.Note) ? "The transfer could not be verified." : dto.Note.Trim());
+        order.PaymentReviewedAt = clock.GetUtcNow().UtcDateTime;
+        await db.SaveChangesAsync();
+
+        if (!confirm)
+            await NotifyRejectedAsync(order);
+
+        logger.LogInformation("Payment of order {OrderId} {Decision}", order.Id, confirm ? "confirmed" : "rejected");
+        return OrderDto.From(order);
+    }
+
+    private async Task NotifyRejectedAsync(Order order)
+    {
+        if (!emails.Enabled)
+            return;
+
+        try
+        {
+            var customer = await db
+                .Users.AsNoTracking()
+                .Where(u => u.Id == order.UserId)
+                .Select(u => new { u.Email, u.FullName })
+                .FirstOrDefaultAsync();
+            if (customer is null)
+                return;
+
+            var url = $"{emailOptions.Value.WebUrl.TrimEnd('/')}/orders/{order.Id}";
+            var name = order.ShippingName.ReplaceLineEndings(" ");
+            await emails.EnqueueAsync(
+                new EmailMessage(
+                    To: customer.Email,
+                    Subject: $"Crafty Corner | تعذّر تأكيد الدفع لطلبك #{order.Id} / Payment problem with order #{order.Id}",
+                    Body:
+                        $"أهلاً {name}، مقدرناش نتأكد من تحويل InstaPay لطلبك رقم {order.Id}.\n"
+                        + $"السبب: {order.PaymentNote}\n"
+                        + $"ارفع صورة التحويل الصحيحة من هنا: {url}\n\n"
+                        + $"Hello {name}, we could not verify the InstaPay transfer for your order #{order.Id}.\n"
+                        + $"Reason: {order.PaymentNote}\n"
+                        + $"Please upload the correct receipt here: {url}"
+                )
+            );
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Could not queue the payment email for order {OrderId}", order.Id);
+        }
+    }
+
     [HttpPost("{id:int}/status")]
     public async Task<ActionResult<OrderDto>> SetStatus(int id, UpdateOrderStatusDto dto)
     {
@@ -168,6 +257,16 @@ public class AdminOrdersController(
         var order = await db.Orders.AsNoTracking().Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
         if (order is null)
             return NotFound();
+
+        if (
+            order.PaymentMethod == PaymentMethod.InstaPay
+            && order.PaymentStatus != PaymentStatus.Confirmed
+            && next != OrderStatus.Cancelled
+        )
+            return Problem(
+                detail: "Confirm the InstaPay payment first.",
+                statusCode: StatusCodes.Status409Conflict
+            );
 
         var current = order.Status;
         if (!Transitions.TryGetValue(current, out var allowed) || !allowed.Contains(next))

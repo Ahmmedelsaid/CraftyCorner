@@ -36,7 +36,9 @@ services:
       Email__WebUrl: ${PUBLIC_URL:-http://localhost:8080}
     volumes:
       - uploads:/data/uploads
+      - receipts:/data/receipts
 
 volumes:
   dbdata:
   uploads:
+  receipts:

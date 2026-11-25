@@ -17,4 +17,22 @@ public class ShopOptions
     /// Orders for any other city are refused. Change it with Shop:DeliveryCities.
     /// </summary>
     public List<string> DeliveryCities { get; set; } = ["Cairo", "Giza", "Qalyubia"];
+
+    /// <summary>Pay by InstaPay (Shop:InstaPay). Off until the shop's InstaPay address or phone is set.</summary>
+    public InstaPayOptions InstaPay { get; set; } = new();
+}
+
+public class InstaPayOptions
+{
+    /// <summary>The shop's InstaPay address, for example craftycorner@instapay.</summary>
+    public string? Handle { get; set; }
+
+    /// <summary>The mobile number linked to the shop's InstaPay, as an alternative to the address.</summary>
+    public string? PhoneNumber { get; set; }
+
+    /// <summary>The name the customer will see on the transfer screen (so they know it is the right account).</summary>
+    public string? AccountName { get; set; }
+
+    public bool IsEnabled =>
+        !string.IsNullOrWhiteSpace(Handle) || !string.IsNullOrWhiteSpace(PhoneNumber);
 }

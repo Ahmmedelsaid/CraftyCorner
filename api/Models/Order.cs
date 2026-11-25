@@ -13,6 +13,23 @@ public enum OrderStatus
     Delivered,
 }
 
+public enum PaymentMethod
+{
+    CashOnDelivery,
+
+    /// <summary>The customer sends the money by InstaPay and uploads a screenshot of the transfer.</summary>
+    InstaPay,
+}
+
+public enum PaymentStatus
+{
+    /// <summary>Nothing to review (cash on delivery).</summary>
+    None,
+    AwaitingReview,
+    Confirmed,
+    Rejected,
+}
+
 public class Order
 {
     public int Id { get; set; }
@@ -35,6 +52,20 @@ public class Order
 
     /// <summary>Delivery fee charged on this order (copied from the shop setting when it was placed).</summary>
     public decimal ShippingFee { get; set; }
+
+    public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.CashOnDelivery;
+    public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.None;
+
+    /// <summary>Id of the uploaded transfer screenshot (kept privately, see ReceiptStore).</summary>
+    public string? PaymentReceipt { get; set; }
+
+    /// <summary>The InstaPay reference number the customer typed (optional).</summary>
+    public string? PaymentReference { get; set; }
+
+    /// <summary>Why the owner rejected the payment, shown to the customer.</summary>
+    public string? PaymentNote { get; set; }
+
+    public DateTime? PaymentReviewedAt { get; set; }
 
     /// <summary>What the customer pays: the items plus the shipping fee.</summary>
     public decimal Total { get; set; }

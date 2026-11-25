@@ -34,8 +34,11 @@ EXPOSE 8080
 
 # صور المنتجات اللي بترفعها صاحبة المتجر: لازم تتحط على volume، وإلا بتضيع مع كل نشر جديد
 ENV Uploads__Path=/data/uploads
-RUN mkdir -p /data/uploads && chown -R $APP_UID /data
+# payment receipts (private): a persistent volume, like the product photos
+ENV Receipts__Path=/data/receipts
+RUN mkdir -p /data/uploads /data/receipts && chown -R $APP_UID /data
 VOLUME /data/uploads
+VOLUME /data/receipts
 
 # مش root
 USER $APP_UID

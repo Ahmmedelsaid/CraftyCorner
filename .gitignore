@@ -30,6 +30,7 @@ Thumbs.db
 
 # product photos uploaded from the dashboard while developing
 api/uploads/
+api/receipts/
 
 # Playwright
 test-results/

@@ -63,6 +63,8 @@ jobs:
             -e Seed__AdminEmail=e2e-admin@example.com \
             -e Seed__AdminPassword=Passw0rd!1 \
             -e RateLimit__AuthPermitLimit=500 \
+            -e Shop__InstaPay__Handle=craftycorner@instapay \
+            -e "Shop__InstaPay__AccountName=Crafty Corner" \
             craftycorner
           for i in $(seq 1 60); do curl -fsS http://localhost:5034/api/health && break; sleep 2; done
       - name: Smoke test

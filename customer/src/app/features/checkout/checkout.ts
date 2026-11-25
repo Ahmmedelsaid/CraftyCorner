@@ -19,9 +19,10 @@ import { GeocodingService, ReverseGeocode } from '../../core/geo/geocoding.servi
 import { LatLng, findGovernorate, matchGovernorate } from '../../core/geo/governorates';
 import { LanguageService } from '@shared/core/i18n/language.service';
 import { ApiError } from '@shared/core/models/api.models';
-import { PlaceOrderRequest } from '@shared/core/orders/order.models';
+import { PaymentMethod, PlaceOrderRequest } from '@shared/core/orders/order.models';
 import { OrdersService, orderErrorKey } from '../../core/orders/orders.service';
 import { ShopService } from '../../core/shop/shop.service';
+import { ReceiptUpload } from '../../shared/ui/receipt-upload';
 import { PricePipe } from '@shared/pipes/price.pipe';
 import { Icon } from '@shared/ui/icon';
 import { LocationPicker } from '../../shared/ui/location-picker';
@@ -40,6 +41,7 @@ import { Reveal } from '../../shared/directives/reveal';
     PricePipe,
     Icon,
     LocationPicker,
+    ReceiptUpload,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -250,19 +252,157 @@ import { Reveal } from '../../shared/directives/reveal';
 
               <section
                 [appReveal]="160"
-                class="grid gap-3 rounded-2xl border border-border bg-surface/60 p-5 sm:p-6"
+                class="grid gap-4 rounded-2xl border border-border bg-surface/60 p-5 sm:p-6"
                 aria-labelledby="co-payment-title"
               >
                 <h2 id="co-payment-title" class="flex items-center gap-3 font-semibold">
                   <span class="step">3</span>
                   {{ 'checkout.sections.payment' | transloco }}
                 </h2>
+
                 <div
-                  class="flex items-center gap-3 rounded-xl border border-accent/50 bg-accent/10 px-4 py-3 text-sm"
+                  class="grid gap-3 sm:grid-cols-2"
+                  role="radiogroup"
+                  [attr.aria-label]="'checkout.sections.payment' | transloco"
                 >
-                  <app-icon name="check" [size]="1.1" class="text-accent" />
-                  <p>{{ 'checkout.cod' | transloco }}</p>
+                  <label
+                    class="flex cursor-pointer items-start gap-3 rounded-xl border-2 p-4 transition has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"
+                    [class]="
+                      method() === 'CashOnDelivery'
+                        ? 'border-accent bg-accent/10'
+                        : 'border-border hover:border-accent/50'
+                    "
+                  >
+                    <input
+                      type="radio"
+                      class="sr-only"
+                      name="co-method"
+                      value="CashOnDelivery"
+                      [checked]="method() === 'CashOnDelivery'"
+                      (change)="chooseMethod('CashOnDelivery')"
+                    />
+                    <app-icon name="cash" [size]="1.3" class="mt-0.5 shrink-0 text-accent" />
+                    <span>
+                      <span class="block font-semibold">{{
+                        'checkout.pay.cod.title' | transloco
+                      }}</span>
+                      <span class="block text-sm text-muted">{{
+                        'checkout.pay.cod.text' | transloco
+                      }}</span>
+                    </span>
+                  </label>
+
+                  @if (shop.instaPay(); as instaPay) {
+                    <label
+                      class="flex cursor-pointer items-start gap-3 rounded-xl border-2 p-4 transition has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"
+                      [class]="
+                        method() === 'InstaPay'
+                          ? 'border-accent bg-accent/10'
+                          : 'border-border hover:border-accent/50'
+                      "
+                    >
+                      <input
+                        type="radio"
+                        class="sr-only"
+                        name="co-method"
+                        value="InstaPay"
+                        [checked]="method() === 'InstaPay'"
+                        (change)="chooseMethod('InstaPay')"
+                      />
+                      <app-icon name="phone" [size]="1.3" class="mt-0.5 shrink-0 text-accent" />
+                      <span>
+                        <span class="block font-semibold">InstaPay</span>
+                        <span class="block text-sm text-muted">{{
+                          'checkout.pay.instapay.text' | transloco
+                        }}</span>
+                      </span>
+                    </label>
+                  }
                 </div>
+
+                @if (method() === 'InstaPay' && shop.instaPay(); as instaPay) {
+                  <div class="grid gap-4 rounded-xl border border-border bg-surface p-4">
+                    <h3 class="font-semibold">{{ 'checkout.pay.howTitle' | transloco }}</h3>
+                    <ol class="grid gap-5 text-sm">
+                      <li class="flex gap-3">
+                        <span class="step shrink-0">1</span>
+                        <div class="grid min-w-0 flex-1 gap-2">
+                          <p>
+                            {{
+                              'checkout.pay.step1'
+                                | transloco: { amount: (current.total ?? current.subtotal | price) }
+                            }}
+                          </p>
+                          <dl class="grid gap-2 rounded-lg bg-accent-soft/50 p-3">
+                            @if (instaPay.handle) {
+                              <div class="flex flex-wrap items-center justify-between gap-2">
+                                <dt class="text-muted">{{ 'checkout.pay.handle' | transloco }}</dt>
+                                <dd class="flex items-center gap-2 font-semibold" dir="ltr">
+                                  <bdi>{{ instaPay.handle }}</bdi>
+                                  <button
+                                    type="button"
+                                    class="btn !px-2.5 !py-1 text-xs"
+                                    (click)="copy(instaPay.handle)"
+                                  >
+                                    {{
+                                      (copied() ? 'checkout.pay.copied' : 'checkout.pay.copy')
+                                        | transloco
+                                    }}
+                                  </button>
+                                </dd>
+                              </div>
+                            }
+                            @if (instaPay.phoneNumber) {
+                              <div class="flex flex-wrap items-center justify-between gap-2">
+                                <dt class="text-muted">{{ 'checkout.pay.phone' | transloco }}</dt>
+                                <dd class="font-semibold" dir="ltr">{{ instaPay.phoneNumber }}</dd>
+                              </div>
+                            }
+                            @if (instaPay.accountName) {
+                              <div class="flex flex-wrap items-center justify-between gap-2">
+                                <dt class="text-muted">
+                                  {{ 'checkout.pay.accountName' | transloco }}
+                                </dt>
+                                <dd class="font-semibold">{{ instaPay.accountName }}</dd>
+                              </div>
+                            }
+                          </dl>
+                        </div>
+                      </li>
+                      <li class="flex gap-3">
+                        <span class="step shrink-0">2</span>
+                        <div class="grid min-w-0 flex-1 gap-2">
+                          <p>{{ 'checkout.pay.step2' | transloco }}</p>
+                          <app-receipt-upload [(receiptId)]="receiptId" />
+                          @if (receiptMissing() && !receiptId()) {
+                            <p role="alert" class="text-sm text-danger">
+                              {{ 'checkout.pay.receiptRequired' | transloco }}
+                            </p>
+                          }
+                        </div>
+                      </li>
+                      <li class="flex gap-3">
+                        <span class="step shrink-0">3</span>
+                        <div class="grid min-w-0 flex-1 gap-2">
+                          <label for="co-reference" class="font-medium">
+                            {{ 'checkout.pay.reference' | transloco }}
+                            <span class="font-normal text-muted">
+                              ({{ 'checkout.optional' | transloco }})
+                            </span>
+                          </label>
+                          <input
+                            id="co-reference"
+                            formControlName="paymentReference"
+                            class="field sm:max-w-xs"
+                            dir="ltr"
+                            maxlength="60"
+                          />
+                          <p class="text-xs text-muted">{{ 'checkout.pay.review' | transloco }}</p>
+                        </div>
+                      </li>
+                    </ol>
+                  </div>
+                }
               </section>
 
               <button
@@ -393,6 +533,7 @@ export class Checkout {
       [Validators.required, Validators.minLength(5), Validators.maxLength(300)],
     ],
     city: [this.auth.user()?.city ?? '', [Validators.required]],
+    paymentReference: ['', [Validators.maxLength(60)]],
     notes: ['', [Validators.maxLength(500)]],
   });
 
@@ -413,6 +554,12 @@ export class Checkout {
   protected readonly submitting = signal(false);
   /** The pin the customer dropped is outside the delivery area. */
   protected readonly outsideArea = signal(false);
+
+  /** How the customer pays: cash on delivery, or InstaPay with the receipt of the transfer. */
+  protected readonly method = signal<PaymentMethod>('CashOnDelivery');
+  protected readonly receiptId = signal<string | null>(null);
+  protected readonly receiptMissing = signal(false);
+  protected readonly copied = signal(false);
   protected readonly serverError = signal<string | null>(null);
   private readonly submitted = signal(false);
 
@@ -467,6 +614,19 @@ export class Checkout {
   }
 
   /** العميل غيّر المحافظة بنفسه: الخريطة تروح لها، والدبوس القديم (كان في محافظة تانية) يتشال. */
+  protected chooseMethod(method: PaymentMethod): void {
+    this.method.set(method);
+    this.receiptMissing.set(false);
+  }
+
+  /** Copies the shop's InstaPay address, so the customer can paste it in the InstaPay app. */
+  protected copy(text: string): void {
+    void navigator.clipboard?.writeText(text).then(() => {
+      this.copied.set(true);
+      setTimeout(() => this.copied.set(false), 2000);
+    });
+  }
+
   protected onGovernorateChange(): void {
     this.outsideArea.set(false);
     this.lookup?.unsubscribe();
@@ -521,12 +681,23 @@ export class Checkout {
 
     const value = this.form.getRawValue();
     const pin = this.pin();
+    const { paymentReference: _reference, ...details } = value;
     const request: PlaceOrderRequest = {
-      ...value,
+      ...details,
       notes: value.notes.trim() || null,
       latitude: pin ? round(pin.lat) : null,
       longitude: pin ? round(pin.lng) : null,
     };
+
+    if (this.method() === 'InstaPay') {
+      if (!this.receiptId()) {
+        this.receiptMissing.set(true);
+        return;
+      }
+      request.paymentMethod = 'InstaPay';
+      request.receiptId = this.receiptId();
+      request.paymentReference = value.paymentReference.trim() || null;
+    }
 
     this.submitting.set(true);
     this.serverError.set(null);

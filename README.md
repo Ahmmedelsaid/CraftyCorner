@@ -105,6 +105,20 @@ Two independent channels. Use either, or both: one failing never stops the order
   On a host use the environment variables `Notifications__Telegram__BotToken`, `Notifications__Telegram__ChatId` and `Notifications__AdminUrl`. The message has the customer, phone, address, items, total and a map link, and a second one tells you when a customer cancels.
 - **Email** (the full details, and you can reply to the customer). Set `Email:Host` (`smtp.gmail.com`), `Email:UserName`, `Email:Password` and `Email:OrderRecipient`. For Gmail the password must be an **App Password** (turn on 2-step verification, then create one at myaccount.google.com/apppasswords), never your normal password.
 
+## Paying by InstaPay
+
+Customers can choose InstaPay at the checkout: they send the order total to the shop's InstaPay account, then upload a screenshot of the transfer. The owner sees the screenshot on the order page and presses **Confirm payment** (or **Reject** with a reason, and the customer uploads a new one). An InstaPay order cannot move past "New order" until the payment is confirmed.
+
+The option stays hidden until the shop sets its account:
+
+```
+dotnet user-secrets set "Shop:InstaPay:Handle" "yourshop@instapay" --project api
+dotnet user-secrets set "Shop:InstaPay:PhoneNumber" "01012345678" --project api   # optional
+dotnet user-secrets set "Shop:InstaPay:AccountName" "Crafty Corner" --project api   # what the customer sees in the InstaPay app
+```
+
+(or the environment variables `Shop__InstaPay__Handle`, `Shop__InstaPay__PhoneNumber`, `Shop__InstaPay__AccountName`.) Screenshots are private: they are stored in the `receipts` folder (`Receipts:Path` to move it; on a host it must be a persistent volume, like `uploads`), never served as static files, and only the customer and the owner can open them. There is no automatic check of the transfer: InstaPay has no public API for shops, so the owner compares the screenshot with the InstaPay app.
+
 ## Delivery fee
 
 Every order carries a delivery fee, 100 EGP for now. Change it with `Shop:ShippingFee` (appsettings, user-secrets, or the environment variable `Shop__ShippingFee`; `0` means free delivery). The fee is copied onto each order when it is placed, so changing it never changes old orders. The cart, the checkout, the order pages, the emails and the Telegram alert all show it.

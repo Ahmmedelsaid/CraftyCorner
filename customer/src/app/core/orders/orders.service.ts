@@ -41,6 +41,22 @@ export class OrdersService {
     return this.http.post<Order>(this.baseUrl, request).pipe(tap(() => this.cart.reload()));
   }
 
+  /** Uploads the screenshot of an InstaPay transfer. It is stored privately; the id is used to place the order. */
+  uploadReceipt(file: File): Observable<{ receiptId: string }> {
+    const body = new FormData();
+    body.append('file', file);
+    return this.http.post<{ receiptId: string }>(`${environment.apiUrl}/payments/receipts`, body);
+  }
+
+  /** After a rejected payment: a new receipt for the same order. */
+  replaceReceipt(
+    id: number,
+    receiptId: string,
+    paymentReference: string | null,
+  ): Observable<Order> {
+    return this.http.put<Order>(`${this.baseUrl}/${id}/receipt`, { receiptId, paymentReference });
+  }
+
   cancel(id: number): Observable<Order> {
     return this.http.post<Order>(`${this.baseUrl}/${id}/cancel`, null);
   }

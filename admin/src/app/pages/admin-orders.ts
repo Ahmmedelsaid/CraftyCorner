@@ -176,6 +176,20 @@ function localDate(offsetDays = 0, firstOfMonth = false): string {
                   </td>
                   <td class="inline-block md:table-cell md:px-4 md:py-3">
                     <app-order-status [status]="order.status" />
+                    @if (order.paymentMethod === 'InstaPay') {
+                      <span
+                        class="ms-1.5 inline-flex rounded-full px-2 py-0.5 text-xs font-semibold"
+                        [class]="
+                          order.paymentStatus === 'Confirmed'
+                            ? 'bg-success/15 text-success'
+                            : order.paymentStatus === 'Rejected'
+                              ? 'bg-danger/15 text-danger'
+                              : 'bg-highlight/25 text-highlight-strong'
+                        "
+                      >
+                        InstaPay · {{ 'admin.payment.status.' + order.paymentStatus | transloco }}
+                      </span>
+                    }
                   </td>
                   <td class="hidden px-4 py-3 text-end tabular-nums md:table-cell">
                     {{ order.itemCount }}

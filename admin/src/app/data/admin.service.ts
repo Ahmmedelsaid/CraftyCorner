@@ -102,6 +102,15 @@ export class AdminService {
     return this.http.get<Order>(`${this.api}/admin/orders/${id}`);
   }
 
+  /** The owner decides about an InstaPay transfer: "confirm", or "reject" with a reason for the customer. */
+  reviewPayment(
+    id: number,
+    decision: 'confirm' | 'reject',
+    note: string | null,
+  ): Observable<Order> {
+    return this.http.post<Order>(`${this.api}/admin/orders/${id}/payment`, { decision, note });
+  }
+
   setOrderStatus(id: number, status: OrderStatus): Observable<Order> {
     return this.http.post<Order>(`${this.api}/admin/orders/${id}/status`, { status });
   }

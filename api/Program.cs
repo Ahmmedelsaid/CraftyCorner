@@ -110,6 +110,20 @@ builder.Services.AddRateLimiter(options =>
             }
         )
     );
+    // رفع صور تحويل InstaPay: لكل مستخدم، عشان ما حدّش يملّى القرص
+    options.AddPolicy("receipts", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.User.FindFirst("sub")?.Value
+                ?? httpContext.Connection.RemoteIpAddress?.ToString()
+                ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+            }
+        )
+    );
     // رسايل "اتصل بنا": محدودة لكل IP عشان ما تتحولش لسبام
     options.AddPolicy("contact", httpContext =>
         RateLimitPartition.GetFixedWindowLimiter(
@@ -165,6 +179,7 @@ builder.Services.AddHttpClient<IOrderAlerts, TelegramOrderAlerts>(client =>
     client.Timeout = TimeSpan.FromSeconds(8)
 );
 builder.Services.Configure<ShopOptions>(builder.Configuration.GetSection(ShopOptions.SectionName));
+builder.Services.AddSingleton<ReceiptStore>();
 builder.Services.AddSingleton<EmailQueue>();
 builder.Services.AddSingleton<IEmailQueue>(sp => sp.GetRequiredService<EmailQueue>());
 builder.Services.AddHostedService<EmailSenderService>();

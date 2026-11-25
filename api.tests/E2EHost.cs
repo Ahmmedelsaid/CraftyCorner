@@ -24,6 +24,10 @@ public class E2EHost
 
         var port = int.Parse(Environment.GetEnvironmentVariable("E2E_PORT") ?? "5034");
 
+        // the shop accepts InstaPay in this copy (the setting is read from the environment like any other)
+        Environment.SetEnvironmentVariable("Shop__InstaPay__Handle", "e2e-shop@instapay");
+        Environment.SetEnvironmentVariable("Shop__InstaPay__AccountName", "Crafty Corner");
+
         var file = Path.Combine(Path.GetTempPath(), $"cc-e2e-{Guid.NewGuid():N}.db");
         await using var factory = new ApiFactory(file);
         factory.UseKestrel(port);

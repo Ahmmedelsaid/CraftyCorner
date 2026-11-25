@@ -240,6 +240,31 @@ namespace CraftyCorner.Api.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("PaymentNote")
+                        .HasMaxLength(300)
+                        .HasColumnType("varchar(300)");
+
+                    b.Property<string>("PaymentReceipt")
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar(60)");
+
+                    b.Property<string>("PaymentReference")
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar(60)");
+
+                    b.Property<DateTime?>("PaymentReviewedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -275,6 +300,9 @@ namespace CraftyCorner.Api.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PaymentReceipt")
+                        .IsUnique();
 
                     b.HasIndex("UserId", "CreatedAt");
 

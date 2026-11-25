@@ -5,9 +5,17 @@ import { environment } from '@env/environment';
 import { GOVERNORATES, Governorate } from '../geo/governorates';
 
 /** The shop's rules, from the API. Until the answer arrives (or if it never does) the defaults below are used. */
+export interface InstaPayInfo {
+  handle: string | null;
+  phoneNumber: string | null;
+  accountName: string | null;
+}
+
 export interface ShopInfo {
   shippingFee: number;
   deliveryCities: string[];
+  /** null until the shop sets InstaPay up: the checkout then offers cash on delivery only. */
+  instaPay?: InstaPayInfo | null;
 }
 
 const DEFAULTS: ShopInfo = { shippingFee: 100, deliveryCities: ['Cairo', 'Giza', 'Qalyubia'] };
@@ -17,6 +25,7 @@ export class ShopService {
   private readonly info = signal<ShopInfo>(DEFAULTS);
 
   readonly shippingFee = computed(() => this.info().shippingFee);
+  readonly instaPay = computed(() => this.info().instaPay ?? null);
 
   /** The governorates the shop delivers to (the ones the checkout and the account offer). */
   readonly governorates = computed<readonly Governorate[]>(() => {

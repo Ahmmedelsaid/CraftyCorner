@@ -90,6 +90,13 @@ export async function adminApi(request: APIRequestContext) {
       });
       expect(response.ok(), `moving order ${orderId} to ${status}`).toBeTruthy();
     },
+    async confirmPayment(orderId: number) {
+      const response = await request.post(`${API}/admin/orders/${orderId}/payment`, {
+        headers,
+        data: { decision: 'confirm' },
+      });
+      expect(response.ok(), 'confirming the InstaPay payment').toBeTruthy();
+    },
     async setTracking(orderId: number, company: string, number: string) {
       const response = await request.put(`${API}/admin/orders/${orderId}/tracking`, {
         headers,
@@ -137,6 +144,45 @@ export async function apiCustomer(request: APIRequestContext) {
       });
       expect(placed.status(), 'placing the order').toBe(201);
       return { orderId: (await placed.json()).id, productId };
+    },
+    /** Uploads a receipt image and returns its id. */
+    async uploadReceipt(): Promise<string> {
+      const png = Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEgAF/QualzQAAAABJRU5ErkJggg==',
+        'base64',
+      );
+      const response = await request.post(`${API}/payments/receipts`, {
+        headers,
+        multipart: { file: { name: 'receipt.png', mimeType: 'image/png', buffer: png } },
+      });
+      expect(response.ok(), 'uploading the receipt').toBeTruthy();
+      return (await response.json()).receiptId;
+    },
+    /** Orders the first product, paying by InstaPay with a receipt. */
+    async orderWithInstaPay(): Promise<number> {
+      const productId = await pickProductId(request);
+      await request.post(`${API}/cart/items`, { headers, data: { productId, quantity: 1 } });
+      const placed = await request.post(`${API}/orders`, {
+        headers,
+        data: {
+          shippingName: customer.name,
+          phone: customer.phone,
+          address: '12 Nile Street, Dokki',
+          city: 'Giza',
+          paymentMethod: 'InstaPay',
+          receiptId: await this.uploadReceipt(),
+          paymentReference: 'IP-ADMIN-1',
+        },
+      });
+      expect(placed.status(), 'placing the InstaPay order').toBe(201);
+      return (await placed.json()).id;
+    },
+    async replaceReceipt(orderId: number) {
+      const response = await request.put(`${API}/orders/${orderId}/receipt`, {
+        headers,
+        data: { receiptId: await this.uploadReceipt() },
+      });
+      expect(response.ok(), 'sending a new receipt').toBeTruthy();
     },
     async getOrder(orderId: number) {
       return (await request.get(`${API}/orders/${orderId}`, { headers })).json();

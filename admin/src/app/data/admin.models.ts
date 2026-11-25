@@ -21,6 +21,8 @@ export interface AdminOrderRow {
   shippingName: string;
   phone: string;
   city: string;
+  paymentMethod?: 'CashOnDelivery' | 'InstaPay';
+  paymentStatus?: 'None' | 'AwaitingReview' | 'Confirmed' | 'Rejected';
 }
 
 export interface AdminMessage {

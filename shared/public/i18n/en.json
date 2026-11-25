@@ -334,7 +334,27 @@
     "emptyHint": "If you have just placed an order, you will find it, and its status, in My orders.",
     "viewOrders": "View my orders",
     "deliveryAreas": "We deliver to {{areas}} for now.",
-    "outsideArea": "That pin is outside our delivery area. For now we deliver to {{areas}} only."
+    "outsideArea": "That pin is outside our delivery area. For now we deliver to {{areas}} only.",
+    "pay": {
+      "cod": {
+        "title": "Cash on delivery",
+        "text": "You pay in cash when the order arrives."
+      },
+      "instapay": {
+        "text": "Pay now by transfer, and upload the receipt."
+      },
+      "howTitle": "How to pay with InstaPay",
+      "step1": "Open InstaPay and send {{amount}} to:",
+      "step2": "Take a screenshot of the confirmation and upload it here.",
+      "handle": "InstaPay address",
+      "phone": "Mobile number",
+      "accountName": "Account name",
+      "copy": "Copy",
+      "copied": "Copied",
+      "reference": "InstaPay reference number",
+      "review": "We check the transfer and confirm your order, usually within a few hours.",
+      "receiptRequired": "Upload the receipt of your transfer to place the order."
+    }
   },
   "orders": {
     "title": "My orders",
@@ -755,6 +775,24 @@
       "companyPlaceholder": "e.g. Bosta, Aramex",
       "number": "Tracking number",
       "sendWhatsapp": "Send tracking on WhatsApp"
+    },
+    "payment": {
+      "status": {
+        "None": "",
+        "AwaitingReview": "To review",
+        "Confirmed": "Paid",
+        "Rejected": "Rejected"
+      },
+      "title": "InstaPay payment",
+      "amount": "Amount to receive",
+      "reference": "Reference",
+      "confirm": "Confirm payment",
+      "reject": "Reject",
+      "reason": "Why? (the customer will read this)",
+      "reasonPlaceholder": "e.g. The transferred amount is not the order total",
+      "rejectSend": "Reject and notify",
+      "reviewed": "Payment reviewed.",
+      "waitingNew": "Waiting for the customer to upload a new receipt."
     }
   },
   "wishlist": {
@@ -779,5 +817,23 @@
     "thanks": "Thank you for your review!",
     "failed": "Could not save your review. Try again.",
     "delete": "Delete my review"
+  },
+  "payment": {
+    "upload": "Upload the transfer receipt",
+    "uploadHint": "JPG, PNG or WebP, up to 5 MB",
+    "uploading": "Uploading...",
+    "uploaded": "Receipt uploaded",
+    "remove": "Remove",
+    "uploadFailed": "Could not upload the image. Use a JPG, PNG or WebP under 5 MB.",
+    "receiptAlt": "Transfer receipt",
+    "receiptMissing": "The receipt image is not available.",
+    "reference": "Reference",
+    "sendAnother": "Upload the receipt of the transfer again:",
+    "send": "Send the new receipt",
+    "status": {
+      "AwaitingReview": "We received your receipt and we are checking the transfer. We will confirm your order soon.",
+      "Confirmed": "Payment confirmed. Thank you!",
+      "Rejected": "We could not verify your transfer."
+    }
   }
 }

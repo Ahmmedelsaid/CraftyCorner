@@ -41,6 +41,9 @@ public interface IOrderAlerts
     Task NewOrderAsync(Order order, string customerEmail);
 
     Task OrderCancelledAsync(Order order);
+
+    /// <summary>The customer uploaded a new transfer receipt for an order (after a rejected one).</summary>
+    Task ReceiptReplacedAsync(Order order);
 }
 
 /// <summary>Sends the alerts as Telegram messages (the Bot API is free).</summary>
@@ -57,6 +60,12 @@ public sealed class TelegramOrderAlerts(
     public Task NewOrderAsync(Order order, string customerEmail) =>
         SendAsync(NewOrderText(order, customerEmail, Settings.AdminUrl), order.Id);
 
+    public Task ReceiptReplacedAsync(Order order) =>
+        SendAsync(
+            $"Order #{order.Id}: a new InstaPay receipt is waiting for your review ({Money(order.Total)}).",
+            order.Id
+        );
+
     public Task OrderCancelledAsync(Order order) =>
         SendAsync(
             $"Order #{order.Id} was cancelled by the customer ({OneLine(order.ShippingName)}, {order.Phone}).",
@@ -71,6 +80,8 @@ public sealed class TelegramOrderAlerts(
     {
         var text = new StringBuilder();
         text.AppendLine($"New order #{order.Id} - {Money(order.Total)}");
+        if (order.PaymentMethod == PaymentMethod.InstaPay)
+            text.AppendLine("PAID BY INSTAPAY: the receipt is waiting for your review");
         text.AppendLine();
         text.AppendLine($"{OneLine(order.ShippingName)}  {order.Phone}");
         text.AppendLine($"{OneLine(order.Address)}, {OneLine(order.City)}");

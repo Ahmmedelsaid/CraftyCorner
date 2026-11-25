@@ -413,3 +413,44 @@ test.describe('categories, reviews and team', () => {
     await expect(page.getByText('This email is used by another account.')).toBeVisible();
   });
 });
+
+test.describe('InstaPay payments', () => {
+  test('the owner rejects a receipt with a reason, the customer sends another, and the owner confirms', async ({
+    page,
+    request,
+  }) => {
+    const shop = await (await request.get(`${API}/shop`)).json();
+    test.skip(!shop.instaPay, 'the shop has no InstaPay address (Shop__InstaPay__Handle)');
+    const customer = await apiCustomer(request);
+    const orderId = await customer.orderWithInstaPay();
+    await signInAsOwner(page);
+
+    await page.goto(`/orders/${orderId}`);
+    await expect(page.getByRole('heading', { name: 'InstaPay payment' })).toBeVisible();
+    await expect(page.getByText('To review').first()).toBeVisible();
+    await expect(page.getByText('IP-ADMIN-1')).toBeVisible();
+    // the screenshot is shown (it is fetched with the owner's sign-in), and the order cannot move on yet
+    await expect(page.locator('app-receipt-image img')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Confirm order' })).toHaveCount(0);
+
+    // reject, with a reason the customer will read
+    await page.getByRole('button', { name: 'Reject', exact: true }).click();
+    await page.getByLabel('Why?').fill('The amount is not the order total');
+    await page.getByRole('button', { name: 'Reject and notify' }).click();
+    await expect(page.getByText('Payment reviewed.').first()).toBeVisible();
+    expect((await customer.getOrder(orderId)).paymentStatus).toBe('Rejected');
+    expect((await customer.getOrder(orderId)).paymentNote).toBe(
+      'The amount is not the order total',
+    );
+
+    // the customer uploads another receipt: it is waiting for review again
+    await customer.replaceReceipt(orderId);
+    await page.reload();
+    await page.getByRole('button', { name: 'Confirm payment' }).click();
+    await expect(page.getByText('Payment reviewed.').first()).toBeVisible();
+    expect((await customer.getOrder(orderId)).paymentStatus).toBe('Confirmed');
+
+    // now the order can move on
+    await expect(page.getByRole('button', { name: 'Confirm order' })).toBeVisible();
+  });
+});

@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { map, switchMap, tap } from 'rxjs';
 import { initialOf } from '@shared/core/forms/form-errors';
+import { environment } from '@env/environment';
 import { Order, OrderStatus } from '@shared/core/orders/order.models';
 import { LoadState, toLoadState } from '@shared/core/state/load-state';
 import { ToastService } from '@shared/core/toast/toast.service';
@@ -11,6 +12,7 @@ import { DateTimePipe } from '@shared/pipes/date-time.pipe';
 import { PricePipe } from '@shared/pipes/price.pipe';
 import { Icon } from '@shared/ui/icon';
 import { OrderStatusBadge } from '@shared/ui/order-status';
+import { ReceiptImage } from '@shared/ui/receipt-image';
 import { NEXT_STATUSES, toWhatsAppNumber } from '../data/admin.models';
 import { AdminCounters } from '../data/admin-counters';
 import { AdminService } from '../data/admin.service';
@@ -18,7 +20,15 @@ import { AdminService } from '../data/admin.service';
 /** طلب واحد: الحالة والخطوة اللي بعدها، المنتجات، وبيانات العميل مع أزرار التواصل. */
 @Component({
   selector: 'app-admin-order-detail',
-  imports: [RouterLink, TranslocoPipe, PricePipe, DateTimePipe, OrderStatusBadge, Icon],
+  imports: [
+    RouterLink,
+    TranslocoPipe,
+    PricePipe,
+    DateTimePipe,
+    OrderStatusBadge,
+    ReceiptImage,
+    Icon,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a
@@ -209,6 +219,92 @@ import { AdminService } from '../data/admin.service';
         </div>
 
         <div class="grid content-start gap-5">
+          @if (order.paymentMethod === 'InstaPay') {
+            <section class="card grid content-start gap-3 p-5">
+              <div class="flex items-center justify-between gap-2">
+                <h2 class="flex items-center gap-2 font-bold">
+                  <app-icon name="phone" [size]="1.1" class="text-accent" />
+                  {{ 'admin.payment.title' | transloco }}
+                </h2>
+                <span
+                  class="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                  [class]="
+                    order.paymentStatus === 'Confirmed'
+                      ? 'bg-success/15 text-success'
+                      : order.paymentStatus === 'Rejected'
+                        ? 'bg-danger/15 text-danger'
+                        : 'bg-highlight/25 text-highlight-strong'
+                  "
+                >
+                  {{ 'admin.payment.status.' + order.paymentStatus | transloco }}
+                </span>
+              </div>
+
+              <p class="flex justify-between text-sm">
+                <span class="text-muted">{{ 'admin.payment.amount' | transloco }}</span>
+                <b class="tabular-nums text-accent-hover">{{ order.total | price }}</b>
+              </p>
+              @if (order.paymentReference) {
+                <p class="flex justify-between gap-3 text-sm">
+                  <span class="text-muted">{{ 'admin.payment.reference' | transloco }}</span>
+                  <b dir="ltr" class="tabular-nums">{{ order.paymentReference }}</b>
+                </p>
+              }
+              @if (order.hasReceipt) {
+                <app-receipt-image [url]="receiptUrl(order)" />
+              }
+              @if (order.paymentNote) {
+                <p class="rounded-lg bg-danger/5 px-3 py-2 text-sm text-danger">
+                  {{ order.paymentNote }}
+                </p>
+              }
+
+              @if (order.paymentStatus === 'AwaitingReview' && order.status !== 'Cancelled') {
+                @if (rejecting()) {
+                  <label class="grid gap-1 text-sm font-medium">
+                    {{ 'admin.payment.reason' | transloco }}
+                    <textarea
+                      #reason
+                      class="field"
+                      rows="2"
+                      maxlength="300"
+                      [placeholder]="'admin.payment.reasonPlaceholder' | transloco"
+                    ></textarea>
+                  </label>
+                  <div class="flex gap-2">
+                    <button
+                      type="button"
+                      class="btn flex-1 !border-danger !text-danger"
+                      [disabled]="busy()"
+                      (click)="review(order, 'reject', reason.value)"
+                    >
+                      {{ 'admin.payment.rejectSend' | transloco }}
+                    </button>
+                    <button type="button" class="btn" (click)="rejecting.set(false)">
+                      {{ 'admin.cancel' | transloco }}
+                    </button>
+                  </div>
+                } @else {
+                  <div class="flex gap-2">
+                    <button
+                      type="button"
+                      class="btn btn-accent flex-1"
+                      [disabled]="busy()"
+                      (click)="review(order, 'confirm', null)"
+                    >
+                      {{ 'admin.payment.confirm' | transloco }}
+                    </button>
+                    <button type="button" class="btn" (click)="rejecting.set(true)">
+                      {{ 'admin.payment.reject' | transloco }}
+                    </button>
+                  </div>
+                }
+              } @else if (order.paymentStatus === 'Rejected') {
+                <p class="text-xs text-muted">{{ 'admin.payment.waitingNew' | transloco }}</p>
+              }
+            </section>
+          }
+
           @if (order.status !== 'Cancelled') {
             <section class="card grid content-start gap-3 p-5">
               <div class="flex items-center justify-between gap-2">
@@ -338,6 +434,8 @@ export class AdminOrderDetail {
   /** الطلب بعد آخر تغيير حالة (بيغطي على اللي اتحمّل أول مرة). */
   private readonly updated = signal<Order | null>(null);
   protected readonly busy = signal(false);
+  /** The reason box for a rejected transfer is open. */
+  protected readonly rejecting = signal(false);
   /** The tracking card shows the saved details; Edit opens the two fields again. */
   protected readonly editingTracking = signal(false);
   protected readonly confirmingCancel = signal(false);
@@ -358,7 +456,12 @@ export class AdminOrderDetail {
 
   protected readonly nextStatuses = computed(() => {
     const order = this.order();
-    return order ? NEXT_STATUSES[order.status] : [];
+    if (!order) return [];
+    // the server refuses anything but a cancel until the payment is confirmed: do not offer it
+    const unpaid = order.paymentMethod === 'InstaPay' && order.paymentStatus !== 'Confirmed';
+    return unpaid
+      ? NEXT_STATUSES[order.status].filter((status) => status === 'Cancelled')
+      : NEXT_STATUSES[order.status];
   });
 
   protected stepIndex(status: string): number {
@@ -396,6 +499,28 @@ export class AdminOrderDetail {
       },
     );
     return `https://wa.me/${toWhatsAppNumber(order.phone)}?text=${encodeURIComponent(text)}`;
+  }
+
+  protected receiptUrl(order: Order): string {
+    return `${environment.apiUrl}/admin/orders/${order.id}/receipt`;
+  }
+
+  /** Confirms the InstaPay transfer, or rejects the receipt with a reason the customer will read. */
+  protected review(order: Order, decision: 'confirm' | 'reject', note: string | null): void {
+    this.busy.set(true);
+    this.admin.reviewPayment(order.id, decision, note?.trim() || null).subscribe({
+      next: (next) => {
+        this.updated.set(next);
+        this.busy.set(false);
+        this.rejecting.set(false);
+        this.counters.refresh();
+        this.toasts.show({ kind: 'success', key: 'admin.payment.reviewed' });
+      },
+      error: () => {
+        this.busy.set(false);
+        this.toasts.show({ kind: 'error', key: 'admin.saveFailed' });
+      },
+    });
   }
 
   protected saveTracking(order: Order, company: string, number: string): void {

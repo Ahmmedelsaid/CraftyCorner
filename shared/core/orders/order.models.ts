@@ -31,7 +31,17 @@ export interface Order {
   trackingNumber: string | null;
   /** Delivery fee charged on this order (0 on orders placed before the fee existed). */
   shippingFee?: number;
+  /** How the customer pays. Orders from before InstaPay existed are cash on delivery. */
+  paymentMethod?: PaymentMethod;
+  paymentStatus?: PaymentStatus;
+  paymentReference?: string | null;
+  /** Why the owner rejected the payment (shown to the customer). */
+  paymentNote?: string | null;
+  hasReceipt?: boolean;
 }
+
+export type PaymentMethod = 'CashOnDelivery' | 'InstaPay';
+export type PaymentStatus = 'None' | 'AwaitingReview' | 'Confirmed' | 'Rejected';
 
 /** صف في سجل الطلبات: صور مصغّرة بدل كل المنتجات. */
 export interface OrderSummary {
@@ -52,6 +62,10 @@ export interface PlaceOrderRequest {
   /** مكان الدبوس على الخريطة (اختياري): الاتنين مع بعض أو الاتنين null. */
   latitude: number | null;
   longitude: number | null;
+  paymentMethod?: PaymentMethod;
+  /** InstaPay only: id of the uploaded transfer receipt. */
+  receiptId?: string | null;
+  paymentReference?: string | null;
 }
 
 /** نفس شكل رقم التليفون المقبول في الـ API. */

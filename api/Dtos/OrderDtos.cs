@@ -10,7 +10,22 @@ public record PlaceOrderDto(
     [Required, StringLength(100, MinimumLength = 2)] string City,
     [StringLength(500)] string? Notes,
     [Range(-90, 90)] double? Latitude = null,
-    [Range(-180, 180)] double? Longitude = null
+    [Range(-180, 180)] double? Longitude = null,
+    // "CashOnDelivery" (the default) or "InstaPay"; InstaPay needs the id of an uploaded receipt
+    string? PaymentMethod = null,
+    string? ReceiptId = null,
+    [StringLength(60)] string? PaymentReference = null
+);
+
+public record ReplaceReceiptDto(
+    [Required] string ReceiptId,
+    [StringLength(60)] string? PaymentReference = null
+);
+
+public record PaymentDecisionDto(
+    // "confirm" or "reject"
+    [Required] string Decision,
+    [StringLength(300)] string? Note = null
 );
 
 public record OrderItemDto(
@@ -40,7 +55,12 @@ public record OrderDto(
     IReadOnlyList<OrderItemDto> Items,
     string? TrackingCompany = null,
     string? TrackingNumber = null,
-    decimal ShippingFee = 0
+    decimal ShippingFee = 0,
+    string PaymentMethod = "CashOnDelivery",
+    string PaymentStatus = "None",
+    string? PaymentReference = null,
+    string? PaymentNote = null,
+    bool HasReceipt = false
 )
 {
     public static OrderDto From(Order order) =>
@@ -71,7 +91,12 @@ public record OrderDto(
             ],
             order.TrackingCompany,
             order.TrackingNumber,
-            order.ShippingFee
+            order.ShippingFee,
+            order.PaymentMethod.ToString(),
+            order.PaymentStatus.ToString(),
+            order.PaymentReference,
+            order.PaymentNote,
+            order.PaymentReceipt is not null
         );
 }
 

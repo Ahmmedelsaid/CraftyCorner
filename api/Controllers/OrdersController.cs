@@ -19,6 +19,7 @@ public class OrdersController(
     IEmailQueue emails,
     IOrderAlerts alerts,
     IOptions<ShopOptions> shop,
+    ReceiptStore receipts,
     IOptions<EmailOptions> emailOptions,
     ILogger<OrdersController> logger
 ) : ControllerBase
@@ -64,6 +65,73 @@ public class OrdersController(
             .ToList();
     }
 
+    /// <summary>The customer's own transfer screenshot (only the owner of the order can open it).</summary>
+    [HttpGet("{id:int}/receipt")]
+    public async Task<IActionResult> GetReceipt(int id)
+    {
+        if (UserId is not { } userId)
+            return Unauthorized();
+
+        var receipt = await db
+            .Orders.AsNoTracking()
+            .Where(o => o.Id == id && o.UserId == userId)
+            .Select(o => o.PaymentReceipt)
+            .FirstOrDefaultAsync();
+        var path = receipts.PathFor(userId, receipt);
+        if (path is null)
+            return NotFound();
+
+        Response.Headers.CacheControl = "private, no-store";
+        return PhysicalFile(path, ReceiptStore.ContentType(receipt!));
+    }
+
+    /// <summary>After the owner rejected the payment, the customer sends a new screenshot.</summary>
+    [HttpPut("{id:int}/receipt")]
+    public async Task<ActionResult<OrderDto>> ReplaceReceipt(int id, ReplaceReceiptDto dto)
+    {
+        if (UserId is not { } userId)
+            return Unauthorized();
+
+        var order = await db
+            .Orders.Include(o => o.Items)
+            .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
+        if (order is null)
+            return NotFoundOrder();
+
+        if (
+            order.PaymentMethod != PaymentMethod.InstaPay
+            || order.Status == OrderStatus.Cancelled
+            || order.PaymentStatus == PaymentStatus.Confirmed
+        )
+            return ConflictProblem("The payment of this order cannot be changed.");
+
+        var problem = await CheckReceiptAsync(userId, dto.ReceiptId);
+        if (problem is not null)
+            return problem;
+
+        order.PaymentReceipt = dto.ReceiptId;
+        order.PaymentReference = string.IsNullOrWhiteSpace(dto.PaymentReference) ? order.PaymentReference : dto.PaymentReference.Trim();
+        order.PaymentStatus = PaymentStatus.AwaitingReview;
+        order.PaymentNote = null;
+        await db.SaveChangesAsync();
+
+        if (alerts.Enabled)
+            _ = alerts.ReceiptReplacedAsync(order);
+        return OrderDto.From(order);
+    }
+
+    /// <summary>The receipt must be the customer's own upload, still on disk, and not used by another order.</summary>
+    private async Task<ObjectResult?> CheckReceiptAsync(int userId, string? receiptId)
+    {
+        if (receipts.PathFor(userId, receiptId) is null)
+            return Problem(detail: "Upload the transfer receipt first.", statusCode: StatusCodes.Status400BadRequest);
+
+        if (await db.Orders.AnyAsync(o => o.PaymentReceipt == receiptId))
+            return ConflictProblem("This receipt was already used for an order. Upload the receipt of your own transfer.");
+
+        return null;
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<OrderDto>> Get(int id)
     {
@@ -100,6 +168,26 @@ public class OrdersController(
                 detail: $"We deliver to {string.Join(", ", shop.Value.DeliveryCities)} only.",
                 statusCode: StatusCodes.Status400BadRequest
             );
+
+        // cash on delivery, or InstaPay with the receipt of the transfer
+        var method = PaymentMethod.CashOnDelivery;
+        if (
+            !string.IsNullOrWhiteSpace(dto.PaymentMethod)
+            && !Enum.TryParse(dto.PaymentMethod, ignoreCase: true, out method)
+        )
+            return Problem(detail: "Unknown payment method.", statusCode: StatusCodes.Status400BadRequest);
+
+        string? receiptId = null;
+        if (method == PaymentMethod.InstaPay)
+        {
+            if (!shop.Value.InstaPay.IsEnabled)
+                return Problem(detail: "InstaPay is not available.", statusCode: StatusCodes.Status400BadRequest);
+
+            var receiptProblem = await CheckReceiptAsync(userId, dto.ReceiptId);
+            if (receiptProblem is not null)
+                return receiptProblem;
+            receiptId = dto.ReceiptId;
+        }
 
         var cart = await db
             .CartItems.Include(c => c.Product)
@@ -156,6 +244,10 @@ public class OrdersController(
             Latitude = dto.Latitude,
             Longitude = dto.Longitude,
             Notes = string.IsNullOrWhiteSpace(dto.Notes) ? null : dto.Notes.Trim(),
+            PaymentMethod = method,
+            PaymentStatus = method == PaymentMethod.InstaPay ? PaymentStatus.AwaitingReview : PaymentStatus.None,
+            PaymentReceipt = receiptId,
+            PaymentReference = string.IsNullOrWhiteSpace(dto.PaymentReference) ? null : dto.PaymentReference.Trim(),
             CreatedAt = now,
             // السعر بيتاخد من الـ database دلوقتي، مش من اللي العميل شافه في السلة
             Items =
@@ -236,6 +328,9 @@ public class OrdersController(
             .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
         if (order is null)
             return NotFoundOrder();
+
+        if (order.PaymentStatus == PaymentStatus.Confirmed)
+            return ConflictProblem("This order is already paid. Please contact us to cancel it and get your money back.");
 
         var now = clock.GetUtcNow().UtcDateTime;
         await using var transaction = await db.Database.BeginTransactionAsync();
