@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>دليل الأمان للمشاريع</title>
+<style>
+  :root { --fg:#1f2328; --muted:#59636e; --bg:#fffdf9; --card:#f6f1ea; --accent:#8a5a2b; --border:#e3d9cc; --warn:#fff4d6; --bad:#fde8e8; --good:#e6f5ea; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family:"Segoe UI","Noto Naskh Arabic",Tahoma,Arial,sans-serif; line-height:2; font-size:17px; }
+  main { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { font-size: 2rem; margin: 0 0 .25rem; color: var(--accent); }
+  h2 { font-size: 1.5rem; margin: 3rem 0 .75rem; padding-bottom:.4rem; border-bottom: 2px solid var(--border); color: var(--accent); }
+  h3 { font-size: 1.2rem; margin: 2rem 0 .5rem; }
+  h4 { font-size: 1.05rem; margin: 1.4rem 0 .3rem; color: var(--muted); }
+  p { margin: .6rem 0; }
+  ul, ol { padding-inline-start: 1.6rem; margin: .5rem 0; }
+  li { margin: .3rem 0; }
+  /* الكلمات الإنجليزي: معزولة اتجاهياً عشان ما تبوّظش ترتيب الجملة العربي */
+  code, .en { direction: ltr; unicode-bidi: isolate; font-family: Consolas,"Courier New",monospace; font-size: .9em; background: #efe7dc; padding: 0 .35em; border-radius: 4px; white-space: nowrap; }
+  .en { background: none; padding: 0; font-family: inherit; font-size: inherit; white-space: normal; }
+  pre { direction: ltr; text-align: left; unicode-bidi: isolate; background:#22201d; color:#f3ece2; padding: 14px 16px; border-radius: 10px; overflow-x: auto; line-height: 1.6; font-size: 14px; margin: .8rem 0; }
+  pre code { background: none; padding: 0; color: inherit; white-space: pre; font-size: inherit; }
+  .box { border-radius: 10px; padding: 10px 16px; margin: 1rem 0; border: 1px solid var(--border); }
+  .note { background: var(--card); }
+  .warn { background: var(--warn); }
+  .bad { background: var(--bad); }
+  .good { background: var(--good); }
+  .box > strong:first-child { display:block; margin-bottom:.2rem; }
+  table { width:100%; border-collapse: collapse; margin: 1rem 0; font-size: .95rem; line-height: 1.8; }
+  th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: start; vertical-align: top; }
+  th { background: var(--card); }
+  nav.toc { background: var(--card); border-radius: 12px; padding: 12px 22px; margin: 1.5rem 0; }
+  nav.toc ol { columns: 2; column-gap: 2rem; }
+  .sub { color: var(--muted); margin-bottom: 1.5rem; }
+  @media (max-width: 640px) { nav.toc ol { columns: 1; } body { font-size: 16px; } }
+  @media print { body { background: #fff; } .box, table, pre { break-inside: avoid; } h2 { break-after: avoid; } nav.toc { display:none; } }
+</style>
+</head>
+<body>
+<main>
+
+<h1>دليل الأمان للمشاريع</h1>
+<p class="sub">شرح مفصّل: مفهوم الأمان، أمان الفرونت <span class="en">(Frontend)</span>، أمان الباك <span class="en">(Backend)</span>، وتطبيقه على مشروع <code>Crafty Corner</code>.</p>
+
+<div class="box note">
+<strong>طريقة المذاكرة</strong>
+اقرا كل قسم، وبعدين جاوب على أسئلة المراجعة اللي في آخر الملف من غير ما تبص. المصطلحات الإنجليزي مكتوبة بجانب الشرح العربي عشان تتعوّد عليها، لأنها هي اللي هتلاقيها في أي مقال أو وظيفة.
+</div>
+
+<nav class="toc">
+<strong>المحتويات</strong>
+<ol>
+  <li><a href="#s1">مفهوم الأمان وأساسياته</a></li>
+  <li><a href="#s2">المبادئ الذهبية</a></li>
+  <li><a href="#s3">الهوية والصلاحيات</a></li>
+  <li><a href="#s4">كلمات السر</a></li>
+  <li><a href="#s5">الجلسات والـ tokens</a></li>
+  <li><a href="#s6">الشبكة والتشفير</a></li>
+  <li><a href="#s7">الهجمات الشائعة بالتفصيل</a></li>
+  <li><a href="#s8">أمان الفرونت</a></li>
+  <li><a href="#s9">أمان الباك</a></li>
+  <li><a href="#s10">أمان قاعدة البيانات والبنية</a></li>
+  <li><a href="#s11">تطبيق على Crafty Corner</a></li>
+  <li><a href="#s12">قوائم الفحص</a></li>
+  <li><a href="#s13">أسئلة المراجعة</a></li>
+  <li><a href="#s14">قاموس المصطلحات</a></li>
+</ol>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="s1">1) مفهوم الأمان وأساسياته</h2>
+
+<h3>يعني إيه أمان المعلومات؟</h3>
+<p>الأمان هو حماية النظام وبيانات الناس اللي بتتعامل معاه من الاستخدام الغلط، سواء كان متعمّد (مهاجم) أو بالغلط (موظف أو مستخدم). مفيش نظام آمن 100%. الهدف إنك ترفع تكلفة الهجوم على المهاجم لدرجة إنه ما يستاهلش، وتقلّل الضرر لو حصل اختراق.</p>
+
+<h3>مثلث <span class="en">CIA</span>: ثلاث أهداف لكل نظام</h3>
+<table>
+<tr><th>الهدف</th><th>المعنى</th><th>مثال في متجر</th><th>لو اتكسر</th></tr>
+<tr><td>السرية <span class="en">(Confidentiality)</span></td><td>البيانات يشوفها المصرّح لهم بس</td><td>عميل ما يشوفش عنوان وتليفون عميل تاني</td><td>تسريب بيانات</td></tr>
+<tr><td>السلامة <span class="en">(Integrity)</span></td><td>البيانات ما تتغيّرش إلا بطريقة مصرّح بيها</td><td>حد ما يقدرش يغيّر سعر المنتج أو حالة الطلب</td><td>تلاعب بالأسعار والطلبات</td></tr>
+<tr><td>التوافر <span class="en">(Availability)</span></td><td>النظام شغّال لما تحتاجه</td><td>الموقع ما يقعش وقت العروض</td><td>توقف الخدمة <code>DoS</code></td></tr>
+</table>
+
+<h3>مصطلحات لازم تفرّق بينها</h3>
+<ul>
+  <li><strong>الأصل <span class="en">(Asset)</span></strong>: أي حاجة ليها قيمة: بيانات العملاء، حسابات الأدمن، قاعدة البيانات، سمعة المتجر.</li>
+  <li><strong>الثغرة <span class="en">(Vulnerability)</span></strong>: نقطة ضعف في الكود أو الإعدادات. مثال: استعلام بيدمج مدخل المستخدم في الـ <code>SQL</code> مباشرة.</li>
+  <li><strong>التهديد <span class="en">(Threat)</span></strong>: حد أو حاجة ممكن تستغل الثغرة. مثال: مهاجم أو برنامج آلي.</li>
+  <li><strong>الاستغلال <span class="en">(Exploit)</span></strong>: الطريقة اللي بتستغل بيها الثغرة فعلاً.</li>
+  <li><strong>المخاطرة <span class="en">(Risk)</span></strong>: احتمال حدوث الضرر × حجم الضرر. ثغرة سهلة الاستغلال على بيانات حساسة = مخاطرة عالية.</li>
+  <li><strong>سطح الهجوم <span class="en">(Attack Surface)</span></strong>: كل الأماكن اللي مهاجم ممكن يتفاعل معاها: كل <code>endpoint</code> وكل حقل إدخال وكل مكتبة. كل ما قلّلته قلّت المخاطر.</li>
+  <li><strong>المصادقة <span class="en">(Authentication)</span></strong>: إنت مين؟ (تسجيل الدخول).</li>
+  <li><strong>التفويض <span class="en">(Authorization)</span></strong>: إنت مسموح لك تعمل إيه؟ (الصلاحيات).</li>
+</ul>
+
+<h3>نموذج التهديد <span class="en">(Threat Modeling)</span></h3>
+<p>قبل ما تكتب كود، اسأل 4 أسئلة بسيطة:</p>
+<ol>
+  <li>إيه اللي بنحميه؟ (الأصول)</li>
+  <li>مين ممكن يهاجمنا؟ (عميل فضولي، منافس، بوت، موظف سابق)</li>
+  <li>إزاي ممكن يهاجم؟ (مثلاً بتغيير رقم الطلب في الرابط)</li>
+  <li>إيه اللي بنعمله عشان نمنعه أو نكتشفه؟</li>
+</ol>
+<p>أداة جاهزة بتفكّرك: <span class="en">STRIDE</span> وهي ست أنواع تهديد: انتحال الهوية <span class="en">(Spoofing)</span>، التلاعب <span class="en">(Tampering)</span>، إنكار الفعل <span class="en">(Repudiation)</span>، كشف المعلومات <span class="en">(Information disclosure)</span>، منع الخدمة <span class="en">(Denial of service)</span>، رفع الصلاحيات <span class="en">(Elevation of privilege)</span>.</p>
+
+<!-- ============================================================ -->
+<h2 id="s2">2) المبادئ الذهبية</h2>
+
+<ol>
+  <li><strong>الدفاع على طبقات <span class="en">(Defense in Depth)</span></strong>: ما تعتمدش على حاجة واحدة. لو طبقة وقعت، اللي بعدها تحميك. مثال: التحقق من المدخلات في الفرونت <em>و</em> الباك، و<code>CSP</code> بالإضافة لتعقيم Angular.</li>
+  <li><strong>أقل صلاحية <span class="en">(Least Privilege)</span></strong>: كل مستخدم وكل خدمة تاخد الصلاحية اللازمة بس. حساب قاعدة البيانات بتاع التطبيق ما يبقاش <code>root</code>.</li>
+  <li><strong>ما تثقش في أي مدخل <span class="en">(Never Trust Input)</span></strong>: كل حاجة جاية من برّة (نموذج، رابط، <code>header</code>، ملف، <code>cookie</code>) تتعامل كأنها خبيثة لحد ما تتحقق منها.</li>
+  <li><strong>الفرونت مش مصدر ثقة</strong>: أي حاجة في المتصفح المستخدم يقدر يعدّلها. أي منع في الواجهة هو تجربة استخدام <span class="en">(UX)</span> مش أمان.</li>
+  <li><strong>الفشل الآمن <span class="en">(Fail Secure)</span></strong>: لو حصل خطأ، النظام يرفض ما يسمحش. مثال: لو فحص الصلاحية فشل بـ exception، ارفض الطلب.</li>
+  <li><strong>الأمان بالتصميم <span class="en">(Secure by Design)</span> والافتراضي <span class="en">(Secure by Default)</span></strong>: الإعداد الافتراضي يكون الأكثر أماناً.</li>
+  <li><strong>ما تخترعش تشفير بنفسك</strong>: استخدم مكتبات ومعايير مجرّبة (<code>PBKDF2</code>، <code>bcrypt</code>، <code>AES</code>، <code>TLS</code>).</li>
+  <li><strong>البساطة</strong>: الكود المعقّد فيه ثغرات أكتر. امسح الـ <code>endpoints</code> والمكتبات اللي ما بتستخدمهاش.</li>
+  <li><strong>الأمان مش مرحلة أخيرة</strong>: بيتحط من أول يوم، وبيتراجع عليه مع كل تعديل.</li>
+</ol>
+
+<div class="box warn"><strong>سؤال تسأله لنفسك دايماً</strong>لو الطرف التاني خبيث ومتمكّن من أدوات المتصفح، إيه أسوأ حاجة يقدر يعملها بالـ <code>endpoint</code> ده؟</div>
+
+<!-- ============================================================ -->
+<h2 id="s3">3) الهوية والصلاحيات</h2>
+
+<h3>المصادقة <span class="en">(Authentication)</span></h3>
+<p>إثبات هوية المستخدم. العوامل التلاتة: حاجة تعرفها (كلمة سر)، حاجة معاك (موبايل أو مفتاح أمان)، حاجة إنت (بصمة). استخدام عاملين أو أكتر اسمه <span class="en">MFA</span> أو <span class="en">2FA</span>، وهو أقوى دفاع ضد سرقة كلمات السر. (مشروعنا لسه ما فيهوش MFA.)</p>
+
+<h3>التفويض <span class="en">(Authorization)</span></h3>
+<p>بعد ما عرفنا إنت مين، نحدّد مسموح لك بإيه. فيه مستويين لازم تفحصهم الاتنين:</p>
+<ul>
+  <li><strong>على مستوى الدور <span class="en">(Role-Based, RBAC)</span></strong>: هل إنت أدمن؟ مثال عندنا: <code>[Authorize(Roles = "Admin")]</code> على كل <code>controller</code> الأدمن.</li>
+  <li><strong>على مستوى المورد <span class="en">(Resource/Object level)</span></strong>: هل الطلب ده بتاعك؟ مثال: العميل بيشوف طلباته هو بس. ده المكان اللي بتحصل فيه ثغرة <code>IDOR</code> (هنشرحها في قسم الهجمات).</li>
+</ul>
+
+<div class="box bad"><strong>خطأ شائع جداً</strong>
+تفحص الدور بس وتنسى فحص الملكية. مثال: <code>GET /api/orders/15</code> بيرجّع الطلب لأي مستخدم مسجّل. الصح: <code>Where(o => o.Id == id &amp;&amp; o.UserId == currentUserId)</code>.</div>
+
+<pre><code>// غلط: أي مستخدم مسجّل يقدر يقرا أي طلب
+var order = await db.Orders.FindAsync(id);
+
+// صح: الطلب لازم يكون بتاع المستخدم الحالي
+var order = await db.Orders
+    .FirstOrDefaultAsync(o => o.Id == id &amp;&amp; o.UserId == userId);
+if (order is null) return NotFound(); // مش Forbidden، عشان ما نكشفش إنه موجود</code></pre>
+
+<!-- ============================================================ -->
+<h2 id="s4">4) كلمات السر</h2>
+
+<h3>التخزين: <span class="en">Hash</span> مش <span class="en">Encryption</span></h3>
+<table>
+<tr><th></th><th>التشفير <span class="en">(Encryption)</span></th><th>التجزئة <span class="en">(Hashing)</span></th></tr>
+<tr><td>الاتجاه</td><td>ذهاب وعودة (بمفتاح بتفك التشفير)</td><td>اتجاه واحد (ما ينفعش ترجع الأصل)</td></tr>
+<tr><td>الاستخدام</td><td>بيانات لازم ترجع تقراها (رقم بطاقة مثلاً)</td><td>كلمات السر</td></tr>
+<tr><td>لو سُرقت القاعدة</td><td>المهاجم محتاج المفتاح</td><td>المهاجم محتاج يخمّن كل كلمة سر لوحدها</td></tr>
+</table>
+<p>ما تخزّنش كلمة السر نفسها أبداً، ولا مشفّرة. خزّن الـ <span class="en">hash</span> بس. وقت الدخول بتحسب <span class="en">hash</span> للي كتبه المستخدم وتقارنه.</p>
+
+<h3>ليه مش <code>SHA256</code> العادي؟</h3>
+<p>لأنه سريع جداً، والمهاجم بكرت شاشة يجرّب مليارات التخمينات في الثانية. محتاجين دوال <strong>بطيئة عمداً</strong> ومصمّمة لكلمات السر: <code>PBKDF2</code> (اللي بنستخدمه في .NET عبر <code>PasswordHasher</code>)، <code>bcrypt</code>، <code>scrypt</code>، <code>Argon2</code>.</p>
+
+<h3>الملح <span class="en">(Salt)</span> وعدد التكرارات</h3>
+<ul>
+  <li><strong>الملح</strong>: نص عشوائي مختلف لكل مستخدم بيتضاف لكلمة السر قبل التجزئة. يمنع هجوم الجداول الجاهزة <span class="en">(Rainbow Tables)</span> ويخلّي مستخدمين بنفس كلمة السر يطلع لهم <span class="en">hash</span> مختلف. <code>PasswordHasher</code> بيعمله لوحده.</li>
+  <li><strong>التكرارات <span class="en">(Iterations)</span></strong>: بتبطّأ الحساب. وبتتزوّد مع الوقت، وده سبب وجود <code>SuccessRehashNeeded</code> في كودنا: لو الخوارزمية اتحدّثت بنعيد حفظ الـ <span class="en">hash</span> الجديد عند الدخول.</li>
+</ul>
+
+<h3>سياسة كلمة السر</h3>
+<ul>
+  <li>الطول أهم من التعقيد: 8 أحرف حد أدنى، والأفضل 12 فأكتر.</li>
+  <li>امنع كلمات السر الشائعة (<code>123456</code>، <code>password</code>، <code>admin123</code>).</li>
+  <li>ما تفرضش تغيير دوري بلا سبب، لأنه بيخلّي الناس تختار كلمات ضعيفة متوقّعة.</li>
+  <li>اسمح بمدير كلمات السر <span class="en">(Password Manager)</span> واللصق في الحقل.</li>
+</ul>
+
+<h3>حماية تسجيل الدخول من التخمين</h3>
+<ul>
+  <li><strong>تحديد المعدل <span class="en">(Rate Limiting)</span></strong>: عدد محاولات لكل <span class="en">IP</span> في الدقيقة (عندنا 10).</li>
+  <li><strong>قفل الحساب <span class="en">(Account Lockout)</span></strong>: بعد 5 محاولات غلط الحساب بيتقفل 15 دقيقة. الاتنين مع بعض لأن المهاجم ممكن يغيّر الـ <span class="en">IP</span> لكن الحساب ثابت.</li>
+  <li><strong>هجوم حشو الاعتمادات <span class="en">(Credential Stuffing)</span></strong>: المهاجم بيجرّب إيميلات وكلمات سر مسرّبة من مواقع تانية. الحماية: <span class="en">Rate Limiting</span> + <span class="en">MFA</span> + منع كلمات السر المسرّبة.</li>
+  <li><strong>تعداد المستخدمين <span class="en">(User Enumeration)</span></strong>: لو الرسالة "الإيميل مش موجود" مرة و"كلمة السر غلط" مرة، المهاجم يعرف مين مسجّل عندك. عشان كده رسالتنا دايماً واحدة: "الإيميل أو كلمة السر غير صحيحة"، وبنعمل حساب <span class="en">hash</span> وهمي لو الإيميل مش موجود عشان زمن الرد يبقى متقارب <span class="en">(Timing attack)</span>.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="s5">5) الجلسات والـ <span class="en">tokens</span></h2>
+
+<h3>المشكلة</h3>
+<p>بروتوكول <code>HTTP</code> بلا ذاكرة: كل طلب مستقل. فبعد الدخول لازم المتصفح يبعت "دليل" مع كل طلب إنه هو نفس المستخدم. الدليل ده يا <span class="en">session id</span> أو <span class="en">token</span>.</p>
+
+<h3>نظامنا: <span class="en">Access Token</span> + <span class="en">Refresh Token</span></h3>
+<table>
+<tr><th></th><th><span class="en">Access Token (JWT)</span></th><th><span class="en">Refresh Token</span></th></tr>
+<tr><td>العمر</td><td>قصير: 15 دقيقة</td><td>طويل: 7 أيام</td></tr>
+<tr><td>التخزين</td><td>في ذاكرة الصفحة <span class="en">(memory)</span> فقط</td><td>في <code>cookie</code> بخصائص <code>HttpOnly</code> و<code>Secure</code> و<code>SameSite=Strict</code></td></tr>
+<tr><td>بيتبعت</td><td>في الـ <code>Authorization: Bearer</code> header مع كل طلب</td><td>تلقائياً من المتصفح لمسار <code>/api/auth</code> بس</td></tr>
+<tr><td>الهدف</td><td>إثبات الهوية في كل طلب</td><td>الحصول على <span class="en">access token</span> جديد</td></tr>
+</table>
+
+<h3>ليه التقسيم ده؟</h3>
+<ul>
+  <li>لو <span class="en">access token</span> اتسرق، بيشتغل 15 دقيقة بس.</li>
+  <li>مخزّن في الذاكرة، فكود <span class="en">XSS</span> أصعب عليه يسرقه من <code>localStorage</code> (اللي أي سكريبت يقراه).</li>
+  <li>الـ <span class="en">refresh token</span> في <code>cookie</code> بـ <code>HttpOnly</code>، يعني الـ <span class="en">JavaScript</span> ما يقدرش يقراه أصلاً.</li>
+</ul>
+
+<h3>خصائص الـ <code>Cookie</code> الأمنية</h3>
+<ul>
+  <li><code>HttpOnly</code>: ما ينفعش يتقرا من <span class="en">JavaScript</span> (ضد سرقته بـ <span class="en">XSS</span>).</li>
+  <li><code>Secure</code>: بيتبعت على <code>HTTPS</code> بس.</li>
+  <li><code>SameSite=Strict</code>: المتصفح ما يبعتهوش في طلبات جاية من موقع تاني (ضد <span class="en">CSRF</span>). <code>Lax</code> أخف (بيسمح عند الضغط على رابط)، و<code>None</code> بيسمح دايماً (لازم <code>Secure</code>).</li>
+  <li><code>Path</code> و<code>Domain</code> و<code>Max-Age</code>: حدّد النطاق والمدة بأضيق ما يمكن.</li>
+</ul>
+
+<h3>دورة حياة الـ <span class="en">refresh token</span> الآمنة</h3>
+<ul>
+  <li><strong>التدوير <span class="en">(Rotation)</span></strong>: كل مرة تستخدمه، بتاخد واحد جديد والقديم بيتلغي.</li>
+  <li><strong>الكشف عن إعادة الاستخدام <span class="en">(Reuse Detection)</span></strong>: لو حد استخدم token قديم، يبقى اتسرق على الأرجح، فنلغي كل جلسات المستخدم. (عندنا فترة سماح 10 ثواني عشان تعدد الطلبات المتزامنة.)</li>
+  <li>بنخزّن <span class="en">hash</span> الـ token في القاعدة مش الـ token نفسه.</li>
+  <li><strong>الإبطال <span class="en">(Revocation)</span></strong>: عند تغيير كلمة السر أو إيقاف الحساب نلغي كل الـ tokens. وعندنا كمان فحص في كل طلب إن الحساب لسه نشط.</li>
+</ul>
+
+<h3>الـ <span class="en">JWT</span> نفسه</h3>
+<ul>
+  <li>تركيبته: <code>header.payload.signature</code>. الـ <span class="en">payload</span> <strong>مش مشفّر</strong> (<span class="en">Base64</span> بس)، فما تحطّش فيه بيانات حساسة.</li>
+  <li>التوقيع بيضمن إنه ما اتعدّلش. السيرفر لازم يتحقق من: التوقيع، المُصدِر <code>iss</code>، الجمهور <code>aud</code>، الانتهاء <code>exp</code>.</li>
+  <li>المفتاح السري <code>Jwt:Key</code> لازم يكون طويل (32 حرف على الأقل) وعشوائي، ومخزّن في أسرار مش في الكود.</li>
+  <li>ارفض خوارزمية <code>none</code>، وحدّد الخوارزمية المقبولة.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="s6">6) الشبكة والتشفير</h2>
+
+<h3><code>HTTPS</code> و<code>TLS</code></h3>
+<p>بروتوكول <code>HTTP</code> العادي بيمشي نص مقروء، فأي حد على الشبكة (واي فاي عام مثلاً) يقدر يقرا كلمات السر ويغيّر المحتوى (هجوم الوسيط <span class="en">Man-in-the-Middle</span>). <code>HTTPS</code> يعني نفس <code>HTTP</code> داخل قناة مشفّرة بـ <code>TLS</code>، وبيضمن 3 حاجات: السرية، السلامة، وإثبات هوية السيرفر بالشهادة <span class="en">(Certificate)</span>.</p>
+<ul>
+  <li>استخدم <code>HTTPS</code> في كل مكان، حتى للـ <span class="en">API</span> الداخلي لو ينفع.</li>
+  <li><code>HSTS</code> <span class="en">(Strict-Transport-Security)</span>: <span class="en">header</span> بيقول للمتصفح "افتح الموقع ده <code>HTTPS</code> بس لمدة كذا". بيمنع تخفيض الاتصال <span class="en">(SSL stripping)</span>.</li>
+  <li>التحويل التلقائي من <code>HTTP</code> لـ <code>HTTPS</code> <code>(UseHttpsRedirection)</code>.</li>
+</ul>
+
+<h3><span class="en">CORS</span>: مفهوم غلط شائع</h3>
+<div class="box warn"><strong>تنبيه</strong><span class="en">CORS</span> مش حماية للسيرفر. ده إعداد بيحمي <em>المستخدم</em> داخل المتصفح. أي أداة زي <code>curl</code> أو <code>Postman</code> تتجاهله تماماً.</div>
+<p>المتصفح بيمنع صفحة على موقع <code>A</code> تقرا رد من موقع <code>B</code> (سياسة نفس الأصل <span class="en">Same-Origin Policy</span>). أصل الموقع = البروتوكول + الدومين + البورت. الـ <span class="en">CORS</span> بيسمح باستثناءات محددة. في مشروعنا: <code>localhost:4200</code> و<code>localhost:4201</code> مسموح لهم بالتواصل مع الـ <span class="en">API</span>. القاعدة:</p>
+<ul>
+  <li>ما تستخدمش <code>AllowAnyOrigin</code> مع <code>AllowCredentials</code> (والمتصفح أصلاً بيرفضه).</li>
+  <li>حدّد الأصول المسموحة بالاسم بالظبط.</li>
+</ul>
+
+<h3>رؤوس الأمان <span class="en">(Security Headers)</span></h3>
+<table>
+<tr><th><span class="en">Header</span></th><th>وظيفته</th></tr>
+<tr><td><code>Content-Security-Policy</code></td><td>يحدّد المصادر المسموح تحميل سكريبتات وصور وأنماط منها. أقوى دفاع إضافي ضد <span class="en">XSS</span></td></tr>
+<tr><td><code>X-Frame-Options: DENY</code> أو <code>frame-ancestors</code></td><td>يمنع عرض موقعك داخل <code>iframe</code> في موقع تاني (ضد <span class="en">Clickjacking</span>)</td></tr>
+<tr><td><code>X-Content-Type-Options: nosniff</code></td><td>يمنع المتصفح من تخمين نوع الملف (ملف رفع على إنه صورة وهو سكريبت)</td></tr>
+<tr><td><code>Referrer-Policy</code></td><td>يتحكّم في كمية معلومات الرابط السابق المبعوتة للمواقع التانية</td></tr>
+<tr><td><code>Permissions-Policy</code></td><td>يقفل مزايا المتصفح اللي مش محتاجها (كاميرا، ميكروفون...)</td></tr>
+<tr><td><code>Strict-Transport-Security</code></td><td><span class="en">HSTS</span> زي ما شرحنا</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="s7">7) الهجمات الشائعة بالتفصيل</h2>
+<p>معظمها موجود في قائمة <span class="en">OWASP Top 10</span> وهي قائمة أخطر ثغرات تطبيقات الويب، بتتحدّث كل كام سنة وتستاهل تقراها كاملة.</p>
+
+<h3>7.1) <span class="en">Broken Access Control</span> و<span class="en">IDOR</span></h3>
+<p><strong>الفكرة:</strong> المستخدم بيوصل لحاجة مش بتاعته بتغيير مُعرّف في الطلب. <span class="en">IDOR</span> اختصار <span class="en">Insecure Direct Object Reference</span>.</p>
+<p><strong>مثال:</strong> بتفتح <code>/orders/15</code> وده طلبك، وتغيّر الرقم لـ <code>16</code> فتشوف طلب شخص تاني.</p>
+<p><strong>الدفاع:</strong> فحص الملكية في الباك في كل طلب (شوف المثال في القسم 3). الأرقام التسلسلية <code>1, 2, 3</code> بتسهّل التخمين، لكن إخفاءها مش حل. الحل الفحص.</p>
+<p>أنواع تانية: وصول لصفحات الأدمن بتغيير الرابط، تغيير <span class="en">role</span> في الطلب، تعديل بيانات غيرك بـ <code>PUT</code>.</p>
+
+<h3>7.2) <span class="en">Injection</span> (حقن)</h3>
+<p><strong>الفكرة:</strong> مدخل المستخدم يتفسّر كأمر مش كبيانات.</p>
+<h4><span class="en">SQL Injection</span></h4>
+<pre><code>// غلط: دمج نص المستخدم في الاستعلام
+var sql = "SELECT * FROM Users WHERE Email = '" + email + "'";
+// لو email = ' OR '1'='1  ...يرجّع كل المستخدمين
+// ولو ' ; DROP TABLE Users; -- ...يمسح الجدول
+
+// صح: استعلام بمعاملات (EF Core بيعمل كده تلقائياً)
+var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+// ولو SQL خام لازم معاملات
+db.Database.ExecuteSqlInterpolated($"UPDATE Users SET ... WHERE Id = {id}");</code></pre>
+<p>الأنواع التانية من الحقن: <span class="en">NoSQL Injection</span>، <span class="en">Command Injection</span> (تنفيذ أوامر نظام)، <span class="en">LDAP Injection</span>، <span class="en">Header Injection</span>. العلاج واحد: افصل البيانات عن الأوامر دايماً (<span class="en">parameterized queries</span>)، وما تبنيش أوامر من نص المستخدم.</p>
+
+<h3>7.3) <span class="en">XSS</span> (<span class="en">Cross-Site Scripting</span>)</h3>
+<p><strong>الفكرة:</strong> المهاجم يحقن كود <span class="en">JavaScript</span> في صفحتك فيشتغل في متصفح الضحية بصلاحياتها. ممكن يسرق التوكن، يعمل طلبات باسم المستخدم، أو يغيّر شكل الصفحة (نموذج دخول مزيّف).</p>
+<table>
+<tr><th>النوع</th><th>إزاي بيحصل</th></tr>
+<tr><td>مخزّن <span class="en">(Stored)</span></td><td>الكود بيتحفظ في القاعدة (تعليق، اسم منتج، تقييم) ويظهر لكل من يفتح الصفحة. الأخطر</td></tr>
+<tr><td>منعكس <span class="en">(Reflected)</span></td><td>الكود جاي في الرابط ويتعرض في الصفحة. الضحية بتضغط رابط خبيث</td></tr>
+<tr><td>مبني على <span class="en">DOM</span></td><td>سكريبت الصفحة نفسه بيكتب مدخل غير موثوق في <span class="en">DOM</span> (مثلاً <code>innerHTML</code>) من غير ما السيرفر يشارك</td></tr>
+</table>
+<p><strong>الدفاع:</strong></p>
+<ul>
+  <li><strong>ترميز المخرجات <span class="en">(Output Encoding)</span></strong>: حوّل <code>&lt;</code> لـ <code>&amp;lt;</code> وقت العرض. <span class="en">Angular</span> بيعمله تلقائياً في <code>{{ }}</code>.</li>
+  <li>ما تستخدمش <code>innerHTML</code> و<code>bypassSecurityTrustHtml</code> إلا لو لازم جداً ومع تعقيم بمكتبة (<code>DOMPurify</code>).</li>
+  <li><code>CSP</code> كطبقة تانية.</li>
+  <li><code>HttpOnly</code> على الـ <span class="en">cookies</span>.</li>
+</ul>
+<p>مهم: في مشروعنا التقييمات والأسماء والتعليقات كلها بتتعرض بـ <code>{{ }}</code> (مشفّرة تلقائياً)، وبحثنا ما لقيناش <code>innerHTML</code> في الكود.</p>
+
+<h3>7.4) <span class="en">CSRF</span> (<span class="en">Cross-Site Request Forgery</span>)</h3>
+<p><strong>الفكرة:</strong> إنت مسجّل دخول في موقعك. بتفتح موقع خبيث، وهو يخلّي متصفحك يبعت طلب لموقعك (زي "غيّر الإيميل"). المتصفح بيبعت الـ <span class="en">cookies</span> تلقائياً، فالطلب بيتنفّذ باسمك.</p>
+<p><strong>الدفاع:</strong></p>
+<ul>
+  <li><code>SameSite=Strict</code> أو <code>Lax</code> على الـ <span class="en">cookies</span> (بنستخدم <code>Strict</code>).</li>
+  <li>إرسال التوكن في <code>Authorization</code> <span class="en">header</span> بدل <span class="en">cookie</span>: المتصفح ما بيبعتوش تلقائياً. ده سبب إن الـ <span class="en">access token</span> عندنا في <span class="en">header</span> مش <span class="en">cookie</span>، فمعظم الـ <span class="en">API</span> محمي من <span class="en">CSRF</span> بطبيعته.</li>
+  <li>رمز <span class="en">CSRF</span> <span class="en">(Anti-forgery token)</span> للتطبيقات اللي بتعتمد على الـ <span class="en">cookies</span> في كل حاجة.</li>
+  <li>ما تغيّرش حالة بـ <code>GET</code> أبداً (<code>GET</code> لازم يكون للقراءة فقط).</li>
+</ul>
+
+<h3>7.5) <span class="en">Clickjacking</span></h3>
+<p>موقع خبيث بيعرض موقعك في <code>iframe</code> شفاف فوق زرار مغري، فتضغط على زرار في موقعك من غير ما تحس. الدفاع: <code>X-Frame-Options</code> أو <code>CSP frame-ancestors</code> (عندنا الاتنين).</p>
+
+<h3>7.6) رفع الملفات <span class="en">(File Upload)</span></h3>
+<ul>
+  <li>ما تثقش في الامتداد ولا في <code>Content-Type</code> اللي بعتهم المستخدم. افحص أول بايتات الملف <span class="en">(magic bytes)</span>: <code>FF D8 FF</code> لـ <span class="en">JPEG</span>، <code>89 50 4E 47</code> لـ <span class="en">PNG</span>.</li>
+  <li>حدّد حجم أقصى (عندنا 5MB).</li>
+  <li>غيّر اسم الملف لاسم عشوائي (ضد <span class="en">Path Traversal</span> مثل <code>../../etc/passwd</code> وضد تعارض الأسماء).</li>
+  <li>خزّن خارج مسار التنفيذ، وقدّم الملف بـ <code>X-Content-Type-Options: nosniff</code>.</li>
+  <li>ممنوع تماماً تسمح برفع ملفات تتنفّذ (<code>.exe</code>, <code>.aspx</code>, <code>.php</code>).</li>
+  <li>الـ <span class="en">SVG</span> ممكن يحتوي سكريبت، فما نقبلوش (بنقبل <span class="en">JPG/PNG/WebP</span> بس).</li>
+</ul>
+
+<h3>7.7) <span class="en">Mass Assignment</span> / <span class="en">Over-posting</span></h3>
+<p>لو ربطت الطلب مباشرة بكيان القاعدة <span class="en">(Entity)</span>، المهاجم يضيف حقول ما كنتش متوقعة مثل <code>"role":"Admin"</code> أو <code>"isActive":true</code>. الحل: استخدم <span class="en">DTOs</span> (كائنات نقل بيانات) فيها الحقول المسموحة بس، زي ما بنعمل (<code>RegisterDto</code> مفيهوش <code>Role</code>).</p>
+
+<h3>7.8) <span class="en">SSRF</span> (<span class="en">Server-Side Request Forgery</span>)</h3>
+<p>السيرفر بيجيب رابط المستخدم يدّيه (صورة من رابط، <span class="en">webhook</span>)، فالمهاجم يخلّيه يطلب عناوين داخلية (<code>http://localhost/admin</code> أو خدمات السحابة). الحل: قائمة بيضاء للمضيفين المسموحة، وما ترجّعش الرد الخام. (عندنا خدمة الخرائط <span class="en">Geocode</span> بتكلّم عنوان ثابت بس.)</p>
+
+<h3>7.9) <span class="en">Open Redirect</span></h3>
+<p>صفحة الدخول بتحوّل المستخدم لـ <code>?returnUrl=...</code> بعد الدخول. لو ما اتحققتش، المهاجم يبعت رابط <code>login?returnUrl=https://evil.com</code> فتتحوّل لموقع مزيّف. عندنا الدالة <code>safeReturnUrl</code> بتقبل المسارات الداخلية فقط.</p>
+
+<h3>7.10) رفض الخدمة <span class="en">(DoS / DDoS)</span> واستنزاف الموارد</h3>
+<ul>
+  <li><span class="en">Rate Limiting</span> على الـ <span class="en">endpoints</span> المكلفة أو الحساسة (دخول، تسجيل، رسايل الاتصال، الخرائط).</li>
+  <li>حدود لحجم الطلب والـ <span class="en">pagination</span> (ما تسمحش بـ <code>pageSize=1000000</code>). عندنا <code>Math.Clamp</code> للحجم.</li>
+  <li>مهلة <span class="en">(Timeout)</span> للطلبات الخارجية (عندنا 5 ثواني للخرائط).</li>
+  <li>للهجمات الموزّعة الكبيرة: خدمة حماية أمام الموقع (<span class="en">Cloudflare</span> مثلاً).</li>
+</ul>
+
+<h3>7.11) كشف معلومات حساسة <span class="en">(Information Disclosure)</span></h3>
+<ul>
+  <li>ما تعرضش <span class="en">stack trace</span> أو رسالة خطأ القاعدة للمستخدم. اعرض رسالة عامة وسجّل التفاصيل في الـ <span class="en">logs</span> (عندنا <code>ProblemDetails</code> عام).</li>
+  <li>ما تحطّش أسرار في الكود أو <span class="en">git</span> أو <span class="en">logs</span> أو رسائل الخطأ.</li>
+  <li>اخفِ إصدارات السيرفر والـ <span class="en">headers</span> الكاشفة.</li>
+  <li>ما ترجّعش حقول زيادة في الـ <span class="en">API</span> (مثل <code>PasswordHash</code>). استخدم <span class="en">DTOs</span>.</li>
+</ul>
+
+<h3>7.12) المكتبات المصابة وسلسلة التوريد <span class="en">(Supply Chain)</span></h3>
+<p>كودك بيعتمد على مئات المكتبات، وأي ثغرة فيها هي ثغرة عندك. الدفاع: <code>npm audit</code> و<code>dotnet list package --vulnerable</code>، تحديث دوري، ملف <code>package-lock.json</code> مثبّت، ما تثبّتش حزم مجهولة، وراجع الحزم المشبوهة (أسماء شبيهة بالأسماء المشهورة <span class="en">Typosquatting</span>). و<span class="en">Dependabot</span> على <span class="en">GitHub</span> بيساعد.</p>
+
+<h3>7.13) الهندسة الاجتماعية <span class="en">(Social Engineering)</span> والتصيّد <span class="en">(Phishing)</span></h3>
+<p>أضعف حلقة غالباً الإنسان. مهاجم يبعت إيميل مزيّف "حسابك اتقفل، سجّل دخولك" لرابط شبيه. الدفاع: <span class="en">MFA</span>، توعية، ورسايل الإيميل بتاعتنا ما بتطلبش كلمة السر أبداً.</p>
+
+<!-- ============================================================ -->
+<h2 id="s8">8) أمان الفرونت <span class="en">(Frontend)</span> بالتفصيل</h2>
+
+<div class="box note"><strong>القاعدة الأولى والأهم</strong>الفرونت بيشتغل على جهاز المستخدم، يعني المستخدم (أو المهاجم) بيشوف كل كودك ويعدّله ويستدعي الـ <span class="en">API</span> مباشرة من غير الواجهة. فأمان الفرونت هدفه: <strong>(1)</strong> ما تفتحش ثغرة للمهاجم في متصفح الضحية (<span class="en">XSS</span> وأخواتها)، و<strong>(2)</strong> تحافظ على بيانات المستخدم في المتصفح. أما "منع" الوصول فمكانه الباك.</div>
+
+<h3>8.1) الحماية من <span class="en">XSS</span> في <span class="en">Angular</span></h3>
+<ul>
+  <li><span class="en">Angular</span> بيعامل كل قيمة كنص غير موثوق ويرمّزها تلقائياً: <code>{{ product.name }}</code> آمن حتى لو الاسم فيه <code>&lt;script&gt;</code>.</li>
+  <li><code>[innerHTML]</code> بيمرّ على معقّم <span class="en">(sanitizer)</span> يشيل العناصر الخطرة. لكن تجنّبه لو ينفع.</li>
+  <li><code>DomSanitizer.bypassSecurityTrustHtml/Url/Script</code> بيقفل الحماية. ما تستخدمهوش على بيانات المستخدم أبداً.</li>
+  <li>ما تبنيش <span class="en">templates</span> من نص جاي من المستخدم.</li>
+  <li>الروابط: لو بتحط رابط من المستخدم في <code>href</code> تأكد إنه يبدأ بـ <code>https://</code> أو <code>http://</code>، لأن <code>javascript:alert(1)</code> ممكن يتنفّذ.</li>
+  <li>المكتبات اللي بتكتب في الـ <span class="en">DOM</span> بنفسها (خرائط، محرّرات نصوص): راجعها وحدّثها.</li>
+</ul>
+<pre><code>&lt;!-- آمن: Angular بيرمّز --&gt;
+&lt;p&gt;{{ review.comment }}&lt;/p&gt;
+
+&lt;!-- خطر: لو comment جاي من مستخدم --&gt;
+&lt;p [innerHTML]="review.comment"&gt;&lt;/p&gt;
+
+// خطر جداً: بيلغي الحماية
+this.sanitizer.bypassSecurityTrustHtml(userText);</code></pre>
+
+<h3>8.2) تخزين البيانات في المتصفح</h3>
+<table>
+<tr><th>المكان</th><th>مين يقراه</th><th>مناسب لـ</th></tr>
+<tr><td><code>localStorage</code> / <code>sessionStorage</code></td><td>أي سكريبت في الصفحة (يعني أي <span class="en">XSS</span>)</td><td>إعدادات غير حساسة: اللغة، الثيم</td></tr>
+<tr><td>ذاكرة التطبيق <span class="en">(signal/variable)</span></td><td>كود الصفحة الحالية فقط، وبيضيع مع التحديث</td><td><span class="en">access token</span> (اختيارنا)</td></tr>
+<tr><td><code>cookie</code> بـ <code>HttpOnly</code></td><td>المتصفح بس، السكريبت لا</td><td><span class="en">refresh token</span></td></tr>
+</table>
+<p>ما تخزّنش في <code>localStorage</code>: توكنات، كلمات سر، بيانات شخصية حساسة. عندنا في <code>localStorage</code> علامة بسيطة "فيه جلسة" ولغة الموقع بس.</p>
+
+<h3>8.3) الـ <span class="en">Route Guards</span> مش أمان</h3>
+<p>الـ <code>authGuard</code> و<code>ownerGuard</code> بيخبّوا الصفحات عن اللي مش مسجّل، وده <strong>تجربة استخدام</strong> فقط. المهاجم ممكن يعطّل الـ <span class="en">guard</span> أو يستدعي الـ <span class="en">API</span> مباشرة. الحماية الحقيقية: الباك بيرفض (<code>401</code> / <code>403</code>) أي طلب من غير صلاحية. ولهذا كل <span class="en">controller</span> أدمن عندنا عليه <code>[Authorize(Roles = "Admin")]</code>.</p>
+
+<h3>8.4) الأسرار في الفرونت</h3>
+<ul>
+  <li>كل حاجة في الـ <span class="en">bundle</span> (ملفات <code>environment.ts</code>) علنية. أي حد يفتح أدوات المطوّر ويشوفها.</li>
+  <li>ما تحطّش: مفاتيح <span class="en">API</span> سرية، كلمات سر، <span class="en">connection strings</span>، مفتاح <span class="en">JWT</span>.</li>
+  <li>مسموح: عناوين الـ <span class="en">API</span>، مفاتيح "عامة" مصمّمة تكون علنية (مثل مفتاح <span class="en">publishable</span> لبوابة دفع).</li>
+  <li>لو لازم تستخدم خدمة بمفتاح سري، اعمل <span class="en">endpoint</span> في الباك يستدعيها بدالك (زي ما بنعمل مع الخرائط).</li>
+  <li>اقفل <span class="en">source maps</span> في الإنتاج لو ما عايزش تكشف هيكل الكود (مش حماية حقيقية لكنها بتصعّب).</li>
+</ul>
+
+<h3>8.5) التحقق من المدخلات في الفرونت</h3>
+<p>التحقق في الفرونت <span class="en">(Reactive Forms validators)</span> هدفه <strong>تحسين تجربة المستخدم</strong> (رسالة فورية)، وما يغنيش عن التحقق في الباك. دايماً: تحقق في الاتنين، والباك هو الحكم. مثال عندنا: رقم الموبايل بيتفحص في <code>egyptPhoneValidator</code> (فرونت) وفي <code>EgyptPhoneAttribute</code> (باك).</p>
+
+<h3>8.6) معالجة الأخطاء والـ <span class="en">logging</span></h3>
+<ul>
+  <li>ما تعرضش رسائل الأخطاء الخام من السيرفر للمستخدم. اعرض رسالة مفهومة (عندنا <code>problemDetailsInterceptor</code> بيحوّل الأخطاء).</li>
+  <li>شيل <code>console.log</code> اللي بيطبع بيانات حساسة قبل النشر.</li>
+  <li>ما تسجّلش التوكن أو كلمة السر في أي <span class="en">log</span>.</li>
+</ul>
+
+<h3>8.7) سياسة أمان المحتوى <span class="en">(CSP)</span> وتحميل السكريبتات</h3>
+<ul>
+  <li>قلّل السكريبتات الخارجية <span class="en">(third-party)</span> (تحليلات، شات، إعلانات) لأن أي واحد منهم لو اتخترق، اتخترق موقعك (هجوم <span class="en">Magecart</span> بيسرق بيانات بطاقات).</li>
+  <li>لو بتحمّل سكريبت أو <span class="en">CSS</span> من <span class="en">CDN</span> استخدم <code>integrity</code> <span class="en">(SRI)</span> مع <code>crossorigin</code> وثبّت الإصدار.</li>
+  <li><code>CSP</code> صارم بيمنع سكريبتات <span class="en">inline</span>، لكن <span class="en">Angular</span> محتاج ضبط (<span class="en">nonce</span>) عشان يشتغل معاه. ده تحسين مستقبلي لمشروعنا.</li>
+</ul>
+
+<h3>8.8) الروابط الخارجية والنوافذ</h3>
+<p>لما تفتح رابط خارجي بـ <code>target="_blank"</code>، حط <code>rel="noopener noreferrer"</code> (وده بيمنع الصفحة الجديدة من التحكّم في صفحتك <span class="en">window.opener</span>). عندنا كده في روابط الخرائط.</p>
+
+<h3>8.9) الاعتماديات <span class="en">(npm)</span></h3>
+<ul>
+  <li><code>npm audit</code> بشكل دوري (والـ <span class="en">CI</span> ممكن يفشل لو فيه ثغرة عالية).</li>
+  <li>استخدم <code>npm ci</code> في الـ <span class="en">CI</span> عشان الإصدارات تكون ثابتة من <code>package-lock.json</code>.</li>
+  <li>قلّل عدد الحزم. كل حزمة = ثقة في مبرمج غريب.</li>
+</ul>
+
+<h3>8.10) ما الذي يفعله الفرونت عندنا فعلاً</h3>
+<ul>
+  <li>التوكن في الذاكرة، والـ <span class="en">refresh</span> في <span class="en">cookie</span> <code>HttpOnly</code>.</li>
+  <li>مفيش <code>innerHTML</code> ولا <code>bypassSecurityTrust</code> في الكود.</li>
+  <li><code>safeReturnUrl</code> ضد <span class="en">Open Redirect</span>.</li>
+  <li>رأس <code>X-Client-App</code> بيفرّق جلسة الأدمن عن جلسة العميل (كوكيز منفصلة).</li>
+  <li>فيه تحسين ممكن: <span class="en">CSP</span> صارم بـ <span class="en">nonce</span>.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="s9">9) أمان الباك <span class="en">(Backend)</span> بالتفصيل</h2>
+
+<div class="box note"><strong>القاعدة الأولى والأهم</strong>الباك هو آخر خط دفاع وهو <strong>الوحيد اللي تثق فيه</strong>. أي قاعدة أمان (صلاحيات، تحقق، حدود) لازم تتنفّذ هنا، حتى لو الفرونت بيعملها كمان.</div>
+
+<h3>9.1) المصادقة والتفويض في الـ <span class="en">API</span></h3>
+<ul>
+  <li><strong>كل <span class="en">endpoint</span> مقفول افتراضياً</strong> ويتفتح بالاستثناء. الأفضل تحط <code>[Authorize]</code> على الـ <span class="en">controller</span> وتفتح بـ <code>[AllowAnonymous]</code> للي محتاج (دخول، كتالوج). كده نسيان السمة ما يفتحش ثغرة.</li>
+  <li>فحص الدور <span class="en">(RBAC)</span> + فحص الملكية على مستوى المورد (شوف القسم 3).</li>
+  <li>الهوية من التوكن (<code>sub</code> claim) مش من الطلب. ما تقبلش <code>userId</code> من الـ <span class="en">body</span> لتحدّد صاحب المورد.</li>
+  <li>التحقق من التوكن في كل طلب: التوقيع، المُصدِر، الجمهور، الانتهاء، وإن الحساب لسه نشط (عندنا <code>OnTokenValidated</code>).</li>
+  <li>رفض <code>401</code> (مش مسجّل) و<code>403</code> (مسجّل بس مش مسموح) و<code>404</code> لما نخبّي وجود المورد.</li>
+</ul>
+
+<h3>9.2) التحقق من المدخلات <span class="en">(Validation)</span></h3>
+<ul>
+  <li><strong>قائمة بيضاء <span class="en">(Allowlist)</span></strong> أفضل من قائمة سوداء: حدّد المسموح (طول، نطاق، صيغة) بدل ما تحاول تمنع الخطأ.</li>
+  <li>استخدم <span class="en">DTOs</span> مع <span class="en">DataAnnotations</span>: <code>[Required]</code>، <code>[StringLength]</code>، <code>[Range]</code>، <code>[RegularExpression]</code>، وقواعد مخصصة (<code>EgyptPhone</code>).</li>
+  <li>تحقق من النوع والطول والنطاق وصيغة التاريخ والحجم.</li>
+  <li>ما تحاولش "تنظّف" المدخل بإزالة محارف خطرة، بل ارفضه أو رمّزه وقت الاستخدام.</li>
+  <li>طبّع القيم <span class="en">(Normalize)</span> قبل التخزين (الإيميل أحرف صغيرة بلا مسافات، الموبايل بصيغة موحّدة) عشان فهرس الفرادة يشتغل صح.</li>
+  <li>حدود على أي قائمة أو صفحة: <code>pageSize</code> أقصى 100 مثلاً.</li>
+</ul>
+
+<h3>9.3) قاعدة البيانات من الكود</h3>
+<ul>
+  <li><span class="en">EF Core</span> بيستخدم معاملات، فهو آمن ضد <span class="en">SQL Injection</span> لو استخدمت <span class="en">LINQ</span>.</li>
+  <li>لو كتبت <span class="en">SQL</span> خام: <code>FromSqlInterpolated</code> / <code>ExecuteSqlInterpolated</code> (المعاملات تلقائية) وما تستخدمش <code>FromSqlRaw</code> مع نص مدموج.</li>
+  <li>المعاملات <span class="en">(Transactions)</span> وشروط التزامن: مثال عندنا تحديث حالة الطلب بشرط الحالة الحالية عشان طلبين في نفس اللحظة ما يرجّعوش المخزون مرتين <span class="en">(Race Condition)</span>.</li>
+  <li>الفهارس الفريدة <span class="en">(Unique Index)</span> بتحمي من التكرار حتى لو فشل فحص الكود (مثلاً تقييم واحد لكل عميل لكل منتج).</li>
+</ul>
+
+<h3>9.4) الأسرار والإعدادات</h3>
+<ul>
+  <li>ما تحطّش أسرار في الكود أو <span class="en">git</span>. استخدم <code>dotnet user-secrets</code> محلياً ومتغيّرات البيئة <span class="en">(Environment Variables)</span> أو خزنة أسرار <span class="en">(Key Vault)</span> في الإنتاج.</li>
+  <li><code>appsettings.Development.json</code> و<code>.env</code> في <code>.gitignore</code>.</li>
+  <li>لو سرّ اتسرّب (اتحط في <span class="en">git</span> مرة): غيّره فوراً. حذفه من التاريخ مش كفاية.</li>
+  <li>فصل إعدادات التطوير عن الإنتاج، وما تفتحش وضع التطوير <span class="en">(Development)</span> في الإنتاج لأنه بيعرض تفاصيل الأخطاء.</li>
+  <li>التحقق من الإعدادات وقت البدء <span class="en">(ValidateOnStart)</span>: التطبيق يرفض يشتغل بمفتاح <span class="en">JWT</span> ضعيف (عندنا بالفعل).</li>
+</ul>
+
+<h3>9.5) الأخطاء والـ <span class="en">Logging</span> والمراقبة</h3>
+<ul>
+  <li>معالج أخطاء عام <code>UseExceptionHandler</code> بيرجّع <code>ProblemDetails</code> بدون تفاصيل داخلية.</li>
+  <li>سجّل الأحداث الأمنية: محاولات دخول فاشلة، قفل حساب، تغيير كلمة سر، تغيير صلاحيات، حذف مهم. وسجّل <strong>مين وإمتى</strong>.</li>
+  <li><strong>ما تسجّلش</strong> كلمات سر أو توكنات أو بيانات بطاقات أو بيانات شخصية كاملة.</li>
+  <li>راقب الشذوذ: ارتفاع مفاجئ في أخطاء <code>401</code> أو <code>429</code>، وفعّل تنبيهات.</li>
+  <li>حماية الـ <span class="en">logs</span> نفسها من التعديل والوصول.</li>
+</ul>
+
+<h3>9.6) تحديد المعدل <span class="en">(Rate Limiting)</span></h3>
+<p>بيقلّل التخمين والسبام والاستنزاف. عندنا سياسات لكل نوع: <code>auth</code> (10 في الدقيقة)، <code>contact</code> (5 في 10 دقايق)، <code>geocode</code> (20 في الدقيقة لكل مستخدم). الرد <code>429 Too Many Requests</code> مع <code>Retry-After</code>.</p>
+<div class="box warn"><strong>خلف <span class="en">Reverse Proxy</span></strong>لو السيرفر وراء <span class="en">proxy</span> (<span class="en">Railway</span>، <span class="en">nginx</span>) الـ <span class="en">IP</span> اللي يشوفه التطبيق بيبقى <span class="en">IP</span> الـ <span class="en">proxy</span> للكل. لازم تظبط <code>ForwardedHeaders</code> وإلا الـ <span class="en">rate limit</span> هيحجب الكل مع بعض أو ما يحجبش حد.</div>
+
+<h3>9.7) رفع الملفات</h3>
+<p>راجع قسم 7.6. تطبيقها عندنا في <code>UploadsController</code>: فحص <span class="en">magic bytes</span>، حجم 5MB، اسم عشوائي <code>Guid</code>، تقديم بـ <code>nosniff</code>، وللأدمن فقط.</p>
+
+<h3>9.8) البريد الإلكتروني</h3>
+<ul>
+  <li><span class="en">Header Injection</span>: لو حطيت مدخل المستخدم في عنوان أو موضوع الإيميل، شيل أسطر جديدة منه (عندنا الدالة <code>OneLine</code>).</li>
+  <li>رمّز <span class="en">HTML</span> في محتوى الإيميل (<code>Encode</code>)، لأن الإيميل ممكن يتعرض كـ <span class="en">HTML</span>.</li>
+  <li>اعمل الإرسال في الخلفية <span class="en">(queue)</span> عشان فشل الإيميل ما يفشّلش الطلب ولا يبطّأه.</li>
+  <li>روابط إعادة تعيين كلمة السر لو أضفتها: توكن عشوائي طويل، صلاحية قصيرة، استخدام مرة واحدة.</li>
+</ul>
+
+<h3>9.9) الاستعلامات الخارجية والتكاملات</h3>
+<ul>
+  <li>مهلة <span class="en">(timeout)</span> لكل طلب خارجي، وعدد محاولات محدود.</li>
+  <li>ما تثقش في ردود الخدمات الخارجية (تحقق منها).</li>
+  <li>تحقق من توقيع الـ <span class="en">webhooks</span> (لو ضفت بوابة دفع).</li>
+</ul>
+
+<h3>9.10) الدفع (لو أضفته)</h3>
+<ul>
+  <li>ما تخزّنش بيانات البطاقة أبداً. استخدم بوابة مرخّصة (<span class="en">Paymob</span> / <span class="en">Fawry</span>) والعميل يدخل البطاقة في صفحتها هي (معيار <span class="en">PCI-DSS</span>).</li>
+  <li>احسب المبلغ <strong>في الباك</strong> من الأسعار في القاعدة، وما تثقش في السعر اللي جاي من الفرونت أبداً. (ده بالفعل بيحصل عندنا في إنشاء الطلب.)</li>
+  <li>اعتمد على إشعار البوابة الموقّع <span class="en">(webhook)</span> لتأكيد الدفع مش على رجوع العميل لصفحة النجاح.</li>
+</ul>
+
+<h3>9.11) منطق الأعمال <span class="en">(Business Logic)</span></h3>
+<p>ثغرات مش تقنية بل في القواعد: سعر سالب، كمية سالبة، تطبيق كوبون مرتين، إلغاء طلب مُسلَّم. الدفاع: فحص الحالات والانتقالات (عندنا جدول <code>Transitions</code> للحالات المسموحة)، والحدود والقيود (<code>[Range]</code>)، واختبارات للحالات الغريبة.</p>
+
+<!-- ============================================================ -->
+<h2 id="s10">10) أمان قاعدة البيانات والبنية</h2>
+
+<h3>قاعدة البيانات</h3>
+<ul>
+  <li>حساب مخصّص للتطبيق بصلاحيات محدودة <span class="en">(SELECT/INSERT/UPDATE/DELETE)</span> على قاعدته بس، مش <code>root</code>.</li>
+  <li>القاعدة ما تكونش مفتوحة للإنترنت. بس للتطبيق (شبكة خاصة أو <span class="en">firewall</span>).</li>
+  <li>كلمة سر قوية، واتصال مشفّر <span class="en">(TLS)</span> لو بعيدة.</li>
+  <li><strong>نسخ احتياطي <span class="en">(Backup)</span></strong> دوري واختبار الاسترجاع فعلاً. نسخة ما اتجرّبتش مش نسخة.</li>
+  <li>تشفير البيانات الحساسة جداً في الراحة <span class="en">(at rest)</span> لو لزم.</li>
+</ul>
+
+<h3>الحاويات <span class="en">(Docker)</span> والنشر</h3>
+<ul>
+  <li>شغّل التطبيق بمستخدم عادي مش <code>root</code> داخل الحاوية.</li>
+  <li>صورة أساسية صغيرة ومحدّثة، وما تنسخش <code>.env</code> ولا أسرار داخل الصورة (<code>.dockerignore</code>).</li>
+  <li>افتح البورتات اللازمة بس.</li>
+  <li>مفيش أسرار في <code>docker-compose.yml</code> الحقيقي، استخدم متغيّرات بيئة.</li>
+  <li>التحديثات الأمنية لنظام التشغيل والمكتبات.</li>
+</ul>
+
+<h3>الـ <span class="en">CI/CD</span></h3>
+<ul>
+  <li>أسرار الـ <span class="en">pipeline</span> في <span class="en">GitHub Secrets</span> مش في الملفات.</li>
+  <li>اختبارات + فحص مكتبات + <span class="en">linting</span> قبل ما الكود يوصل للإنتاج.</li>
+  <li>تفعيل حماية الفرع الرئيسي <span class="en">(branch protection)</span> ومراجعة الكود <span class="en">(PR review)</span>.</li>
+  <li>مصادقة ثنائية على حساب <span class="en">GitHub</span> وحساب الاستضافة (الاختراق ممكن يجي من حسابك أنت).</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="s11">11) تطبيق على مشروع <code>Crafty Corner</code></h2>
+
+<h3>اللي موجود ومطبّق</h3>
+<table>
+<tr><th>الموضوع</th><th>التطبيق</th><th>مكانه</th></tr>
+<tr><td>تخزين كلمات السر</td><td><code>PasswordHasher</code> (<code>PBKDF2</code> مع ملح) وإعادة التجزئة عند تحديث الخوارزمية</td><td><code>AuthController</code></td></tr>
+<tr><td>منع تعداد المستخدمين</td><td>رسالة واحدة + <span class="en">hash</span> وهمي عند عدم وجود الإيميل</td><td><code>AuthController.Login</code></td></tr>
+<tr><td>تحديد المحاولات</td><td><span class="en">Rate limit</span> على الـ <span class="en">IP</span> + قفل حساب 15 دقيقة بعد 5 أخطاء</td><td><code>Program.cs</code> / <code>AuthController</code></td></tr>
+<tr><td>الجلسات</td><td><span class="en">access</span> 15 دقيقة في الذاكرة + <span class="en">refresh</span> في <span class="en">cookie</span> <code>HttpOnly</code> <code>Secure</code> <code>Strict</code> مع تدوير وكشف إعادة الاستخدام</td><td><code>AuthController</code>, <code>TokenService</code></td></tr>
+<tr><td>فصل جلسة الأدمن عن العميل</td><td>كوكي مختلف لكل تطبيق بحسب <code>X-Client-App</code></td><td><code>AuthController</code></td></tr>
+<tr><td>إيقاف الحساب فوراً</td><td>فحص نشاط الحساب في كل طلب</td><td><code>Program.cs</code> <code>OnTokenValidated</code></td></tr>
+<tr><td>الصلاحيات</td><td><code>[Authorize(Roles="Admin")]</code> على كل <span class="en">controllers</span> الأدمن + فحص ملكية الطلبات والسلة والمفضّلة</td><td><code>Controllers/*</code></td></tr>
+<tr><td>التحقق من المدخلات</td><td><span class="en">DTOs</span> + <span class="en">DataAnnotations</span> + <code>EgyptPhone</code> + <code>Clamp</code> للصفحات</td><td><code>Dtos/*</code></td></tr>
+<tr><td>ضد <span class="en">SQL Injection</span></td><td><span class="en">EF Core</span> بـ <span class="en">LINQ</span> (معاملات تلقائية)</td><td>كل الاستعلامات</td></tr>
+<tr><td>ضد <span class="en">Mass Assignment</span></td><td><span class="en">DTOs</span> بدل الكيانات (<code>RegisterDto</code> بدون <code>Role</code>)</td><td><code>Dtos/*</code></td></tr>
+<tr><td>رفع الصور</td><td><span class="en">magic bytes</span> + 5MB + اسم <code>Guid</code> + <code>nosniff</code> + أدمن فقط</td><td><code>UploadsController</code></td></tr>
+<tr><td>رؤوس الأمان و<span class="en">HSTS</span></td><td><code>CSP</code> / <code>X-Frame-Options</code> / <code>Referrer-Policy</code> / <code>Permissions-Policy</code> / <code>nosniff</code></td><td><code>Program.cs</code></td></tr>
+<tr><td><span class="en">CORS</span></td><td>الأصول المسموحة بالاسم فقط مع <span class="en">credentials</span></td><td><code>Program.cs</code></td></tr>
+<tr><td>الأسرار</td><td><code>user-secrets</code> + التحقق من طول مفتاح <span class="en">JWT</span> عند البدء + <code>.gitignore</code></td><td><code>JwtOptions</code></td></tr>
+<tr><td>الأخطاء</td><td><code>ProblemDetails</code> عام بدون تفاصيل داخلية</td><td><code>Program.cs</code></td></tr>
+<tr><td>التزامن والمخزون</td><td>تحديث حالة الطلب بشرط + معاملة <span class="en">transaction</span></td><td><code>AdminOrdersController</code></td></tr>
+<tr><td>الإيميل</td><td>ترميز <span class="en">HTML</span> + منع <span class="en">Header Injection</span> + إرسال في الخلفية</td><td><code>OrderEmails</code></td></tr>
+<tr><td>المكتبات</td><td><code>npm audit</code> نظيف</td><td>—</td></tr>
+<tr><td>الفرونت</td><td>مفيش <code>innerHTML</code>، <code>safeReturnUrl</code>، توكن في الذاكرة</td><td><code>shared/core/auth</code></td></tr>
+</table>
+
+<h3>الناقص أو المحتاج انتباه</h3>
+<table>
+<tr><th>الموضوع</th><th>الوضع</th><th>المطلوب</th></tr>
+<tr><td><code>AllowedHosts</code></td><td>مضبوط على <code>localhost</code></td><td>يتغيّر للدومين الحقيقي وقت النشر</td></tr>
+<tr><td><span class="en">MFA</span></td><td>مش موجود</td><td>مهم جداً لحسابات الأدمن</td></tr>
+<tr><td>إعادة تعيين كلمة السر بالإيميل</td><td>مش موجود</td><td>إضافته بتوكن عشوائي قصير العمر</td></tr>
+<tr><td>تأكيد الإيميل عند التسجيل</td><td>مش موجود</td><td>يمنع التسجيل بإيميل غيرك</td></tr>
+<tr><td><code>CSP</code> صارم للموقع</td><td>خفيف حالياً</td><td>إضافة <span class="en">nonce</span> وضبط <span class="en">Angular</span></td></tr>
+<tr><td>داشبورد الأدمن في <span class="en">Docker</span></td><td>مش مخدّم</td><td>نشره على <span class="en">subdomain</span> بنفس الموقع (عشان <span class="en">SameSite=Strict</span>)</td></tr>
+<tr><td>سجلّ تدقيق للأدمن <span class="en">(Audit Log)</span></td><td>جزئي (سجلات نصية)</td><td>جدول في القاعدة: مين غيّر إيه وإمتى</td></tr>
+<tr><td>اختبارات الأمان</td><td>مفيش اختبارات للـ <span class="en">API</span></td><td>اختبارات للصلاحيات و<span class="en">IDOR</span></td></tr>
+<tr><td>المراقبة والتنبيهات</td><td>مفيش</td><td>تجميع <span class="en">logs</span> وتنبيه على الشذوذ</td></tr>
+<tr><td>نسخ احتياطي</td><td>غير مضبوط</td><td>نسخة يومية واختبار استرجاع</td></tr>
+<tr><td><span class="en">Dependabot</span></td><td>غير مفعّل</td><td>تفعيله على <span class="en">GitHub</span></td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="s12">12) قوائم الفحص</h2>
+
+<h3>قبل كتابة أي <span class="en">endpoint</span> جديد</h3>
+<ol>
+  <li>مين مسموح له يستخدمه؟ حطّ <code>[Authorize]</code> المناسب.</li>
+  <li>هل بيمسّ مورد يخصّ مستخدم؟ افحص الملكية.</li>
+  <li>إيه المدخلات؟ حدّد DTO بحقول ونطاقات محدّدة.</li>
+  <li>إيه المخرجات؟ DTO بدون حقول حساسة.</li>
+  <li>هل مكلف أو ممكن يتسبّب في سبام؟ حدّد المعدل.</li>
+  <li>هل الأخطاء بتكشف تفاصيل؟</li>
+  <li>هل بيتسجّل حدث أمني لو لازم؟</li>
+</ol>
+
+<h3>قبل كل <span class="en">Pull Request</span></h3>
+<ol>
+  <li>ما فيش أسرار في التعديلات (<code>git diff</code>).</li>
+  <li>ما أضفتش <code>innerHTML</code> / <code>bypassSecurityTrust</code>.</li>
+  <li>التحقق من المدخلات في الباك مش الفرونت بس.</li>
+  <li>مكتبة جديدة؟ راجعتها وصحّتها ومعروفة؟</li>
+  <li>اختبار للحالة السلبية (مستخدم غير مسموح).</li>
+</ol>
+
+<h3>قبل النشر للإنتاج</h3>
+<ol>
+  <li><code>HTTPS</code> شغّال و<code>HSTS</code> مفعّل.</li>
+  <li><code>AllowedHosts</code> و<span class="en">CORS</span> على الدومين الحقيقي بس.</li>
+  <li>مفتاح <span class="en">JWT</span> طويل وعشوائي وجديد (مش بتاع التطوير).</li>
+  <li>حساب أدمن بكلمة سر قوية فريدة، وبيانات تجريبية مقفولة (<code>Seed:DemoData=false</code>).</li>
+  <li>حساب قاعدة بيانات بصلاحيات محدودة، والقاعدة مش علنية.</li>
+  <li>وضع الإنتاج <span class="en">(Production)</span> مش <span class="en">Development</span>.</li>
+  <li>نسخ احتياطي شغّال ومجرَّب.</li>
+  <li><code>npm audit</code> و<code>dotnet list package --vulnerable</code> نظاف.</li>
+  <li>رؤوس الأمان موجودة (جرّب موقعك على <span class="en">securityheaders.com</span>).</li>
+  <li>مراقبة وتنبيهات، وخطة لو حصل اختراق: مين يتصرّف وإزاي (تغيير الأسرار، إبطال الجلسات، إبلاغ العملاء).</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="s13">13) أسئلة المراجعة</h2>
+<p>جاوب من غير ما تبص، وبعدين راجع القسم المقابل.</p>
+<ol>
+  <li>إيه الفرق بين <span class="en">Authentication</span> و<span class="en">Authorization</span>؟ (قسم 1 و3)</li>
+  <li>ليه نخزّن <span class="en">hash</span> كلمة السر ومش تشفيرها؟ وليه <code>SHA256</code> العادي مش مناسب؟ (قسم 4)</li>
+  <li>إيه وظيفة الملح <span class="en">(Salt)</span>؟ (قسم 4)</li>
+  <li>ليه الـ <span class="en">access token</span> في الذاكرة والـ <span class="en">refresh token</span> في <span class="en">cookie</span>؟ (قسم 5)</li>
+  <li>اشرح <code>HttpOnly</code> و<code>Secure</code> و<code>SameSite</code>. (قسم 5)</li>
+  <li>إيه هو <span class="en">CORS</span>؟ هل بيحمي السيرفر؟ ليه لأ؟ (قسم 6)</li>
+  <li>اشرح <span class="en">IDOR</span> بمثال، وإزاي تمنعه. (قسم 7.1)</li>
+  <li>اشرح الفرق بين أنواع <span class="en">XSS</span> الثلاثة. وإزاي <span class="en">Angular</span> بيحميك؟ (قسم 7 و8)</li>
+  <li>إيه هو <span class="en">CSRF</span>؟ وإيه اللي بيحمينا منه عندنا؟ (قسم 7.4)</li>
+  <li>ليه الـ <span class="en">Route Guard</span> في الفرونت مش حماية حقيقية؟ (قسم 8.3)</li>
+  <li>ليه ما نحطّش مفتاح سري في <code>environment.ts</code>؟ (قسم 8.4)</li>
+  <li>إزاي نأمّن رفع الملفات؟ (قسم 7.6)</li>
+  <li>إيه هو <span class="en">Mass Assignment</span> وإزاي <span class="en">DTO</span> بيمنعه؟ (قسم 7.7)</li>
+  <li>ليه رسالة "إيميل أو كلمة سر غير صحيحة" واحدة؟ (قسم 4)</li>
+  <li>إيه مبدأ <span class="en">Least Privilege</span> وإزاي تطبّقه على قاعدة البيانات؟ (قسم 2 و10)</li>
+  <li>لو سرّ اتسرّب على <span class="en">GitHub</span> إيه اللي تعمله؟ (قسم 9.4)</li>
+  <li>ليه نحسب سعر الطلب في الباك مش الفرونت؟ (قسم 9.10)</li>
+  <li>إيه المشكلة لو السيرفر خلف <span class="en">proxy</span> من غير <code>ForwardedHeaders</code>؟ (قسم 9.6)</li>
+  <li>اذكر 5 رؤوس أمان ووظيفة كل واحد. (قسم 6)</li>
+  <li>إيه اللي ناقص في مشروعنا قبل النشر؟ (قسم 11)</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="s14">14) قاموس المصطلحات</h2>
+<table>
+<tr><th>المصطلح</th><th>المعنى بالعربي</th></tr>
+<tr><td><span class="en">Asset</span></td><td>أصل: شيء له قيمة ويحتاج حماية</td></tr>
+<tr><td><span class="en">Attack Surface</span></td><td>سطح الهجوم: كل نقاط التفاعل الممكن مهاجمتها</td></tr>
+<tr><td><span class="en">Authentication</span></td><td>المصادقة: إثبات الهوية</td></tr>
+<tr><td><span class="en">Authorization</span></td><td>التفويض: تحديد الصلاحيات</td></tr>
+<tr><td><span class="en">Brute Force</span></td><td>القوة الغاشمة: تجريب كل الاحتمالات</td></tr>
+<tr><td><span class="en">Clickjacking</span></td><td>خداع النقر عبر <code>iframe</code> شفاف</td></tr>
+<tr><td><span class="en">CORS</span></td><td>مشاركة الموارد بين الأصول: إعداد متصفح</td></tr>
+<tr><td><span class="en">CSP</span></td><td>سياسة أمان المحتوى</td></tr>
+<tr><td><span class="en">CSRF</span></td><td>تزوير طلب عبر موقع آخر</td></tr>
+<tr><td><span class="en">Credential Stuffing</span></td><td>حشو الاعتمادات المسرّبة</td></tr>
+<tr><td><span class="en">DoS / DDoS</span></td><td>رفض الخدمة (الموزّع)</td></tr>
+<tr><td><span class="en">Encryption</span></td><td>التشفير (قابل للفك بمفتاح)</td></tr>
+<tr><td><span class="en">Exploit</span></td><td>استغلال الثغرة</td></tr>
+<tr><td><span class="en">Hash</span></td><td>تجزئة: بصمة اتجاه واحد</td></tr>
+<tr><td><span class="en">HSTS</span></td><td>إلزام المتصفح بـ <code>HTTPS</code></td></tr>
+<tr><td><span class="en">IDOR</span></td><td>الوصول المباشر لمورد غيرك بتغيير المعرّف</td></tr>
+<tr><td><span class="en">Injection</span></td><td>حقن أوامر عبر المدخلات</td></tr>
+<tr><td><span class="en">JWT</span></td><td>توكن موقّع بصيغة <span class="en">JSON</span></td></tr>
+<tr><td><span class="en">Least Privilege</span></td><td>أقل صلاحية لازمة</td></tr>
+<tr><td><span class="en">MFA / 2FA</span></td><td>مصادقة متعددة / ثنائية العوامل</td></tr>
+<tr><td><span class="en">Man-in-the-Middle</span></td><td>هجوم الوسيط على الاتصال</td></tr>
+<tr><td><span class="en">OWASP</span></td><td>منظمة تنشر أفضل ممارسات وأخطر ثغرات الويب</td></tr>
+<tr><td><span class="en">Open Redirect</span></td><td>تحويل مفتوح لموقع خارجي</td></tr>
+<tr><td><span class="en">Phishing</span></td><td>تصيّد: مواقع ورسائل مزيّفة لسرقة البيانات</td></tr>
+<tr><td><span class="en">Rate Limiting</span></td><td>تحديد معدّل الطلبات</td></tr>
+<tr><td><span class="en">RBAC</span></td><td>صلاحيات حسب الدور</td></tr>
+<tr><td><span class="en">Salt</span></td><td>ملح: قيمة عشوائية تُضاف قبل التجزئة</td></tr>
+<tr><td><span class="en">Same-Origin Policy</span></td><td>سياسة نفس الأصل في المتصفح</td></tr>
+<tr><td><span class="en">SSRF</span></td><td>تزوير طلب من جهة السيرفر</td></tr>
+<tr><td><span class="en">Supply Chain</span></td><td>سلسلة التوريد: مكتبات ومصادر تعتمد عليها</td></tr>
+<tr><td><span class="en">Threat Model</span></td><td>نموذج التهديدات</td></tr>
+<tr><td><span class="en">TLS</span></td><td>بروتوكول التشفير تحت <code>HTTPS</code></td></tr>
+<tr><td><span class="en">Vulnerability</span></td><td>ثغرة: نقطة ضعف</td></tr>
+<tr><td><span class="en">XSS</span></td><td>حقن سكريبت في صفحة الضحية</td></tr>
+</table>
+
+<h3>مصادر للتوسّع</h3>
+<ul>
+  <li><code>owasp.org/Top10</code>: أخطر 10 ثغرات.</li>
+  <li><code>cheatsheetseries.owasp.org</code>: أوراق غش مفصّلة لكل موضوع (كلمات السر، الجلسات، <span class="en">XSS</span>...).</li>
+  <li><code>angular.dev/best-practices/security</code>: أمان <span class="en">Angular</span> الرسمي.</li>
+  <li>توثيق أمان <span class="en">ASP.NET Core</span> من مايكروسوفت.</li>
+  <li><code>portswigger.net/web-security</code>: تعلّم مجاني بمعامل تطبيقية.</li>
+</ul>
+
+<p class="sub" style="margin-top:3rem">آخر تحديث: 25 نوفمبر 2026. مكتوب لمشروع <code>Crafty Corner</code>.</p>
+
+</main>
+</body>
+</html>
