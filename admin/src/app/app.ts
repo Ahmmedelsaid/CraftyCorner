@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -9,14 +9,13 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { catchError, filter, map, of, startWith, switchMap } from 'rxjs';
+import { filter, interval, map, merge, startWith } from 'rxjs';
 import { environment } from '@env/environment';
 import { AuthService } from '@shared/core/auth/auth.service';
 import { LanguageService } from '@shared/core/i18n/language.service';
 import { Icon, IconName } from '@shared/ui/icon';
 import { Toasts } from '@shared/ui/toasts';
-import { AdminStats } from './data/admin.models';
-import { AdminService } from './data/admin.service';
+import { AdminCounters } from './data/admin-counters';
 
 interface NavItem {
   path: string;
@@ -142,7 +141,7 @@ interface NavItem {
               {{ auth.user()?.fullName }}
             </span>
           </header>
-          <main class="mx-auto max-w-6xl px-4 py-6 lg:px-8"><router-outlet /></main>
+          <main class="mx-auto max-w-[100rem] px-4 py-6 lg:px-8"><router-outlet /></main>
         </div>
       </div>
     }
@@ -152,7 +151,6 @@ export class AdminApp {
   protected readonly auth = inject(AuthService);
   protected readonly language = inject(LanguageService);
   private readonly router = inject(Router);
-  private readonly admin = inject(AdminService);
   private readonly route = inject(ActivatedRoute);
   protected readonly storeUrl = environment.storeUrl;
   protected readonly menuOpen = signal(false);
@@ -184,29 +182,31 @@ export class AdminApp {
     { initialValue: 'admin.title' },
   );
 
-  /** العدّادات (طلبات جديدة / رسائل غير مقروءة): بتتحدّث مع كل تنقّل. */
-  private readonly stats = toSignal(
-    this.navigated$.pipe(
-      startWith(null),
-      switchMap(() =>
-        this.auth.isAdmin()
-          ? this.admin.stats().pipe(catchError(() => of<AdminStats | null>(null)))
-          : of<AdminStats | null>(null),
-      ),
-    ),
-    { initialValue: null },
-  );
+  private readonly counters = inject(AdminCounters);
 
   protected readonly counts = computed(() => ({
-    orders: this.stats()?.ordersByStatus['Placed'] ?? 0,
-    messages: this.stats()?.unreadMessages ?? 0,
+    orders: this.counters.newOrders(),
+    messages: this.counters.unreadMessages(),
   }));
+
+  constructor() {
+    // refresh on every navigation, and every 30 seconds so a new order appears while the page is just open
+    merge(this.navigated$, interval(30_000))
+      .pipe(startWith(null), takeUntilDestroyed())
+      .subscribe(() => {
+        if (this.auth.isAdmin()) this.counters.refresh();
+        else this.counters.clear();
+      });
+  }
 
   protected badge(item: NavItem): number {
     return item.badge ? this.counts()[item.badge] : 0;
   }
 
   protected logout(): void {
-    this.auth.logout().subscribe(() => void this.router.navigateByUrl('/login'));
+    this.auth.logout().subscribe(() => {
+      this.counters.clear();
+      void this.router.navigateByUrl('/login');
+    });
   }
 }

@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { BehaviorSubject, combineLatest, switchMap } from 'rxjs';
 import { AdminMessage, toWhatsAppNumber } from '../data/admin.models';
+import { AdminCounters } from '../data/admin-counters';
 import { AdminService } from '../data/admin.service';
 import { PagedResult } from '@shared/core/models/api.models';
 import { LoadState, toLoadState } from '@shared/core/state/load-state';
@@ -62,7 +63,7 @@ import { DateTimePipe } from '@shared/pipes/date-time.pipe';
                 @if (message.phone) {
                   · <span dir="ltr">{{ message.phone }}</span>
                 }
-                · {{ 'contact.topic.' + message.topic | transloco }}
+                · {{ 'contact.topics.' + message.topic | transloco }}
                 @if (message.orderNumber) {
                   ·
                   <a
@@ -113,6 +114,7 @@ import { DateTimePipe } from '@shared/pipes/date-time.pipe';
 })
 export class AdminMessages {
   private readonly admin = inject(AdminService);
+  private readonly counters = inject(AdminCounters);
   private readonly reload$ = new BehaviorSubject<void>(undefined);
 
   protected readonly unreadOnly = signal(false);
@@ -136,6 +138,11 @@ export class AdminMessages {
   }
 
   protected toggle(message: AdminMessage): void {
-    this.admin.markMessageRead(message.id, !message.isRead).subscribe(() => this.reload$.next());
+    const markRead = !message.isRead;
+    this.admin.markMessageRead(message.id, markRead).subscribe(() => {
+      // the sidebar badge moves at once, and the list is loaded again
+      this.counters.adjustUnread(markRead ? -1 : 1);
+      this.reload$.next();
+    });
   }
 }

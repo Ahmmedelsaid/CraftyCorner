@@ -12,6 +12,7 @@ import { PricePipe } from '@shared/pipes/price.pipe';
 import { Icon } from '@shared/ui/icon';
 import { OrderStatusBadge } from '@shared/ui/order-status';
 import { NEXT_STATUSES, toWhatsAppNumber } from '../data/admin.models';
+import { AdminCounters } from '../data/admin-counters';
 import { AdminService } from '../data/admin.service';
 
 /** طلب واحد: الحالة والخطوة اللي بعدها، المنتجات، وبيانات العميل مع أزرار التواصل. */
@@ -126,45 +127,76 @@ import { AdminService } from '../data/admin.service';
         }
       </section>
 
-      <div class="grid items-start gap-5 lg:grid-cols-[1.5fr_1fr]">
-        <section class="card overflow-hidden">
-          <h3 class="border-b border-border px-5 py-3.5 font-bold">
-            {{ 'admin.order.items' | transloco }}
-            <span class="ms-1 text-sm font-normal text-muted">({{ order.itemCount }})</span>
-          </h3>
-          <ul class="divide-y divide-border">
-            @for (item of order.items; track item.productId) {
-              <li class="flex items-center gap-4 px-5 py-3">
-                <div class="arch size-14 shrink-0 !rounded-[999px_999px_0.6rem_0.6rem]">
-                  @if (item.imageUrl) {
-                    <img [src]="item.imageUrl" alt="" />
-                  }
-                </div>
-                <div class="min-w-0 flex-1">
-                  <a
-                    [routerLink]="['/products', item.productId]"
-                    class="block font-semibold hover:text-accent"
-                    >{{ item.name }}</a
-                  >
-                  <p class="text-sm text-muted">
-                    {{ item.unitPrice | price }} × {{ item.quantity }}
+      <div class="grid items-start gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <div class="grid content-start gap-5">
+          <section class="card overflow-hidden">
+            <h3 class="border-b border-border px-5 py-3.5 font-bold">
+              {{ 'admin.order.items' | transloco }}
+              <span class="ms-1 text-sm font-normal text-muted">({{ order.itemCount }})</span>
+            </h3>
+            <ul class="divide-y divide-border">
+              @for (item of order.items; track item.productId) {
+                <li class="flex items-center gap-4 px-5 py-3">
+                  <div class="arch size-14 shrink-0 !rounded-[999px_999px_0.6rem_0.6rem]">
+                    @if (item.imageUrl) {
+                      <img [src]="item.imageUrl" alt="" />
+                    }
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <a
+                      [routerLink]="['/products', item.productId]"
+                      class="block font-semibold hover:text-accent"
+                      >{{ item.name }}</a
+                    >
+                    <p class="text-sm text-muted">
+                      {{ item.unitPrice | price }} × {{ item.quantity }}
+                    </p>
+                  </div>
+                  <p class="font-bold tabular-nums">{{ item.lineTotal | price }}</p>
+                </li>
+              }
+            </ul>
+            <div class="grid gap-1 border-t border-border bg-surface-2/50 px-5 py-4">
+              <p class="flex justify-between text-lg font-bold">
+                <span>{{ 'orders.total' | transloco }}</span>
+                <span class="text-accent-hover">{{ order.total | price }}</span>
+              </p>
+              <p class="flex items-center gap-1.5 text-sm text-muted">
+                <app-icon name="cash" [size]="1" />
+                {{ 'checkout.cod' | transloco }}
+              </p>
+            </div>
+          </section>
+
+          <section class="card grid gap-4 p-5">
+            <h3 class="flex items-center gap-2 font-bold">
+              <app-icon name="pin" [size]="1.1" class="text-accent" />
+              {{ 'admin.order.address' | transloco }}
+            </h3>
+            <div class="grid gap-4 md:grid-cols-2">
+              <div>
+                <p class="font-semibold leading-relaxed">{{ order.address }}</p>
+                <p class="text-muted">{{ order.city }}</p>
+                @if (order.latitude !== null && order.longitude !== null) {
+                  <a class="btn mt-3 !py-1.5" target="_blank" rel="noopener" [href]="mapUrl(order)">
+                    <app-icon name="pin" [size]="1" />
+                    {{ 'orders.viewOnMap' | transloco }}
+                  </a>
+                }
+              </div>
+              @if (order.notes) {
+                <div>
+                  <p class="mb-1 text-xs font-medium text-muted">
+                    {{ 'admin.order.notes' | transloco }}
+                  </p>
+                  <p class="rounded-lg bg-accent-soft/60 px-3 py-2 text-sm leading-relaxed">
+                    {{ order.notes }}
                   </p>
                 </div>
-                <p class="font-bold tabular-nums">{{ item.lineTotal | price }}</p>
-              </li>
-            }
-          </ul>
-          <div class="grid gap-1 border-t border-border bg-surface-2/50 px-5 py-4">
-            <p class="flex justify-between text-lg font-bold">
-              <span>{{ 'orders.total' | transloco }}</span>
-              <span class="text-accent-hover">{{ order.total | price }}</span>
-            </p>
-            <p class="flex items-center gap-1.5 text-sm text-muted">
-              <app-icon name="cash" [size]="1" />
-              {{ 'checkout.cod' | transloco }}
-            </p>
-          </div>
-        </section>
+              }
+            </div>
+          </section>
+        </div>
 
         <div class="grid content-start gap-5">
           @if (order.status !== 'Cancelled') {
@@ -240,32 +272,6 @@ import { AdminService } from '../data/admin.service';
                 {{ 'admin.order.whatsapp' | transloco }}
               </a>
             </div>
-
-            <div class="border-t border-border pt-4">
-              <p class="mb-1 flex items-center gap-1.5 text-xs text-muted">
-                <app-icon name="pin" [size]="0.9" />
-                {{ 'admin.order.address' | transloco }}
-              </p>
-              <p>{{ order.address }}</p>
-              <p class="text-muted">{{ order.city }}</p>
-              @if (order.latitude !== null && order.longitude !== null) {
-                <a
-                  class="mt-2 inline-block text-sm font-semibold text-accent hover:underline"
-                  target="_blank"
-                  rel="noopener"
-                  [href]="mapUrl(order)"
-                >
-                  {{ 'orders.viewOnMap' | transloco }}
-                </a>
-              }
-            </div>
-
-            @if (order.notes) {
-              <div class="border-t border-border pt-4">
-                <p class="mb-1 text-xs text-muted">{{ 'admin.order.notes' | transloco }}</p>
-                <p class="rounded-lg bg-accent-soft/60 px-3 py-2 text-sm">{{ order.notes }}</p>
-              </div>
-            }
           </section>
         </div>
       </div>
@@ -278,6 +284,7 @@ import { AdminService } from '../data/admin.service';
 })
 export class AdminOrderDetail {
   private readonly admin = inject(AdminService);
+  private readonly counters = inject(AdminCounters);
   private readonly route = inject(ActivatedRoute);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
@@ -318,6 +325,7 @@ export class AdminOrderDetail {
     this.admin.setOrderStatus(order.id, status).subscribe({
       next: (next) => {
         this.updated.set(next);
+        this.counters.refresh(); // the "new orders" badge
         this.confirmingCancel.set(false);
         this.busy.set(false);
         this.toasts.show({ kind: 'success', key: 'admin.order.updated' });
