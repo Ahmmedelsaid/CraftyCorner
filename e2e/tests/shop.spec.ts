@@ -48,11 +48,16 @@ test.describe('visitor', () => {
     }
   });
 
-  test('the shop has no link to the dashboard, and the owner account cannot sign in to it', async ({ page }) => {
+  test('the shop has no link to the dashboard, and the owner account cannot sign in to it', async ({
+    page,
+  }) => {
     test.skip(!HAS_ADMIN, 'set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD to try the owner account');
     await useLanguage(page, 'en');
     await page.goto('/login');
-    await page.locator('#login-email, input[type="email"]').first().fill(process.env['E2E_ADMIN_EMAIL']!);
+    await page
+      .locator('#login-email, input[type="email"]')
+      .first()
+      .fill(process.env['E2E_ADMIN_EMAIL']!);
     await page.locator('input[type="password"]').first().fill(process.env['E2E_ADMIN_PASSWORD']!);
     await page.locator('form button[type="submit"]').click();
 

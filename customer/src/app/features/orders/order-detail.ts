@@ -92,7 +92,8 @@ import { Reveal } from '../../shared/directives/reveal';
               </ol>
 
               <div class="mt-8 flex flex-wrap justify-center gap-3">
-                @if (whatsappNumber) {
+                <!-- a chat about an order that was cancelled has nothing to say: only the form is offered -->
+                @if (whatsappNumber && order.status !== 'Cancelled') {
                   <a
                     [href]="whatsappUrl(order)"
                     target="_blank"

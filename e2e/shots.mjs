@@ -4,7 +4,9 @@ import { chromium } from '@playwright/test';
 
 const base = process.env.E2E_BASE_URL ?? 'http://localhost:4200';
 const out = process.env.SHOTS_DIR ?? 'test-results/shots';
-const paths = process.argv.slice(2).map((p) => (p.startsWith('/') ? p : '/' + p.replace(/^.*Git/, '')));
+const paths = process.argv
+  .slice(2)
+  .map((p) => (p.startsWith('/') ? p : '/' + p.replace(/^.*Git/, '')));
 
 const browser = await chromium.launch({ channel: process.env.E2E_CHANNEL ?? 'chrome' });
 for (const [name, viewport] of [

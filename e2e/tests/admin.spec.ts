@@ -157,6 +157,15 @@ test.describe('orders', () => {
     await page.getByRole('button', { name: 'Save', exact: true }).click();
     await expect(page.getByText('Saved.').first()).toBeVisible();
 
+    // saved: the details are shown, not editable, until Edit is pressed
+    await expect(page.getByLabel('Courier')).toHaveCount(0);
+    await expect(page.getByLabel('Tracking number')).toHaveCount(0);
+    await expect(page.getByText(number)).toBeVisible();
+    await page.getByRole('button', { name: 'Edit', exact: true }).click();
+    await expect(page.getByLabel('Tracking number')).toHaveValue(number);
+    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(page.getByLabel('Tracking number')).toHaveCount(0);
+
     const whatsapp = page.getByRole('link', { name: 'Send tracking on WhatsApp' });
     await expect(whatsapp).toBeVisible();
     const href = (await whatsapp.getAttribute('href'))!;

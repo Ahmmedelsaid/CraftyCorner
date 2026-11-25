@@ -201,44 +201,77 @@ import { AdminService } from '../data/admin.service';
         <div class="grid content-start gap-5">
           @if (order.status !== 'Cancelled') {
             <section class="card grid content-start gap-3 p-5">
-              <h2 class="flex items-center gap-2 font-bold">
-                <app-icon name="truck" [size]="1.1" class="text-accent" />
-                {{ 'admin.tracking.title' | transloco }}
-              </h2>
-              <p class="text-xs text-muted">{{ 'admin.tracking.hint' | transloco }}</p>
-              <label class="grid gap-1 text-sm font-medium">
-                {{ 'admin.tracking.company' | transloco }}
-                <input
-                  #company
-                  class="field"
-                  maxlength="60"
-                  [value]="order.trackingCompany ?? ''"
-                  [placeholder]="'admin.tracking.companyPlaceholder' | transloco"
-                />
-              </label>
-              <label class="grid gap-1 text-sm font-medium">
-                {{ 'admin.tracking.number' | transloco }}
-                <input
-                  #number
-                  class="field"
-                  dir="ltr"
-                  maxlength="60"
-                  [value]="order.trackingNumber ?? ''"
-                />
-              </label>
-              <button
-                type="button"
-                class="btn btn-accent"
-                [disabled]="busy()"
-                (click)="saveTracking(order, company.value, number.value)"
-              >
-                {{ 'admin.save' | transloco }}
-              </button>
-              @if (order.trackingNumber) {
+              <div class="flex items-center justify-between gap-2">
+                <h2 class="flex items-center gap-2 font-bold">
+                  <app-icon name="truck" [size]="1.1" class="text-accent" />
+                  {{ 'admin.tracking.title' | transloco }}
+                </h2>
+                <!-- once it is saved the details are shown, not edited; a typo is fixed with Edit, until delivery -->
+                @if (order.trackingNumber && !editingTracking() && order.status !== 'Delivered') {
+                  <button
+                    type="button"
+                    class="btn !px-3 !py-1 text-sm"
+                    (click)="editingTracking.set(true)"
+                  >
+                    {{ 'admin.edit' | transloco }}
+                  </button>
+                }
+              </div>
+
+              @if (order.trackingNumber && !editingTracking()) {
+                <dl class="grid gap-2 rounded-xl bg-surface-2/60 p-4 text-sm">
+                  @if (order.trackingCompany) {
+                    <div class="flex justify-between gap-3">
+                      <dt class="text-muted">{{ 'admin.tracking.company' | transloco }}</dt>
+                      <dd class="font-semibold">{{ order.trackingCompany }}</dd>
+                    </div>
+                  }
+                  <div class="flex justify-between gap-3">
+                    <dt class="text-muted">{{ 'admin.tracking.number' | transloco }}</dt>
+                    <dd class="font-semibold tabular-nums" dir="ltr">{{ order.trackingNumber }}</dd>
+                  </div>
+                </dl>
                 <a class="btn" [href]="whatsAppUrl(order)" target="_blank" rel="noopener">
                   <app-icon name="chat" [size]="1" />
                   {{ 'admin.tracking.sendWhatsapp' | transloco }}
                 </a>
+              } @else {
+                <p class="text-xs text-muted">{{ 'admin.tracking.hint' | transloco }}</p>
+                <label class="grid gap-1 text-sm font-medium">
+                  {{ 'admin.tracking.company' | transloco }}
+                  <input
+                    #company
+                    class="field"
+                    maxlength="60"
+                    [value]="order.trackingCompany ?? ''"
+                    [placeholder]="'admin.tracking.companyPlaceholder' | transloco"
+                  />
+                </label>
+                <label class="grid gap-1 text-sm font-medium">
+                  {{ 'admin.tracking.number' | transloco }}
+                  <input
+                    #number
+                    class="field"
+                    dir="ltr"
+                    maxlength="60"
+                    [value]="order.trackingNumber ?? ''"
+                  />
+                </label>
+                <div class="flex gap-2">
+                  <button
+                    type="button"
+                    class="btn btn-accent flex-1"
+                    [disabled]="busy()"
+                    (click)="saveTracking(order, company.value, number.value)"
+                  >
+                    {{ 'admin.save' | transloco }}
+                  </button>
+                  @if (order.trackingNumber) {
+                    <button type="button" class="btn" (click)="editingTracking.set(false)">
+                      {{ 'admin.cancel' | transloco }}
+                    </button>
+                  }
+                </div>
               }
             </section>
           }
@@ -295,6 +328,8 @@ export class AdminOrderDetail {
   /** الطلب بعد آخر تغيير حالة (بيغطي على اللي اتحمّل أول مرة). */
   private readonly updated = signal<Order | null>(null);
   protected readonly busy = signal(false);
+  /** The tracking card shows the saved details; Edit opens the two fields again. */
+  protected readonly editingTracking = signal(false);
   protected readonly confirmingCancel = signal(false);
 
   protected readonly state = toSignal(
@@ -361,6 +396,7 @@ export class AdminOrderDetail {
         next: (next) => {
           this.updated.set(next);
           this.busy.set(false);
+          this.editingTracking.set(false);
           this.toasts.show({ kind: 'success', key: 'admin.saved' });
         },
         error: () => {
