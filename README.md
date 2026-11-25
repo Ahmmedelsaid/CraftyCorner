@@ -90,6 +90,31 @@ see [docs/DEPLOY.md](docs/DEPLOY.md) and `.env.example`.
   photos are reference images). The owner replaces it from the dashboard.
 - Shop details (phone, email, address, hours) live in `customer/src/app/core/site.ts`; empty fields are hidden.
 
+## New-order alerts (on your phone)
+
+Two independent channels. Use either, or both: one failing never stops the order.
+
+- **Telegram** (instant, free). In Telegram, talk to `@BotFather`, send `/newbot` and keep the token it gives you. Open a chat with your new bot and send it any message, then open `https://api.telegram.org/bot<TOKEN>/getUpdates` and copy the number in `"chat":{"id":...}`. Then set:
+
+  ```
+  dotnet user-secrets set "Notifications:Telegram:BotToken" "<TOKEN>" --project api
+  dotnet user-secrets set "Notifications:Telegram:ChatId" "<CHAT ID>" --project api
+  dotnet user-secrets set "Notifications:AdminUrl" "https://your-dashboard-address" --project api   # optional: adds an "Open" link
+  ```
+
+  On a host use the environment variables `Notifications__Telegram__BotToken`, `Notifications__Telegram__ChatId` and `Notifications__AdminUrl`. The message has the customer, phone, address, items, total and a map link, and a second one tells you when a customer cancels.
+- **Email** (the full details, and you can reply to the customer). Set `Email:Host` (`smtp.gmail.com`), `Email:UserName`, `Email:Password` and `Email:OrderRecipient`. For Gmail the password must be an **App Password** (turn on 2-step verification, then create one at myaccount.google.com/apppasswords), never your normal password.
+
+## Tests
+
+- `dotnet test api.tests`: API tests (xunit). Unit-style tests of the controllers plus end-to-end HTTP tests that start the real app in memory on SQLite.
+- `npx ng test`: Angular specs (CI is the reference on Windows, where the runner can hang).
+- `npm run test:e2e`: Playwright, in a real browser. It covers the shop, the delivery map, the phone layout, and the owner dashboard (including its phone layout).
+  It needs the site and the API running, and Chrome installed.
+  - With the dev servers: `E2E_BASE_URL=http://localhost:4200 E2E_API_URL=http://localhost:5034/api`, plus `E2E_ADMIN_EMAIL` and `E2E_ADMIN_PASSWORD` for the dashboard tests (they are skipped without them). Set `E2E_START_ADMIN=1` to let Playwright start the dashboard on port 4201.
+  - **No MySQL?** `E2E_HOST=1 dotnet test api.tests --filter E2EHost` runs a throwaway copy of the API on port 5034 (SQLite, demo catalogue, admin `e2e-admin@example.com` / `Passw0rd!1`) and leaves your database alone. The tests create customers, orders and products with `e2e-` / `E2E` names, so run them against a throwaway database, not the one you use for real data.
+  - CI runs everything against the Docker image and MySQL.
+
 ## Before going live (security)
 
 - Set `AllowedHosts` (env `AllowedHosts`, or `ALLOWED_HOSTS` in Docker) to the real domain. It is `localhost` by default, so a deployed site answers 400 until it is set.

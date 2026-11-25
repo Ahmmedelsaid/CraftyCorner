@@ -21,12 +21,16 @@ namespace CraftyCorner.Api.Tests;
 public sealed class ApiFactory : WebApplicationFactory<Program>
 {
     private readonly string? databaseFile;
+    private readonly Action<IServiceCollection>? extraServices;
 
     /// <summary>Tests: one shared in-memory database.</summary>
     public ApiFactory() { }
 
     /// <summary>Browser host: a database file, one connection per request.</summary>
     internal ApiFactory(string databaseFile) => this.databaseFile = databaseFile;
+
+    /// <summary>Tests that replace a service (for example a fake alert sender).</summary>
+    internal ApiFactory(Action<IServiceCollection> services) => extraServices = services;
 
     public const string Password = "Passw0rd!1";
 
@@ -66,6 +70,8 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
                     .ToList()
             )
                 services.Remove(descriptor);
+
+            extraServices?.Invoke(services);
 
             // Tests share one open in-memory connection. A browser run (a file) needs one connection per
             // request, because the page fires several requests at once.

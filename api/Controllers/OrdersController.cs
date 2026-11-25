@@ -17,6 +17,7 @@ public class OrdersController(
     AppDbContext db,
     TimeProvider clock,
     IEmailQueue emails,
+    IOrderAlerts alerts,
     IOptions<EmailOptions> emailOptions,
     ILogger<OrdersController> logger
 ) : ControllerBase
@@ -178,7 +179,7 @@ public class OrdersController(
     /// </summary>
     private async Task NotifyAsync(Order order)
     {
-        if (!emails.Enabled)
+        if (!emails.Enabled && !alerts.Enabled)
             return;
 
         try
@@ -192,12 +193,19 @@ public class OrdersController(
             if (customer is null)
                 return;
 
-            await emails.EnqueueAsync(
-                OrderEmails.ForCustomer(order, customer.Email, customer.FullName, settings.WebUrl)
-            );
+            if (emails.Enabled)
+            {
+                await emails.EnqueueAsync(
+                    OrderEmails.ForCustomer(order, customer.Email, customer.FullName, settings.WebUrl)
+                );
 
-            if (settings.ShopRecipient is { Length: > 0 } shop)
-                await emails.EnqueueAsync(OrderEmails.ForShop(order, shop, customer.Email));
+                if (settings.ShopRecipient is { Length: > 0 } shop)
+                    await emails.EnqueueAsync(OrderEmails.ForShop(order, shop, customer.Email));
+            }
+
+            // the phone alert goes out in the background: a slow Telegram must not slow the customer's order
+            if (alerts.Enabled)
+                _ = alerts.NewOrderAsync(order, customer.Email);
         }
         catch (Exception ex)
         {
@@ -250,6 +258,8 @@ public class OrdersController(
 
         order.Status = OrderStatus.Cancelled;
         order.CancelledAt = now;
+        if (alerts.Enabled)
+            _ = alerts.OrderCancelledAsync(order);
         return OrderDto.From(order);
     }
 

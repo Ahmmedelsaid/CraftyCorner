@@ -157,6 +157,13 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.Configure<EmailOptions>(
     builder.Configuration.GetSection(EmailOptions.SectionName)
 );
+// تنبيه على التليفون (Telegram) لما يجي طلب جديد. من غير Notifications:Telegram:BotToken بيفضل مقفول.
+builder.Services.Configure<NotificationOptions>(
+    builder.Configuration.GetSection(NotificationOptions.SectionName)
+);
+builder.Services.AddHttpClient<IOrderAlerts, TelegramOrderAlerts>(client =>
+    client.Timeout = TimeSpan.FromSeconds(8)
+);
 builder.Services.AddSingleton<EmailQueue>();
 builder.Services.AddSingleton<IEmailQueue>(sp => sp.GetRequiredService<EmailQueue>());
 builder.Services.AddHostedService<EmailSenderService>();
