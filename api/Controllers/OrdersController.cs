@@ -18,6 +18,7 @@ public class OrdersController(
     TimeProvider clock,
     IEmailQueue emails,
     IOrderAlerts alerts,
+    IOptions<ShopOptions> shop,
     IOptions<EmailOptions> emailOptions,
     ILogger<OrdersController> logger
 ) : ControllerBase
@@ -162,7 +163,8 @@ public class OrdersController(
                 }),
             ],
         };
-        order.Total = order.Items.Sum(i => i.UnitPrice * i.Quantity);
+        order.ShippingFee = shop.Value.ShippingFee;
+        order.Total = order.Items.Sum(i => i.UnitPrice * i.Quantity) + order.ShippingFee;
 
         db.Orders.Add(order);
         db.CartItems.RemoveRange(cart);

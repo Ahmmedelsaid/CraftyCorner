@@ -79,6 +79,8 @@ public sealed class TelegramOrderAlerts(
         text.AppendLine();
         foreach (var item in order.Items)
             text.AppendLine($"{item.Quantity} x {OneLine(item.ProductName)}");
+        if (order.ShippingFee > 0)
+            text.AppendLine($"Shipping: {Money(order.ShippingFee)}");
         if (order.Latitude is { } lat && order.Longitude is { } lng)
         {
             text.AppendLine();

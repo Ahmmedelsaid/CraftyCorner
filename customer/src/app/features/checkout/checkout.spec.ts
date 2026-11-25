@@ -51,6 +51,8 @@ const cart: Cart = {
   ],
   itemCount: 2,
   subtotal: 200,
+  shippingFee: 100,
+  total: 300,
 };
 
 describe('Checkout page', () => {

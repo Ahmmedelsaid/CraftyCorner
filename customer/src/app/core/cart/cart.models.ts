@@ -17,6 +17,10 @@ export interface Cart {
   /** مجموع الكميات (اللي بيظهر على أيقونة السلة). */
   itemCount: number;
   subtotal: number;
+  /** Delivery fee, charged once per order (0 while nothing in the cart can be ordered). */
+  shippingFee: number;
+  /** What the customer pays: subtotal + shipping fee. */
+  total: number;
 }
 
 /** أقصى كمية من المنتج الواحد (نفس حد الـ API). */

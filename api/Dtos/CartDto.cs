@@ -14,4 +14,11 @@ public record CartItemDto(
     string? NameEn
 );
 
-public record CartDto(IReadOnlyList<CartItemDto> Items, int ItemCount, decimal Subtotal);
+public record CartDto(
+    IReadOnlyList<CartItemDto> Items,
+    int ItemCount,
+    decimal Subtotal,
+    // charged once per order, so it is 0 while nothing in the cart can be ordered
+    decimal ShippingFee,
+    decimal Total
+);

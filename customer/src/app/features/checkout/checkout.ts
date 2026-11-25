@@ -308,9 +308,17 @@ import { Reveal } from '../../shared/directives/reveal';
               </ul>
 
               <dl class="grid gap-2 border-t border-border pt-3 text-sm">
-                <div class="flex justify-between text-base font-bold">
-                  <dt>{{ 'cart.subtotal' | transloco }}</dt>
-                  <dd class="text-accent">{{ current.subtotal | price }}</dd>
+                <div class="flex justify-between">
+                  <dt class="text-muted">{{ 'cart.subtotal' | transloco }}</dt>
+                  <dd>{{ current.subtotal | price }}</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt class="text-muted">{{ 'cart.shipping' | transloco }}</dt>
+                  <dd>{{ current.shippingFee | price }}</dd>
+                </div>
+                <div class="flex justify-between border-t border-border pt-3 text-base font-bold">
+                  <dt>{{ 'cart.total' | transloco }}</dt>
+                  <dd class="text-accent">{{ current.total | price }}</dd>
                 </div>
                 <p class="text-xs text-muted">{{ 'checkout.shippingNote' | transloco }}</p>
               </dl>

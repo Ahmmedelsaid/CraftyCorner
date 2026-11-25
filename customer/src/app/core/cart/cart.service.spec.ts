@@ -29,6 +29,8 @@ function cartOf(quantity: number): Cart {
     ],
     itemCount: quantity,
     subtotal: 100 * quantity,
+    shippingFee: 100,
+    total: 100 * quantity + 100,
   };
 }
 

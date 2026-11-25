@@ -146,6 +146,8 @@ test.describe('customer', () => {
     // ----- cart, then checkout
     await page.goto('/cart');
     await expect(page.getByRole('heading', { name: 'Order summary' })).toBeVisible();
+    // the delivery fee (EGP 100 for now) is part of what the customer pays
+    await expect(page.locator('dl').filter({ hasText: 'Shipping' })).toContainText('EGP 100');
     await page.getByRole('link', { name: 'Checkout' }).click();
     await expect(page).toHaveURL(/\/checkout/);
 

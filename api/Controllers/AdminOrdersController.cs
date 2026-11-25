@@ -113,6 +113,13 @@ public class AdminOrdersController(
         if (order.Status == OrderStatus.Cancelled)
             return Problem(detail: "A cancelled order has no shipment.", statusCode: StatusCodes.Status409Conflict);
 
+        // once the courier has delivered it, the shipment record is final
+        if (order.Status == OrderStatus.Delivered)
+            return Problem(
+                detail: "A delivered order cannot change its shipment details.",
+                statusCode: StatusCodes.Status409Conflict
+            );
+
         var company = string.IsNullOrWhiteSpace(dto.Company) ? null : dto.Company.Trim();
         var number = string.IsNullOrWhiteSpace(dto.Number) ? null : dto.Number.Trim();
         var changed = order.TrackingCompany != company || order.TrackingNumber != number;

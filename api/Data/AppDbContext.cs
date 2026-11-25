@@ -87,6 +87,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(o => o.City).HasMaxLength(100);
             entity.Property(o => o.Notes).HasMaxLength(500);
             entity.Property(o => o.Total).HasPrecision(18, 2);
+            entity.Property(o => o.ShippingFee).HasPrecision(18, 2);
             entity.Property(o => o.TrackingCompany).HasMaxLength(60);
             entity.Property(o => o.TrackingNumber).HasMaxLength(60);
 

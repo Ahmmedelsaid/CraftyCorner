@@ -105,6 +105,10 @@ Two independent channels. Use either, or both: one failing never stops the order
   On a host use the environment variables `Notifications__Telegram__BotToken`, `Notifications__Telegram__ChatId` and `Notifications__AdminUrl`. The message has the customer, phone, address, items, total and a map link, and a second one tells you when a customer cancels.
 - **Email** (the full details, and you can reply to the customer). Set `Email:Host` (`smtp.gmail.com`), `Email:UserName`, `Email:Password` and `Email:OrderRecipient`. For Gmail the password must be an **App Password** (turn on 2-step verification, then create one at myaccount.google.com/apppasswords), never your normal password.
 
+## Delivery fee
+
+Every order carries a delivery fee, 100 EGP for now. Change it with `Shop:ShippingFee` (appsettings, user-secrets, or the environment variable `Shop__ShippingFee`; `0` means free delivery). The fee is copied onto each order when it is placed, so changing it never changes old orders. The cart, the checkout, the order pages, the emails and the Telegram alert all show it.
+
 ## Tests
 
 - `dotnet test api.tests`: API tests (xunit). Unit-style tests of the controllers plus end-to-end HTTP tests that start the real app in memory on SQLite.

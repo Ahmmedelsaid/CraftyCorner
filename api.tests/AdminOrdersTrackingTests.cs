@@ -85,6 +85,21 @@ public class AdminOrdersTrackingTests : IDisposable
     }
 
     [Fact]
+    public async Task A_delivered_order_keeps_its_shipment_details()
+    {
+        var (order, _) = ShippedOrder(OrderStatus.Shipped);
+        await Admin().SetTracking(order.Id, new UpdateTrackingDto("Bosta", "AB-1"));
+        await Admin().SetStatus(order.Id, new UpdateOrderStatusDto("Delivered"));
+        t.Db.ChangeTracker.Clear(); // the next request would read the order again from the database
+
+        var result = await Admin().SetTracking(order.Id, new UpdateTrackingDto("Other", "ZZ-9"));
+
+        var conflict = Assert.IsType<ObjectResult>(result.Result);
+        Assert.Equal(409, conflict.StatusCode);
+        Assert.Equal("AB-1", t.New().Orders.Single().TrackingNumber);
+    }
+
+    [Fact]
     public async Task A_shipped_order_emails_the_customer_the_tracking_number_once()
     {
         var (order, user) = ShippedOrder(OrderStatus.Shipped);

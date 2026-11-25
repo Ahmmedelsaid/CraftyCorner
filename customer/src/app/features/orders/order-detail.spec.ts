@@ -31,6 +31,7 @@ const order: Order = {
   cancelledAt: null,
   trackingCompany: null,
   trackingNumber: null,
+  shippingFee: 100,
   shippingName: 'Ana Test',
   phone: '01011252834',
   address: '12 Nile St',

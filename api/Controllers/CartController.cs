@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using CraftyCorner.Api.Data;
 using CraftyCorner.Api.Dtos;
 using CraftyCorner.Api.Models;
+using CraftyCorner.Api.Services;
 
 namespace CraftyCorner.Api.Controllers;
 
@@ -11,7 +13,7 @@ namespace CraftyCorner.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/[controller]")]
-public class CartController(AppDbContext db, TimeProvider clock) : ControllerBase
+public class CartController(AppDbContext db, TimeProvider clock, IOptions<ShopOptions> shop) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<CartDto>> Get() =>
@@ -162,6 +164,7 @@ public class CartController(AppDbContext db, TimeProvider clock) : ControllerBas
         items = [.. items.Select(i => i with { LineTotal = i.UnitPrice * i.Quantity })];
 
         var subtotal = items.Where(i => i.IsAvailable).Sum(i => i.LineTotal);
-        return new CartDto(items, items.Sum(i => i.Quantity), subtotal);
+        var fee = subtotal > 0 ? shop.Value.ShippingFee : 0m;
+        return new CartDto(items, items.Sum(i => i.Quantity), subtotal, fee, subtotal + fee);
     }
 }

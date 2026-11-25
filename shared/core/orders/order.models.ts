@@ -29,6 +29,8 @@ export interface Order {
   items: OrderItem[];
   trackingCompany: string | null;
   trackingNumber: string | null;
+  /** Delivery fee charged on this order (0 on orders placed before the fee existed). */
+  shippingFee: number;
 }
 
 /** صف في سجل الطلبات: صور مصغّرة بدل كل المنتجات. */

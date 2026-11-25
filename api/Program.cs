@@ -164,6 +164,7 @@ builder.Services.Configure<NotificationOptions>(
 builder.Services.AddHttpClient<IOrderAlerts, TelegramOrderAlerts>(client =>
     client.Timeout = TimeSpan.FromSeconds(8)
 );
+builder.Services.Configure<ShopOptions>(builder.Configuration.GetSection(ShopOptions.SectionName));
 builder.Services.AddSingleton<EmailQueue>();
 builder.Services.AddSingleton<IEmailQueue>(sp => sp.GetRequiredService<EmailQueue>());
 builder.Services.AddHostedService<EmailSenderService>();

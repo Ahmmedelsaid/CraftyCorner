@@ -102,6 +102,17 @@ public class OrderAlertsTests
     }
 
     [Fact]
+    public void The_alert_lists_the_shipping_fee_only_when_there_is_one()
+    {
+        var order = SampleOrder();
+
+        Assert.DoesNotContain("Shipping:", TelegramOrderAlerts.NewOrderText(order, "a@example.com", null));
+
+        order.ShippingFee = 100;
+        Assert.Contains("Shipping: 100 EGP", TelegramOrderAlerts.NewOrderText(order, "a@example.com", null));
+    }
+
+    [Fact]
     public void There_is_no_link_when_the_dashboard_address_is_not_set()
     {
         var text = TelegramOrderAlerts.NewOrderText(SampleOrder(), "ana@example.com", adminUrl: null);

@@ -92,8 +92,7 @@ import { Reveal } from '../../shared/directives/reveal';
               </ol>
 
               <div class="mt-8 flex flex-wrap justify-center gap-3">
-                <!-- a chat about an order that was cancelled has nothing to say: only the form is offered -->
-                @if (whatsappNumber && order.status !== 'Cancelled') {
+                @if (whatsappNumber) {
                   <a
                     [href]="whatsappUrl(order)"
                     target="_blank"
@@ -254,11 +253,17 @@ import { Reveal } from '../../shared/directives/reveal';
               <dl class="grid gap-2 border-t border-border bg-surface-2/40 px-5 py-4 text-sm">
                 <div class="flex justify-between">
                   <dt class="text-muted">{{ 'cart.subtotal' | transloco }}</dt>
-                  <dd class="font-medium">{{ order.total | price }}</dd>
+                  <dd class="font-medium">{{ order.total - order.shippingFee | price }}</dd>
                 </div>
                 <div class="flex justify-between">
                   <dt class="text-muted">{{ 'orders.delivery' | transloco }}</dt>
-                  <dd class="font-medium">{{ 'orders.deliveryNote' | transloco }}</dd>
+                  <dd class="font-medium">
+                    @if (order.shippingFee > 0) {
+                      {{ order.shippingFee | price }}
+                    } @else {
+                      {{ 'orders.deliveryNote' | transloco }}
+                    }
+                  </dd>
                 </div>
                 <div class="flex justify-between border-t border-border pt-3 text-base font-bold">
                   <dt>{{ 'orders.total' | transloco }}</dt>
@@ -343,7 +348,8 @@ import { Reveal } from '../../shared/directives/reveal';
               <h2 class="font-bold">{{ 'orders.help.title' | transloco }}</h2>
               <p class="text-sm text-muted">{{ 'orders.help.text' | transloco }}</p>
               <div class="flex flex-wrap gap-2">
-                @if (whatsappNumber) {
+                <!-- a chat about an order that was cancelled has nothing to say: only the form is offered -->
+                @if (whatsappNumber && order.status !== 'Cancelled') {
                   <a
                     [href]="whatsappUrl(order)"
                     target="_blank"

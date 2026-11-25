@@ -30,6 +30,7 @@ const order: Order = {
   cancelledAt: null,
   trackingCompany: null,
   trackingNumber: null,
+  shippingFee: 100,
   ...request,
   items: [
     { productId: 1, name: 'Phone', imageUrl: null, unitPrice: 100, quantity: 1, lineTotal: 100 },

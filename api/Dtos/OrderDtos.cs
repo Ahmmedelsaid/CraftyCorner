@@ -39,7 +39,8 @@ public record OrderDto(
     double? Longitude,
     IReadOnlyList<OrderItemDto> Items,
     string? TrackingCompany = null,
-    string? TrackingNumber = null
+    string? TrackingNumber = null,
+    decimal ShippingFee = 0
 )
 {
     public static OrderDto From(Order order) =>
@@ -69,7 +70,8 @@ public record OrderDto(
                 )),
             ],
             order.TrackingCompany,
-            order.TrackingNumber
+            order.TrackingNumber,
+            order.ShippingFee
         );
 }
 

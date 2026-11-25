@@ -211,6 +211,10 @@ public static class OrderEmails
             html.Append(
                 $"<tr><td style=\"padding:10px 12px;border-top:1px solid #e0d2ba;font-size:14px;\">{Encode(item.ProductName)}</td><td align=\"center\" style=\"padding:10px 12px;border-top:1px solid #e0d2ba;font-size:14px;\">{item.Quantity}</td><td align=\"right\" style=\"padding:10px 12px;border-top:1px solid #e0d2ba;font-size:14px;white-space:nowrap;\">{Money(item.UnitPrice * item.Quantity)}</td></tr>"
             );
+        if (order.ShippingFee > 0)
+            html.Append(
+                $"<tr><td colspan=\"2\" style=\"padding:10px 12px;border-top:1px solid #e0d2ba;font-size:14px;\">{(bilingual ? "الشحن / Shipping" : "Shipping")}</td><td align=\"right\" style=\"padding:10px 12px;border-top:1px solid #e0d2ba;font-size:14px;white-space:nowrap;\">{Money(order.ShippingFee)}</td></tr>"
+            );
         html.Append(
             $"<tr style=\"background:#f6efe3;\"><td colspan=\"2\" style=\"padding:12px;border-top:1px solid #e0d2ba;font-size:14px;font-weight:700;\">{total}</td><td align=\"right\" style=\"padding:12px;border-top:1px solid #e0d2ba;font-size:15px;font-weight:700;color:{AccentColor};white-space:nowrap;\">{Money(order.Total)}</td></tr>"
         );
@@ -225,6 +229,8 @@ public static class OrderEmails
             body.AppendLine(
                 $"- {OneLine(item.ProductName)} x{item.Quantity}  {Money(item.UnitPrice * item.Quantity)}"
             );
+        if (order.ShippingFee > 0)
+            body.AppendLine($"الشحن / Shipping: {Money(order.ShippingFee)}");
         body.AppendLine($"الإجمالي / Total: {Money(order.Total)}");
     }
 

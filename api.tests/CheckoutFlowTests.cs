@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using CraftyCorner.Api.Dtos;
 using CraftyCorner.Api.Models;
 
@@ -42,7 +43,8 @@ public class CheckoutFlowTests(ApiFactory factory) : IClassFixture<ApiFactory>
         Assert.Equal(HttpStatusCode.Created, placed.StatusCode);
         var order = (await placed.Content.ReadFromJsonAsync<OrderDto>())!;
         Assert.Equal("Placed", order.Status);
-        Assert.Equal(240m, order.Total); // 2 x 120, worked out by the server
+        Assert.Equal(340m, order.Total); // 2 x 120 + 100 shipping, worked out by the server
+        Assert.Equal(100m, order.ShippingFee);
         Assert.Equal("01012345678", order.Phone); // the phone is stored in one standard form
         Assert.Equal(3, Stock(productId));
 
@@ -72,8 +74,43 @@ public class CheckoutFlowTests(ApiFactory factory) : IClassFixture<ApiFactory>
         );
 
         var order = (await placed.Content.ReadFromJsonAsync<OrderDto>())!;
-        Assert.Equal(120m, order.Total);
+        Assert.Equal(220m, order.Total); // 120 + 100 shipping
         Assert.Equal("Placed", order.Status);
+    }
+
+    [Fact]
+    public async Task The_cart_shows_the_shipping_fee_and_the_total_to_pay()
+    {
+        var productId = factory.AddProduct();
+        var client = await factory.ClientFor(factory.AddUser());
+
+        var empty = (await client.GetFromJsonAsync<CartDto>("/api/cart"))!;
+        await AddToCart(client, productId, 2);
+        var cart = (await client.GetFromJsonAsync<CartDto>("/api/cart"))!;
+
+        Assert.Equal(0m, empty.ShippingFee); // nothing to ship yet
+        Assert.Equal(0m, empty.Total);
+        Assert.Equal(240m, cart.Subtotal);
+        Assert.Equal(100m, cart.ShippingFee);
+        Assert.Equal(340m, cart.Total);
+    }
+
+    [Fact]
+    public async Task The_fee_is_a_setting_and_an_order_keeps_the_fee_it_was_placed_with()
+    {
+        using var free = new ApiFactory(services =>
+            services.Configure<CraftyCorner.Api.Services.ShopOptions>(o => o.ShippingFee = 0)
+        );
+        var productId = free.AddProduct();
+        var client = await free.ClientFor(free.AddUser());
+        await AddToCart(client, productId, 1);
+
+        var placed = await client.PostAsJsonAsync("/api/orders", Order());
+
+        var order = (await placed.Content.ReadFromJsonAsync<OrderDto>())!;
+        Assert.Equal(0m, order.ShippingFee);
+        Assert.Equal(120m, order.Total);
+        Assert.Equal(0m, free.WithDb(db => db.Orders.Single().ShippingFee));
     }
 
     [Fact]

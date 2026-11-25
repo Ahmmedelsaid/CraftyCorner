@@ -33,6 +33,10 @@ public class Order
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
 
+    /// <summary>Delivery fee charged on this order (copied from the shop setting when it was placed).</summary>
+    public decimal ShippingFee { get; set; }
+
+    /// <summary>What the customer pays: the items plus the shipping fee.</summary>
     public decimal Total { get; set; }
 
     /// <summary>Courier name and tracking number, entered by the owner when the order is handed over.</summary>

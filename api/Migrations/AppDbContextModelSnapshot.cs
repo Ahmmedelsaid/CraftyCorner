@@ -245,6 +245,10 @@ namespace CraftyCorner.Api.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
+                    b.Property<decimal>("ShippingFee")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("ShippingName")
                         .IsRequired()
                         .HasMaxLength(100)

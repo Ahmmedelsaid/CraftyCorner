@@ -272,7 +272,9 @@
     "errors": {
       "stock": "That quantity is more than what we have in stock.",
       "gone": "This product is no longer available."
-    }
+    },
+    "shipping": "Shipping",
+    "total": "Total"
   },
   "checkout": {
     "title": "Checkout",
