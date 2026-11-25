@@ -20,7 +20,10 @@ test.describe('visitor', () => {
     await expect(firstCard).toContainText(ARABIC);
 
     // switching language flips direction and shows the English names the owner entered
-    await page.locator('button', { hasText: /^\s*(EN|English)\s*$/ }).first().click();
+    await page
+      .locator('button', { hasText: /^\s*(EN|English)\s*$/ })
+      .first()
+      .click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(firstCard).not.toContainText(ARABIC);
@@ -35,7 +38,9 @@ test.describe('visitor', () => {
     await expect(page.getByRole('heading', { name: 'Ratings and reviews' })).toBeVisible();
   });
 
-  test('is sent to sign in when opening the cart, checkout, orders, account or favourites', async ({ page }) => {
+  test('is sent to sign in when opening the cart, checkout, orders, account or favourites', async ({
+    page,
+  }) => {
     await useLanguage(page, 'en');
     for (const path of ['/cart', '/checkout', '/orders', '/account', '/wishlist']) {
       await page.goto(path);
@@ -65,8 +70,16 @@ test.describe('customer', () => {
     const productId = await openFirstProduct(page);
 
     const heart = page.getByRole('button', { name: 'Save to favourites' });
+    // the heart turns red at once; wait for the server to have saved it before leaving the page
+    const saved = page.waitForResponse(
+      (r) => r.url().includes('/wishlist/') && r.request().method() === 'PUT',
+    );
     await heart.click();
-    await expect(page.getByRole('button', { name: 'Remove from favourites' })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('button', { name: 'Remove from favourites' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect((await saved).ok()).toBeTruthy();
 
     await page.goto('/wishlist');
     await expect(page.locator(`a[href="/products/${productId}"]`).first()).toBeVisible();
@@ -76,7 +89,11 @@ test.describe('customer', () => {
     await expect(page.locator(`a[href="/products/${productId}"]`).first()).toBeVisible();
 
     await page.locator(`a[href="/products/${productId}"]`).first().click();
+    const removed = page.waitForResponse(
+      (r) => r.url().includes('/wishlist/') && r.request().method() === 'DELETE',
+    );
     await page.getByRole('button', { name: 'Remove from favourites' }).click();
+    expect((await removed).ok()).toBeTruthy();
     await page.goto('/wishlist');
     await expect(page.getByText('Nothing saved yet')).toBeVisible();
   });
@@ -86,11 +103,16 @@ test.describe('customer', () => {
     await register(page);
     await openFirstProduct(page);
 
-    await expect(page.getByText('You can review this product after it is delivered to you.')).toBeVisible();
+    await expect(
+      page.getByText('You can review this product after it is delivered to you.'),
+    ).toBeVisible();
     await expect(page.getByRole('button', { name: 'Submit review' })).toHaveCount(0);
   });
 
-  test('registers, orders a product, follows it to delivery and reviews it', async ({ page, request }) => {
+  test('registers, orders a product, follows it to delivery and reviews it', async ({
+    page,
+    request,
+  }) => {
     await useLanguage(page, 'en');
 
     // ----- sign up
@@ -116,7 +138,9 @@ test.describe('customer', () => {
 
     // ----- confirmation
     await expect(page).toHaveURL(/\/orders\/\d+\?placed=1/);
-    await expect(page.getByRole('heading', { name: 'Thank you! Your order is placed.' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Thank you! Your order is placed.' }),
+    ).toBeVisible();
     const orderId = Number(new URL(page.url()).pathname.split('/').pop());
     await expect(page.getByText('New order').first()).toBeVisible();
 
@@ -141,7 +165,9 @@ test.describe('customer', () => {
     await expect(page.getByText('E2E-TRACK-777')).toBeVisible();
     await expect(page.getByText('Bosta')).toBeVisible();
     await page.goto(`/products/${productId}`);
-    await expect(page.getByText('You can review this product after it is delivered to you.')).toBeVisible();
+    await expect(
+      page.getByText('You can review this product after it is delivered to you.'),
+    ).toBeVisible();
 
     // ----- delivered: now the review form appears
     await admin.setStatus(orderId, 'Delivered');
@@ -150,14 +176,18 @@ test.describe('customer', () => {
 
     await page.goto(`/products/${productId}`);
     await page.getByRole('radio', { name: '5 / 5' }).click();
-    await page.getByPlaceholder('Tell others what you think (optional)').fill('Beautiful and well made, thank you!');
+    await page
+      .getByPlaceholder('Tell others what you think (optional)')
+      .fill('Beautiful and well made, thank you!');
     await page.getByRole('button', { name: 'Submit review' }).click();
 
     await expect(page.getByText('Beautiful and well made, thank you!')).toBeVisible();
     await expect(page.getByText('1 reviews')).toBeVisible();
     // the rating also shows on the catalogue card
     await page.goto('/products');
-    await expect(page.locator(`a[href="/products/${productId}"]`).first().locator('[role="img"]')).toBeVisible();
+    await expect(
+      page.locator(`a[href="/products/${productId}"]`).first().locator('[role="img"]'),
+    ).toBeVisible();
   });
 
   test('can cancel a new order', async ({ page }) => {
@@ -171,7 +201,10 @@ test.describe('customer', () => {
     await page.getByRole('button', { name: 'Place order' }).click();
     await expect(page).toHaveURL(/\/orders\/\d+\?placed=1/);
 
-    await page.getByRole('button', { name: /Cancel/ }).first().click();
+    await page
+      .getByRole('button', { name: /Cancel/ })
+      .first()
+      .click();
     // a confirmation may ask once more
     const confirm = page.getByRole('button', { name: /Yes|Confirm|Cancel order/ }).last();
     if (await confirm.isVisible()) await confirm.click();

@@ -55,7 +55,7 @@ jobs:
       - name: Start it against MySQL
         run: |
           docker run -d --name craftycorner --network host \
-            -e PORT=8080 \
+            -e PORT=5034 \
             -e "ConnectionStrings__Default=Server=127.0.0.1;Port=3306;Database=craftycorner;User=root;Password=ci-only" \
             -e Jwt__Key=ci-only-key-0123456789-abcdefghijklmnopqrstuvwxyz \
             -e Database__MigrateOnStartup=true \
@@ -64,14 +64,14 @@ jobs:
             -e Seed__AdminPassword=Passw0rd!1 \
             -e RateLimit__AuthPermitLimit=500 \
             craftycorner
-          for i in $(seq 1 60); do curl -fsS http://localhost:8080/api/health && break; sleep 2; done
+          for i in $(seq 1 60); do curl -fsS http://localhost:5034/api/health && break; sleep 2; done
       - name: Smoke test
         run: |
-          curl -fsS http://localhost:8080/api/health
-          curl -fsS http://localhost:8080/ | grep -q "<app-root"
-          curl -fsS http://localhost:8080/products/1 | grep -q "<app-root"
-          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/does-not-exist)" = "404"
-          curl -fsS "http://localhost:8080/api/products?pageSize=1" | grep -Eq '"totalCount":[1-9][0-9]*'
+          curl -fsS http://localhost:5034/api/health
+          curl -fsS http://localhost:5034/ | grep -q "<app-root"
+          curl -fsS http://localhost:5034/products/1 | grep -q "<app-root"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5034/api/does-not-exist)" = "404"
+          curl -fsS "http://localhost:5034/api/products?pageSize=1" | grep -Eq '"totalCount":[1-9][0-9]*'
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -80,12 +80,15 @@ jobs:
       - name: Install the browser tests
         run: |
           npm ci
+          npx ng build admin
           npx playwright install --with-deps chromium
-      - name: Browser tests (the main path, in a real browser)
+      - name: Browser tests (shop, map, phone and dashboard, in a real browser)
         env:
-          E2E_BASE_URL: http://localhost:8080
+          E2E_BASE_URL: http://localhost:5034
           E2E_ADMIN_EMAIL: e2e-admin@example.com
           E2E_ADMIN_PASSWORD: Passw0rd!1
+          E2E_START_ADMIN: "1"
+          E2E_API_ORIGIN: http://localhost:5034
         run: npx playwright test -c e2e
       - name: Upload the browser test report (on failure)
         if: failure()
