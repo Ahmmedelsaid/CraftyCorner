@@ -146,6 +146,74 @@ public class HttpSecurityTests(ApiFactory factory) : IClassFixture<ApiFactory>
         Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync("/api/orders")).StatusCode);
     }
 
+    // ---------- the shop is for customers, the dashboard for the owner
+
+    private static HttpRequestMessage LoginRequest(string email, bool fromDashboard)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/login")
+        {
+            Content = JsonContent.Create(new LoginDto(email, ApiFactory.Password)),
+        };
+        if (fromDashboard)
+            request.Headers.Add("X-Client-App", "admin");
+        return request;
+    }
+
+    [Fact]
+    public async Task An_owner_account_cannot_sign_in_to_the_store()
+    {
+        var email = factory.EmailOf(factory.AddUser(UserRole.Admin));
+
+        var fromStore = await factory.CreateClient().SendAsync(LoginRequest(email, fromDashboard: false));
+        var fromDashboard = await factory.CreateClient().SendAsync(LoginRequest(email, fromDashboard: true));
+
+        Assert.Equal(HttpStatusCode.Unauthorized, fromStore.StatusCode);
+        Assert.False(fromStore.Headers.Contains("Set-Cookie")); // no session was started
+        Assert.Equal(HttpStatusCode.OK, fromDashboard.StatusCode);
+    }
+
+    [Fact]
+    public async Task The_store_answers_an_owner_exactly_like_a_wrong_password()
+    {
+        var email = factory.EmailOf(factory.AddUser(UserRole.Admin));
+        var client = factory.CreateClient();
+
+        var owner = await client.SendAsync(LoginRequest(email, fromDashboard: false));
+        var wrong = await client.PostAsJsonAsync("/api/auth/login", new LoginDto(email, "Wrong-password-1"));
+
+        Assert.Equal(wrong.StatusCode, owner.StatusCode);
+        // the body also carries a per-request trace id, so compare the message
+        string Detail(string body) => System.Text.Json.JsonDocument.Parse(body).RootElement.GetProperty("detail").GetString()!;
+        Assert.Equal(Detail(await wrong.Content.ReadAsStringAsync()), Detail(await owner.Content.ReadAsStringAsync()));
+    }
+
+    [Fact]
+    public async Task A_customer_signs_in_to_the_store_as_before()
+    {
+        var email = factory.EmailOf(factory.AddUser());
+
+        var response = await factory.CreateClient().SendAsync(LoginRequest(email, fromDashboard: false));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task An_owner_session_found_in_the_stores_cookie_is_ended_not_renewed()
+    {
+        var email = factory.EmailOf(factory.AddUser(UserRole.Admin));
+        var login = await factory.CreateClient().SendAsync(LoginRequest(email, fromDashboard: true));
+        var cookie = login.Headers.GetValues("Set-Cookie").Single(c => c.StartsWith("cc_admin_refresh="));
+        var token = cookie.Split(';')[0].Split('=', 2)[1];
+
+        // the same token presented in the store's cookie (what an old store session looks like)
+        var refresh = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
+        refresh.Headers.Add("Cookie", $"vc_refresh={token}");
+        var response = await factory.CreateClient().SendAsync(refresh);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.Contains(response.Headers.GetValues("Set-Cookie"), c => c.StartsWith("vc_refresh=;") || c.Contains("expires=Thu, 01 Jan 1970"));
+    }
+
     [Fact]
     public async Task Registering_never_lets_the_caller_choose_the_role()
     {

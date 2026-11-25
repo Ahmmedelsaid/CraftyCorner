@@ -48,6 +48,21 @@ test.describe('visitor', () => {
     }
   });
 
+  test('the shop has no link to the dashboard, and the owner account cannot sign in to it', async ({ page }) => {
+    test.skip(!HAS_ADMIN, 'set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD to try the owner account');
+    await useLanguage(page, 'en');
+    await page.goto('/login');
+    await page.locator('#login-email, input[type="email"]').first().fill(process.env['E2E_ADMIN_EMAIL']!);
+    await page.locator('input[type="password"]').first().fill(process.env['E2E_ADMIN_PASSWORD']!);
+    await page.locator('form button[type="submit"]').click();
+
+    await expect(page.getByRole('alert')).toContainText('Incorrect email or password');
+    await expect(page).toHaveURL(/\/login/);
+    await page.goto('/');
+    await expect(page.getByRole('link', { name: 'Dashboard' })).toHaveCount(0);
+    await expect(page.locator('a[href="/account"]')).toHaveCount(0);
+  });
+
   test('cannot register with a weak password or a wrong phone number', async ({ page }) => {
     await useLanguage(page, 'en');
     await page.goto('/register');

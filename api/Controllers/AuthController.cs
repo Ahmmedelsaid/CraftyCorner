@@ -33,10 +33,10 @@ public class AuthController(
     /// shares cookies between ports. Each app therefore gets its own refresh cookie, chosen by the
     /// X-Client-App header the dashboard sends, so signing in to one never replaces the other's session.
     /// </summary>
-    private string RefreshCookieName =>
-        string.Equals(Request.Headers["X-Client-App"], "admin", StringComparison.OrdinalIgnoreCase)
-            ? AdminCookieName
-            : StoreCookieName;
+    private string RefreshCookieName => IsAdminApp ? AdminCookieName : StoreCookieName;
+
+    private bool IsAdminApp =>
+        string.Equals(Request.Headers["X-Client-App"], "admin", StringComparison.OrdinalIgnoreCase);
 
     private readonly JwtOptions jwt = jwtOptions.Value;
 
@@ -127,6 +127,11 @@ public class AuthController(
         if (!user.IsActive)
             return InvalidCredentials();
 
+        // The shop is for customers: an owner account signs in to the dashboard, never to the store.
+        // (Same answer as a wrong password, so the store does not reveal which emails belong to the owner.)
+        if (!IsAdminApp && user.Role == UserRole.Admin)
+            return InvalidCredentials();
+
         if (user.FailedLoginCount != 0 || user.LockedUntil is not null)
         {
             user.FailedLoginCount = 0;
@@ -186,6 +191,10 @@ public class AuthController(
         }
 
         if (stored.ExpiresAt <= now || !stored.User.IsActive)
+            return SessionExpired(clearCookie: true);
+
+        // an owner session found in the store's cookie (from before this rule) is ended, not renewed
+        if (!IsAdminApp && stored.User.Role == UserRole.Admin)
             return SessionExpired(clearCookie: true);
 
         // Rotation: القديم يتلغي والجديد يحل مكانه. التحديث الشرطي بيضمن إن طلبين متزامنين

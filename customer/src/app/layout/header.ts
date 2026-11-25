@@ -13,7 +13,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { catchError, of } from 'rxjs';
-import { environment } from '@env/environment';
 import { AuthService } from '@shared/core/auth/auth.service';
 import { CartService } from '../core/cart/cart.service';
 import { WishlistService } from '../core/wishlist/wishlist.service';
@@ -132,10 +131,6 @@ import { LocalizedPipe } from '@shared/pipes/localized.pipe';
             }
           </a>
 
-          @if (auth.isAdmin()) {
-            <a [href]="adminUrl" class="btn">{{ 'admin.title' | transloco }}</a>
-          }
-
           @if (auth.user(); as user) {
             <a
               routerLink="/account"
@@ -215,7 +210,6 @@ export class Header {
 
   protected readonly initial = initialOf;
   /** لوحة التحكم تطبيق منفصل (admin)، فده لينك خارجي مش route. */
-  protected readonly adminUrl = environment.adminUrl;
 
   /** نزلنا شوية: الهيدر بيصغّر ويظهر ظل. */
   protected readonly scrolled = signal(false);

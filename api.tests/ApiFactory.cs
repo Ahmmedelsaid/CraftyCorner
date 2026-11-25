@@ -164,10 +164,15 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     public async Task<HttpClient> ClientFor(int userId)
     {
         var client = CreateClient();
-        var response = await client.PostAsJsonAsync(
-            "/api/auth/login",
-            new LoginDto(EmailOf(userId), Password)
-        );
+        // the owner signs in through the dashboard (which says so with this header); customers through the store
+        var isOwner = WithDb(db => db.Users.Single(u => u.Id == userId).Role == UserRole.Admin);
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/login")
+        {
+            Content = JsonContent.Create(new LoginDto(EmailOf(userId), Password)),
+        };
+        if (isOwner)
+            request.Headers.Add("X-Client-App", "admin");
+        var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
         var session = (await response.Content.ReadFromJsonAsync<AuthResponse>())!;
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.AccessToken);
