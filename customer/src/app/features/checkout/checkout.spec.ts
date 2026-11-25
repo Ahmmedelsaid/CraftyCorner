@@ -150,6 +150,15 @@ describe('Checkout page', () => {
       longitude: null,
     });
     post.flush({ id: 9 });
+    // the account has no saved address yet, so "save as default" is on and the profile is updated
+    const profile = http.expectOne({ method: 'PUT', url: `${API}/auth/me` });
+    expect(profile.request.body).toEqual({
+      fullName: 'Ana Test',
+      phone: '+20 100 123 4567',
+      address: '12 Nile St',
+      city: 'Giza',
+    });
+    profile.flush({ ...session.user, address: '12 Nile St', city: 'Giza' });
     http.expectOne(`${API}/cart`).flush({ items: [], itemCount: 0, subtotal: 0 });
     await fixture.whenStable();
 
@@ -185,6 +194,7 @@ describe('Checkout page', () => {
     expect(post.request.body.latitude).toBeCloseTo(30.0131);
     expect(post.request.body.longitude).toBeCloseTo(31.2089);
     post.flush({ id: 9 });
+    http.expectOne({ method: 'PUT', url: `${API}/auth/me` }).flush(session.user);
     http.expectOne(`${API}/cart`).flush({ items: [], itemCount: 0, subtotal: 0 });
   });
 
