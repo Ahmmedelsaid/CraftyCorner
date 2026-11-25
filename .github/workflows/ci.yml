@@ -60,6 +60,9 @@ jobs:
             -e Jwt__Key=ci-only-key-0123456789-abcdefghijklmnopqrstuvwxyz \
             -e Database__MigrateOnStartup=true \
             -e Seed__DemoData=true \
+            -e Seed__AdminEmail=e2e-admin@example.com \
+            -e Seed__AdminPassword=Passw0rd!1 \
+            -e RateLimit__AuthPermitLimit=500 \
             craftycorner
           for i in $(seq 1 60); do curl -fsS http://localhost:8080/api/health && break; sleep 2; done
       - name: Smoke test
