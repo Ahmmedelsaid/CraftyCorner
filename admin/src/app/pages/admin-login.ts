@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -68,7 +69,8 @@ import { ApiError } from '@shared/core/models/api.models';
 export class AdminLogin {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly returnUrl = inject(ActivatedRoute).snapshot.queryParamMap.get('returnUrl');
+  private readonly route = inject(ActivatedRoute);
+  private readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
 
   protected readonly form = inject(NonNullableFormBuilder).group({
     email: ['', [Validators.required, Validators.email]],
@@ -76,24 +78,43 @@ export class AdminLogin {
   });
   protected readonly submitting = signal(false);
   // جلسة عميل عادي (من الموقع) مفتوحة على نفس المتصفح: ننبّه إنه محتاج حساب الأدمن
-  protected readonly error = signal<string | null>(
+  private readonly failure = signal<string | null>(
     this.auth.isAuthenticated() && !this.auth.isAdmin() ? 'admin.login.notOwner' : null,
+  );
+  // Signing out a customer switches the app from the dashboard frame back to the bare login page. The router
+  // reuses this page for the "?error=notOwner" address, so the reason is read from the address as it changes.
+  private readonly query = toSignal(this.route.queryParamMap, {
+    initialValue: this.route.snapshot.queryParamMap,
+  });
+  private readonly dismissed = signal(false);
+  protected readonly error = computed(
+    () =>
+      this.failure() ??
+      (!this.dismissed() && this.query().get('error') === 'notOwner'
+        ? 'admin.login.notOwner'
+        : null),
   );
 
   protected submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.error.set('auth.validation.passwordRequired');
+      this.failure.set('auth.validation.passwordRequired');
       return;
     }
     this.submitting.set(true);
-    this.error.set(null);
+    this.failure.set(null);
+    this.dismissed.set(true);
 
     this.auth.login(this.form.getRawValue()).subscribe({
       next: (user) => {
         if (user.role !== 'Admin') {
           this.submitting.set(false);
-          this.auth.logout().subscribe(() => this.error.set('admin.login.notOwner'));
+          // signing out switches the app from the dashboard frame back to the bare login page, which builds
+          // this component again and would lose the message: so the reason travels in the address
+          this.auth.logout().subscribe(() => {
+            this.failure.set('admin.login.notOwner');
+            void this.router.navigate(['/login'], { queryParams: { error: 'notOwner' } });
+          });
           return;
         }
         const url = this.returnUrl;
@@ -103,7 +124,7 @@ export class AdminLogin {
       },
       error: (error: ApiError) => {
         this.submitting.set(false);
-        this.error.set(authErrorKey(error));
+        this.failure.set(authErrorKey(error));
       },
     });
   }
