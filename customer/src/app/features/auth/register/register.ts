@@ -31,72 +31,107 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
   imports: [ReactiveFormsModule, RouterLink, TranslocoPipe, Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <section class="mx-auto max-w-4xl px-4 py-10">
+    <section class="mx-auto max-w-5xl px-4 py-8 sm:py-12">
       <div
-        class="grid overflow-hidden rounded-3xl border border-border bg-surface shadow-card md:grid-cols-[0.9fr_1.1fr]"
+        class="grid overflow-hidden rounded-3xl border border-border bg-surface shadow-card md:grid-cols-[0.8fr_1.2fr]"
       >
         <aside
-          class="relative hidden flex-col justify-center gap-10 bg-ink p-8 text-white/85 md:flex"
+          class="relative hidden flex-col justify-between gap-10 overflow-hidden bg-ink p-9 text-white/85 md:flex"
         >
-          <div>
+          <!-- decoration: soft light and an arch, like the product frames -->
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute -end-24 -top-24 size-72 rounded-full bg-accent/30 blur-3xl"
+          ></span>
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute -bottom-28 -start-20 h-72 w-56 rounded-t-full border border-white/10"
+          ></span>
+
+          <div class="relative">
             <img
               src="images/logo.jpg"
               alt=""
-              width="56"
-              height="56"
-              class="size-14 rounded-full ring-2 ring-white/20"
+              width="64"
+              height="64"
+              class="size-16 rounded-full ring-2 ring-white/20"
             />
-            <h2 class="mt-5 text-2xl font-bold text-white">
+            <h2 class="mt-6 font-display text-3xl font-bold leading-snug text-white">
               {{ 'auth.register.sideTitle' | transloco }}
             </h2>
           </div>
-          <ul class="grid gap-5">
+
+          <ul class="relative grid gap-6">
             @for (perk of perks; track perk.key) {
-              <li class="flex items-start gap-3">
+              <li class="flex items-start gap-3.5">
                 <span
-                  class="grid size-9 shrink-0 place-items-center rounded-full bg-white/10 text-highlight"
+                  class="grid size-10 shrink-0 place-items-center rounded-full bg-white/10 text-highlight"
                 >
-                  <app-icon [name]="perk.icon" [size]="1.1" />
+                  <app-icon [name]="perk.icon" [size]="1.15" />
                 </span>
-                <span class="pt-1 text-sm leading-relaxed">
+                <span class="pt-1.5 text-sm leading-relaxed">
                   {{ 'auth.register.' + perk.key | transloco }}
                 </span>
               </li>
             }
           </ul>
+
+          <p class="relative flex items-center gap-2 text-xs text-white/60">
+            <app-icon name="shield" [size]="1" />
+            {{ 'auth.register.privacy' | transloco }}
+          </p>
         </aside>
 
-        <div class="p-6 sm:p-9">
-          <header class="mb-6">
+        <div class="p-6 sm:p-10">
+          <header class="mb-7">
+            <img
+              src="images/logo.jpg"
+              alt=""
+              width="48"
+              height="48"
+              class="mb-4 size-12 rounded-full ring-1 ring-border md:hidden"
+            />
             <h1 class="text-3xl font-bold tracking-tight">
               {{ 'auth.register.title' | transloco }}
             </h1>
             <p class="mt-1 text-sm text-muted">{{ 'auth.register.subtitle' | transloco }}</p>
           </header>
 
-          <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="grid gap-4">
+          <form
+            [formGroup]="form"
+            (ngSubmit)="submit()"
+            novalidate
+            class="grid gap-x-4 gap-y-5 sm:grid-cols-2"
+          >
             @if (serverError(); as key) {
               <p
                 role="alert"
-                class="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger"
+                class="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger sm:col-span-2"
               >
                 {{ key | transloco }}
               </p>
             }
 
-            <div>
+            <div class="sm:col-span-2">
               <label for="reg-name" class="mb-1.5 block text-sm font-medium">
                 {{ 'auth.fields.fullName' | transloco }}
               </label>
-              <input
-                id="reg-name"
-                type="text"
-                formControlName="fullName"
-                autocomplete="name"
-                class="field !py-2.5"
-                [attr.aria-invalid]="nameError() ? 'true' : null"
-                [attr.aria-describedby]="nameError() ? 'reg-name-error' : null"
-              />
+              <div class="relative">
+                <app-icon
+                  name="user"
+                  [size]="1.05"
+                  class="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-muted"
+                />
+                <input
+                  id="reg-name"
+                  type="text"
+                  formControlName="fullName"
+                  autocomplete="name"
+                  class="field !py-2.5 !ps-10"
+                  [attr.aria-invalid]="nameError() ? 'true' : null"
+                  [attr.aria-describedby]="nameError() ? 'reg-name-error' : null"
+                />
+              </div>
               @if (nameError(); as key) {
                 <p id="reg-name-error" class="mt-1.5 text-sm text-danger">{{ key | transloco }}</p>
               }
@@ -106,18 +141,24 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
               <label for="reg-email" class="mb-1.5 block text-sm font-medium">
                 {{ 'auth.fields.email' | transloco }}
               </label>
-              <input
-                id="reg-email"
-                type="email"
-                formControlName="email"
-                autocomplete="email"
-                inputmode="email"
-                dir="ltr"
-                class="field !py-2.5"
-                placeholder="name@example.com"
-                [attr.aria-invalid]="emailError() ? 'true' : null"
-                [attr.aria-describedby]="emailError() ? 'reg-email-error' : null"
-              />
+              <div class="relative" dir="ltr">
+                <app-icon
+                  name="mail"
+                  [size]="1.05"
+                  class="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-muted"
+                />
+                <input
+                  id="reg-email"
+                  type="email"
+                  formControlName="email"
+                  autocomplete="email"
+                  inputmode="email"
+                  class="field !py-2.5 !ps-10"
+                  placeholder="name@example.com"
+                  [attr.aria-invalid]="emailError() ? 'true' : null"
+                  [attr.aria-describedby]="emailError() ? 'reg-email-error' : null"
+                />
+              </div>
               @if (emailError(); as key) {
                 <p id="reg-email-error" class="mt-1.5 text-sm text-danger">
                   {{ key | transloco }}
@@ -129,18 +170,24 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
               <label for="reg-phone" class="mb-1.5 block text-sm font-medium">
                 {{ 'auth.fields.phone' | transloco }}
               </label>
-              <input
-                id="reg-phone"
-                type="tel"
-                formControlName="phone"
-                autocomplete="tel"
-                inputmode="tel"
-                dir="ltr"
-                class="field !py-2.5"
-                placeholder="01012345678"
-                [attr.aria-invalid]="phoneError() ? 'true' : null"
-                [attr.aria-describedby]="phoneError() ? 'reg-phone-error' : 'reg-phone-hint'"
-              />
+              <div class="relative" dir="ltr">
+                <app-icon
+                  name="phone"
+                  [size]="1.05"
+                  class="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-muted"
+                />
+                <input
+                  id="reg-phone"
+                  type="tel"
+                  formControlName="phone"
+                  autocomplete="tel"
+                  inputmode="tel"
+                  class="field !py-2.5 !ps-10"
+                  placeholder="01012345678"
+                  [attr.aria-invalid]="phoneError() ? 'true' : null"
+                  [attr.aria-describedby]="phoneError() ? 'reg-phone-error' : 'reg-phone-hint'"
+                />
+              </div>
               @if (phoneError(); as key) {
                 <p id="reg-phone-error" class="mt-1.5 text-sm text-danger">
                   {{ key | transloco }}
@@ -180,7 +227,59 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
                   <app-icon [name]="showPassword() ? 'eye-off' : 'eye'" [size]="1.1" />
                 </button>
               </div>
-              <ul id="reg-password-rules" class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+              @if (passwordError(); as key) {
+                <p class="mt-1.5 text-sm text-danger">{{ key | transloco }}</p>
+              }
+            </div>
+
+            <div>
+              <label for="reg-confirm" class="mb-1.5 block text-sm font-medium">
+                {{ 'auth.fields.confirmPassword' | transloco }}
+              </label>
+              <div class="relative" dir="ltr">
+                <input
+                  id="reg-confirm"
+                  [type]="showPassword() ? 'text' : 'password'"
+                  formControlName="confirmPassword"
+                  autocomplete="new-password"
+                  class="field !py-2.5 !pe-11"
+                  [attr.aria-invalid]="confirmError() ? 'true' : null"
+                  [attr.aria-describedby]="confirmError() ? 'reg-confirm-error' : null"
+                />
+                @if (passwordsMatch()) {
+                  <span
+                    class="absolute inset-y-0 end-0 grid w-11 place-items-center text-success"
+                    aria-hidden="true"
+                  >
+                    <app-icon name="check" [size]="1.1" />
+                  </span>
+                }
+              </div>
+              @if (confirmError(); as key) {
+                <p id="reg-confirm-error" class="mt-1.5 text-sm text-danger">
+                  {{ key | transloco }}
+                </p>
+              }
+            </div>
+
+            <!-- how strong the password is, and which rules it still misses -->
+            <div class="sm:col-span-2" id="reg-password-rules">
+              <div class="flex items-center gap-3">
+                <span class="flex flex-1 gap-1.5" aria-hidden="true">
+                  @for (segment of [1, 2, 3, 4]; track segment) {
+                    <span
+                      class="h-1.5 flex-1 rounded-full transition-colors duration-300"
+                      [class]="segment <= strength().score ? strength().color : 'bg-border'"
+                    ></span>
+                  }
+                </span>
+                <span class="w-16 text-end text-xs font-medium text-muted">
+                  @if (strength().score > 0) {
+                    {{ 'auth.register.strength.' + strength().label | transloco }}
+                  }
+                </span>
+              </div>
+              <ul class="mt-2.5 flex flex-wrap gap-x-5 gap-y-1 text-xs">
                 @for (rule of rules(); track rule.key) {
                   <li
                     class="flex items-center gap-1.5 transition-colors"
@@ -193,37 +292,24 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
               </ul>
             </div>
 
-            <div>
-              <label for="reg-confirm" class="mb-1.5 block text-sm font-medium">
-                {{ 'auth.fields.confirmPassword' | transloco }}
-              </label>
-              <input
-                id="reg-confirm"
-                [type]="showPassword() ? 'text' : 'password'"
-                formControlName="confirmPassword"
-                autocomplete="new-password"
-                dir="ltr"
-                class="field !py-2.5"
-                [attr.aria-invalid]="confirmError() ? 'true' : null"
-                [attr.aria-describedby]="confirmError() ? 'reg-confirm-error' : null"
-              />
-              @if (confirmError(); as key) {
-                <p id="reg-confirm-error" class="mt-1.5 text-sm text-danger">
-                  {{ key | transloco }}
-                </p>
-              }
+            <div class="sm:col-span-2">
+              <button
+                type="submit"
+                class="btn btn-accent w-full py-3 text-base"
+                [disabled]="submitting()"
+              >
+                {{
+                  (submitting() ? 'auth.register.submitting' : 'auth.register.submit') | transloco
+                }}
+              </button>
+              <p class="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted md:hidden">
+                <app-icon name="shield" [size]="0.95" />
+                {{ 'auth.register.privacy' | transloco }}
+              </p>
             </div>
-
-            <button
-              type="submit"
-              class="btn btn-accent mt-1 w-full py-3 text-base"
-              [disabled]="submitting()"
-            >
-              {{ (submitting() ? 'auth.register.submitting' : 'auth.register.submit') | transloco }}
-            </button>
           </form>
 
-          <p class="mt-6 text-center text-sm text-muted">
+          <p class="mt-6 border-t border-border pt-5 text-center text-sm text-muted">
             {{ 'auth.register.haveAccount' | transloco }}
             <a
               routerLink="/login"
@@ -272,6 +358,10 @@ export class Register {
     initialValue: '',
   });
 
+  private readonly confirmValue = toSignal(this.form.controls.confirmPassword.valueChanges, {
+    initialValue: '',
+  });
+
   /** شروط كلمة السر: بتتأكد وإنت بتكتب. */
   protected readonly rules = computed(() => {
     const value = this.passwordValue();
@@ -281,6 +371,28 @@ export class Register {
       { key: 'ruleNumber', ok: /\d/.test(value) },
     ];
   });
+
+  /** 0 to 4 filled segments: length, letters and digits together, a long one, and a symbol or mixed case. */
+  protected readonly strength = computed(() => {
+    const value = this.passwordValue();
+    if (!value) return { score: 0, label: 'weak', color: 'bg-border' };
+    const score =
+      Number(value.length >= 8) +
+      Number(/[A-Za-z]/.test(value) && /\d/.test(value)) +
+      Number(value.length >= 12) +
+      Number(/[^A-Za-z0-9]/.test(value) || (/[a-z]/.test(value) && /[A-Z]/.test(value)));
+    return [
+      { score: 1, label: 'weak', color: 'bg-danger' },
+      { score: 2, label: 'fair', color: 'bg-highlight' },
+      { score: 3, label: 'good', color: 'bg-accent' },
+      { score: 4, label: 'strong', color: 'bg-success' },
+    ][Math.max(1, score) - 1];
+  });
+
+  /** The two passwords are the same (and not empty): shown as a tick in the second field. */
+  protected readonly passwordsMatch = computed(
+    () => this.confirmValue() !== '' && this.confirmValue() === this.passwordValue(),
+  );
 
   protected readonly submitting = signal(false);
   protected readonly serverError = signal<string | null>(null);

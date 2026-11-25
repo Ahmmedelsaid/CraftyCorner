@@ -40,25 +40,30 @@ const TOPICS_WITH_ORDER: readonly Topic[] = ['order', 'complaint'];
   template: `
     <div class="mx-auto grid max-w-7xl gap-6 px-4 pt-6">
       <header
-        class="relative isolate overflow-hidden rounded-3xl bg-linear-to-br from-accent via-[#1d4ed8] to-[#1e3a8a] px-6 py-6 text-white shadow-lift sm:px-10 sm:py-8"
+        class="relative isolate overflow-hidden rounded-3xl bg-ink px-6 py-8 text-white shadow-lift sm:px-10 sm:py-10"
       >
-        <div
+        <span
           aria-hidden="true"
-          class="pointer-events-none absolute -end-20 -top-24 -z-10 size-72 rounded-full bg-white/10 blur-2xl"
-        ></div>
+          class="pointer-events-none absolute -end-24 -top-28 -z-10 size-80 rounded-full bg-accent/40 blur-3xl"
+        ></span>
+        <span
+          aria-hidden="true"
+          class="pointer-events-none absolute -bottom-24 end-10 -z-10 hidden h-56 w-44 rounded-t-full border border-white/15 sm:block"
+        ></span>
         <p
-          class="inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide"
+          class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide"
         >
+          <app-icon name="mail" [size]="0.9" />
           {{ 'contact.eyebrow' | transloco }}
         </p>
-        <h1 class="mt-3 max-w-2xl text-2xl font-bold leading-tight tracking-tight sm:text-3xl">
+        <h1 class="mt-4 max-w-2xl font-display text-3xl leading-tight sm:text-4xl">
           {{ 'contact.title' | transloco }}
         </h1>
-        <p class="mt-2 max-w-xl text-white/85">{{ 'contact.subtitle' | transloco }}</p>
+        <p class="mt-3 max-w-xl text-white/80">{{ 'contact.subtitle' | transloco }}</p>
       </header>
 
       <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
-        <div class="grid gap-3">
+        <div class="grid gap-3 lg:sticky lg:top-24">
           @if (whatsappUrl(); as url) {
             <a
               [href]="url"
@@ -106,19 +111,42 @@ const TOPICS_WITH_ORDER: readonly Topic[] = ['order', 'complaint'];
             </div>
           }
 
+          <div class="card flex items-start gap-3 p-4">
+            <span
+              class="grid size-11 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent"
+            >
+              <app-icon name="clock" [size]="1.3" />
+            </span>
+            <div class="min-w-0">
+              <p class="text-sm font-semibold">{{ 'contact.reply.title' | transloco }}</p>
+              <p class="text-sm text-muted">{{ 'contact.reply.text' | transloco }}</p>
+            </div>
+          </div>
+
           <section class="card p-4" aria-labelledby="quick-title">
-            <h2 id="quick-title" class="mb-3 flex items-center gap-2 text-sm font-semibold">
+            <h2 id="quick-title" class="mb-2 flex items-center gap-2 text-sm font-semibold">
               <app-icon name="help" [size]="1.1" class="text-accent" />
               {{ 'contact.quick.title' | transloco }}
             </h2>
-            <dl class="grid gap-3 text-sm">
+            <div class="divide-y divide-border">
               @for (key of quickKeys; track key) {
-                <div>
-                  <dt class="font-medium">{{ 'contact.quick.' + key + '.q' | transloco }}</dt>
-                  <dd class="text-muted">{{ 'contact.quick.' + key + '.a' | transloco }}</dd>
-                </div>
+                <details class="group py-2.5">
+                  <summary
+                    class="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium marker:hidden [&::-webkit-details-marker]:hidden"
+                  >
+                    {{ 'contact.quick.' + key + '.q' | transloco }}
+                    <app-icon
+                      name="chevron-down"
+                      [size]="1"
+                      class="shrink-0 text-muted transition-transform duration-200 group-open:rotate-180"
+                    />
+                  </summary>
+                  <p class="mt-2 text-sm leading-relaxed text-muted">
+                    {{ 'contact.quick.' + key + '.a' | transloco }}
+                  </p>
+                </details>
               }
-            </dl>
+            </div>
             <a
               routerLink="/orders"
               class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline"
@@ -238,7 +266,7 @@ const TOPICS_WITH_ORDER: readonly Topic[] = ['order', 'complaint'];
                     inputmode="tel"
                     dir="ltr"
                     class="field"
-                    placeholder="+20 100 123 4567"
+                    placeholder="01012345678"
                     [attr.aria-invalid]="phoneError() ? 'true' : null"
                     [attr.aria-describedby]="phoneError() ? 'ct-phone-error' : null"
                   />
@@ -336,7 +364,7 @@ export class Contact {
 
   protected readonly messageMax = MESSAGE_MAX;
   protected readonly topics = TOPICS;
-  protected readonly quickKeys = ['pay', 'delivery'];
+  protected readonly quickKeys = ['pay', 'delivery', 'cancel', 'custom'];
 
   /** كروت بيانات التواصل: بتظهر بس اللي اتملا في site.ts. */
   protected readonly info = computed(() => {

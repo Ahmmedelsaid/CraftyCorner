@@ -56,7 +56,7 @@ import { Reveal } from '../../shared/directives/reveal';
           </button>
         </header>
 
-        @if (incomplete()) {
+        @if (missing(); as what) {
           <div
             role="status"
             class="flex items-start gap-3 rounded-2xl border border-highlight/60 bg-accent-soft p-4"
@@ -64,7 +64,7 @@ import { Reveal } from '../../shared/directives/reveal';
             <app-icon name="pin" [size]="1.3" class="mt-0.5 text-accent" />
             <div>
               <h2 class="font-semibold">{{ 'account.incompleteTitle' | transloco }}</h2>
-              <p class="text-sm text-muted">{{ 'account.incompleteText' | transloco }}</p>
+              <p class="text-sm text-muted">{{ 'account.incomplete.' + what | transloco }}</p>
             </div>
           </div>
         }
@@ -289,9 +289,14 @@ export class Account {
   );
 
   /** ناقص موبايل أو عنوان افتراضي: نفكّره يكمّل بياناته. */
-  protected readonly incomplete = computed(() => {
+  protected readonly missing = computed<'both' | 'phone' | 'address' | null>(() => {
     const user = this.auth.user();
-    return !!user && (!user.phone || !user.address || !user.city);
+    if (!user) return null;
+    const noPhone = !user.phone;
+    const noAddress = !user.address || !user.city;
+    if (noPhone && noAddress) return 'both';
+    if (noPhone) return 'phone';
+    return noAddress ? 'address' : null;
   });
 
   protected readonly form = inject(NonNullableFormBuilder).group({

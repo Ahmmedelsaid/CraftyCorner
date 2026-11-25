@@ -57,9 +57,14 @@ import { Reveal } from '../../shared/directives/reveal';
           >
             <app-icon name="cart" [size]="2.5" class="text-muted/60" />
             <h2 class="text-lg font-semibold">{{ 'cart.emptyTitle' | transloco }}</h2>
-            <a routerLink="/products" class="btn btn-accent mt-1">{{
-              'account.startShopping' | transloco
-            }}</a>
+            <!-- often reached with the Back button right after an order: say where the order is -->
+            <p class="max-w-sm text-sm text-muted">{{ 'checkout.emptyHint' | transloco }}</p>
+            <div class="mt-1 flex flex-wrap justify-center gap-3">
+              <a routerLink="/orders" class="btn btn-accent">{{
+                'checkout.viewOrders' | transloco
+              }}</a>
+              <a routerLink="/products" class="btn">{{ 'account.startShopping' | transloco }}</a>
+            </div>
           </div>
         } @else {
           <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">

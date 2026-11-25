@@ -94,7 +94,14 @@
       "ruleLength": "At least 8 characters",
       "ruleLetter": "One letter",
       "ruleNumber": "One number",
-      "phoneHint": "An Egyptian mobile, like 01012345678."
+      "phoneHint": "An Egyptian mobile, like 01012345678.",
+      "privacy": "Your details are only used for your orders and delivery.",
+      "strength": {
+        "weak": "Weak",
+        "fair": "Fair",
+        "good": "Good",
+        "strong": "Strong"
+      }
     },
     "fields": {
       "fullName": "Full name",
@@ -145,7 +152,27 @@
     "saving": "Saving…",
     "saved": "Your details are saved",
     "incompleteTitle": "Complete your details",
-    "incompleteText": "Add your mobile number and a default address to check out faster."
+    "incomplete": {
+      "both": "Add your mobile number and a default address to check out faster.",
+      "phone": "Add your mobile number so we can call you to confirm your orders.",
+      "address": "Add a default delivery address to check out faster."
+    },
+    "completeness": "Profile {{percent}}% complete",
+    "completeDone": "Your profile is complete, so checkout will be quick.",
+    "checklist": {
+      "name": "Name",
+      "phone": "Mobile number",
+      "address": "Delivery address"
+    },
+    "emailLocked": "The email is your sign-in and cannot be changed here.",
+    "unsaved": "You have unsaved changes",
+    "discard": "Discard",
+    "quick": {
+      "title": "Quick links",
+      "orders": "My orders",
+      "favourites": "Favourites",
+      "contact": "Contact us"
+    }
   },
   "products": {
     "title": "All pieces",
@@ -297,7 +324,9 @@
       "invalid": "Some details are not valid. Please check the form.",
       "stock": "Some items are no longer available in the quantity you chose."
     },
-    "saveDefault": "Save these details as my default address"
+    "saveDefault": "Save these details as my default address",
+    "emptyHint": "If you have just placed an order, you will find it, and its status, in My orders.",
+    "viewOrders": "View my orders"
   },
   "orders": {
     "title": "My orders",
@@ -427,7 +456,7 @@
       "nameShort": "The name must be at least 2 characters.",
       "emailRequired": "Please enter your email.",
       "emailInvalid": "Enter a valid email address.",
-      "phoneInvalid": "Enter a valid phone number, like +20 100 123 4567.",
+      "phoneInvalid": "Enter a valid mobile number, like 01012345678.",
       "messageRequired": "Please write your message.",
       "messageShort": "Please write at least 10 characters.",
       "orderNumberInvalid": "Use digits only, like 1042."
@@ -462,7 +491,19 @@
         "q": "How does delivery work?",
         "a": "After you order, we call you to arrange the time. We deliver to every governorate."
       },
-      "track": "Track my order"
+      "track": "Track my order",
+      "cancel": {
+        "q": "Can I cancel my order?",
+        "a": "Yes, from My orders, as long as we have not started preparing it. The items go back to stock."
+      },
+      "custom": {
+        "q": "Do you take custom orders?",
+        "a": "Yes. Tell us the colours, the size and the date you need it in the message, and we will reply with a price."
+      }
+    },
+    "reply": {
+      "title": "We reply within one working day",
+      "text": "We answer by email, and by WhatsApp when you write to us there."
     }
   },
   "admin": {
